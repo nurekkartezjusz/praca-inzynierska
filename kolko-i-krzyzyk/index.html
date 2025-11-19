@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kółko i krzyżyk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <div class="toprow">
+      <a class="back-link" href="../index.html">← Powrót do strony głównej</a>
+      <h1>Kółko i krzyżyk</h1>
+    </div>
+
+    <div id="status">Tura: <span id="turn">X</span></div>
+
+    <div id="board" class="board" aria-label="Plansza kółko i krzyżyk">
+      <div class="cell" data-index="0" tabindex="0"></div>
+      <div class="cell" data-index="1" tabindex="0"></div>
+      <div class="cell" data-index="2" tabindex="0"></div>
+      <div class="cell" data-index="3" tabindex="0"></div>
+      <div class="cell" data-index="4" tabindex="0"></div>
+      <div class="cell" data-index="5" tabindex="0"></div>
+      <div class="cell" data-index="6" tabindex="0"></div>
+      <div class="cell" data-index="7" tabindex="0"></div>
+      <div class="cell" data-index="8" tabindex="0"></div>
+    </div>
+
+    <div class="controls">
+      <label class="control-item"><input type="checkbox" id="vsBot"> Gra przeciwko botowi</label>
+      <label class="control-item">Poziom: <select id="difficulty"><option value="easy">Łatwy (losowy)</option><option value="hard">Trudny (minimax)</option></select></label>
+      <label class="control-item">Jesteś: <select id="playerSymbol"><option value="X">X</option><option value="O">O</option></select></label>
+      <label class="control-item">Zaczyna: <select id="starter"><option value="X">X</option><option value="O">O</option></select></label>
+      <div class="scoreboard">
+        <div class="score">X: <span id="scoreX">0</span></div>
+        <div class="score">O: <span id="scoreO">0</span></div>
+        <button id="resetScores">Wyczyść wyniki</button>
+      </div>
+      <div class="controls-apply">
+        <button id="applySettings" class="apply-btn">Zastosuj ustawienia</button>
+        <button id="reset">Restart</button>
+      </div>
+    </div>
+
+    <div id="message" class="message" aria-live="polite"></div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+*{
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    align-items:center;
+    background:#f0f4f8;
+    display:flex;
+    justify-content:center;
+    margin:0;
+    min-height:100vh;
+}
+
+main{
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+    padding:20px;
+    text-align:center;
+    width:320px;
+}
+
+h1{
+    font-size:20px;
+    margin:0 0 12px;
+}
+
+#status{
+    font-weight:600;
+    margin-bottom:8px;
+}
+
+.board{
+    display:grid;
+    gap:8px;
+    grid-template-columns:repeat(3,1fr);
+    margin:12px 0
+}
+
+.cell{
+    align-items:center;
+    background:#fff;
+    border:2px solid #d1d7dd;
+    border-radius:6px;
+    cursor:pointer;
+    display:flex;
+    font-size:48px;
+    height:96px;
+    justify-content:center;
+    user-select:none;
+    width:96px;
+}
+
+.cell:hover{
+    background:#f7f9fb
+}
+
+.controls{
+    margin-top:12px
+}
+
+.control-item{
+    align-items:center;
+    display:inline-flex;
+    gap:8px;
+    margin-right:8px
+}
+
+.scoreboard{
+    align-items:center;
+    display:inline-flex;
+    gap:12px;
+    margin-left:6px
+}
+
+.score{
+    font-weight:700}
+
+.scoreboard button{
+    background:#e0e0e0;
+    border:0;
+    border-radius:6px;
+    color:#111;
+    cursor:pointer;
+    padding:6px 8px;
+}
+
+select{
+    background:#fff;
+    border:1px solid #ccd5dd;
+    border-radius:6px;
+    padding:6px
+}
+
+.toprow{
+    align-items:center;
+    display:flex;
+    gap:12px;
+    justify-content:flex-start;
+    margin-bottom:8px
+}
+
+.back-link{
+    color:#1976d2;
+    font-weight:600;
+    text-decoration:none
+}
+
+.back-link:hover{
+    text-decoration:underline}
+
+.controls-apply{
+    align-items:center;
+    display:inline-flex;
+    gap:8px;
+    margin-left:8px
+}
+
+.apply-btn{
+    background:#2e7d32;
+    border:0;
+    border-radius:6px;
+    color:#fff;
+    cursor:pointer;
+    padding:8px 12px
+}
+
+.apply-btn:active{
+    transform:translateY(1px)}
+
+button{
+    background:#1976d2;
+    border:0;
+    border-radius:6px;
+    color:#fff;
+    cursor:pointer;
+    padding:8px 14px;
+}
+
+button:active{
+    transform:translateY(1px)
+}
+
+.message{
+    color:#333;
+    margin-top:10px;
+}
+
+@media (max-width:420px){
+    main{width:92vw}
+    .cell{width:28vw;
+    height:28vw;
+    font-size:8vw}
+}

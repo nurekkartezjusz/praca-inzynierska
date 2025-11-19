@@ -1,35 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>My Project</title>
-    <meta name="description" content="Starter HTML file" />
-    <link rel="stylesheet" href="/css/style.css" />
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Mini Gry — Strona Główna</title>
+        <meta name="description" content="Katalog prostych gier: Kółko i krzyżyk oraz Sudoku" />
+        <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-    <header>
-        <h1>Welcome</h1>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-        </nav>
+    <header class="site-header">
+        <div class="container">
+            <h1 class="site-title">Mini Gry</h1>
+            <p class="site-sub">Kilka prostych gier stworzonych jako projekt — wybierz i zagraj.</p>
+        </div>
     </header>
 
-    <main id="home">
-        <section>
-            <h2>DUPA</h2>
-            <p>This is a starter HTML file for your project.</p>
+    <main class="container main-grid">
+        <section class="cards">
+            <article class="card">
+                <div class="card-media">🎯</div>
+                <h2>Kółko i krzyżyk</h2>
+                <p class="card-desc">Gra dla dwóch graczy lub przeciwko botowi. Wybierz poziom trudności i zagraj szybki mecz.</p>
+                <a class="card-btn" href="/kolko-i-krzyzyk/index.html">Otwórz grę</a>
+            </article>
+
+            <article class="card">
+                <div class="card-media">🔢</div>
+                <h2>Sudoku</h2>
+                <p class="card-desc">Generowanie plansz, podpowiedzi, timer i ranking — rozwiązuj i zapisuj wyniki.</p>
+                <a class="card-btn" href="/sudoku/index.html">Otwórz grę</a>
+            </article>
         </section>
+
+        <aside class="info">
+            <h3>O projekcie</h3>
+            <p>Projekt zawiera proste przeglądarkowe gry napisane w HTML/CSS/JS. Wszystkie ustawienia i wyniki są zapisywane w lokalnej pamięci przeglądarki.</p>
+            <p class="small">Repozytorium: <code>inzynierka-basic</code></p>
+        </aside>
     </main>
 
-    <footer>
-        <small>&copy; <span id="year"></span> Your Name</small>
+    <footer class="site-footer">
+        <div class="container">© 2025 — Projekt edukacyjny</div>
     </footer>
-
-    <script>
-        // small helper to keep footer year current
-        document.getElementById('year').textContent = new Date().getFullYear();
-    </script>
 </body>
 </html>

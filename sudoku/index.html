@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sudoku</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <div class="toprow">
+      <a class="back-link" href="../index.html">← Powrót do strony głównej</a>
+      <h1>Sudoku</h1>
+    </div>
+
+    <div class="controls">
+      <label>Poziom: <select id="difficulty"><option value="easy">Łatwy</option><option value="medium">Średni</option><option value="hard">Trudny</option></select></label>
+      <button id="newGame">Nowa gra</button>
+      <button id="check">Sprawdź</button>
+      <button id="solve">Rozwiąż</button>
+      <button id="reset">Reset</button>
+      <button id="saveGame">Zapisz</button>
+      <button id="loadGame">Wczytaj zapis</button>
+      <button id="clearSave">Wyczyść zapis</button>
+      <label class="control-item"><input type="checkbox" id="showHints"> Pokaż podpowiedzi</label>
+      <label class="control-item"><input type="checkbox" id="notesMode"> Tryb notatek</label>
+      <button id="exportGame">Eksportuj (JSON)</button>
+      <input id="importFile" type="file" accept="application/json" style="display:none">
+      <button id="importGame">Importuj (JSON)</button>
+      <div class="timer" id="timerContainer">Czas: <span id="timer">00:00</span> <span id="timerDot" class="timer-dot" aria-hidden="true"></span></div>
+      <button id="pauseTimer">Pauza</button>
+      <div class="save-meta">Ostatni zapis: <span id="savedAt">-</span></div>
+      <button id="showLeaderboard">Pokaż ranking</button>
+      <button id="clearLeaderboard">Wyczyść ranking</button>
+    </div>
+
+    <div class="board-area">
+      <div id="board" class="sudoku-board" aria-label="Plansza sudoku"></div>
+      <div id="keypad" class="keypad" aria-label="Klawiatura numeryczna">
+        <div class="keys">
+          <button data-value="1">1</button>
+          <button data-value="2">2</button>
+          <button data-value="3">3</button>
+          <button data-value="4">4</button>
+          <button data-value="5">5</button>
+          <button data-value="6">6</button>
+          <button data-value="7">7</button>
+          <button data-value="8">8</button>
+          <button data-value="9">9</button>
+        </div>
+        <div class="key-actions">
+          <button data-value="clear" class="clear">Wyczyść</button>
+        </div>
+      </div>
+      <div id="pauseOverlay" class="pause-overlay hidden" role="status" aria-live="polite">
+        <div class="pause-content">
+          <div class="pause-title">PAUZA — czas zatrzymany</div>
+          <div class="pause-desc">Podczas pauzy plansza jest ukryta, aby zapobiec patrzeniu na rozwiązanie.</div>
+          <button id="resumeBtn" class="card-btn">Wznów</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="candidates" class="candidates" aria-hidden="true"></div>
+    <div id="message" class="message" aria-live="polite"></div>
+
+    <div id="leaderboard" class="leaderboard hidden" aria-live="polite">
+      <h2>Ranking najlepszych</h2>
+      <label>Filtr: <select id="leaderboardFilter"><option value="all">Wszystkie</option><option value="easy">Łatwy</option><option value="medium">Średni</option><option value="hard">Trudny</option></select></label>
+      <table id="leaderboardTable">
+        <thead>
+          <tr><th>#</th><th>Poziom</th><th>Czas</th><th>Data</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <p class="hint">Wprowadź cyfry 1–9. Puste pole zostaw puste.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

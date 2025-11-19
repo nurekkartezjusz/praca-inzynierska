@@ -1,0 +1,114 @@
+*{
+    box-sizing:border-box;font-family:Arial, Helvetica, sans-serif
+}
+
+body{
+    display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f6f7fb
+}
+
+main{
+    width:min(720px,95vw);padding:20px;background:#fff;border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.08);text-align:center
+}
+
+h1{
+    margin:0 0 12px
+}
+
+.controls{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:12px
+}
+
+button{padding:8px 12px;border-radius:6px;border:0;background:#1976d2;color:#fff;cursor:pointer}
+button:active{transform:translateY(1px)}
+.sudoku-board{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;max-width:640px;margin:0 auto}
+.cell{width:calc(640px/9 - 4px);height:calc(640px/9 - 4px);display:flex;align-items:center;justify-content:center}
+.cell input{width:100%;height:100%;text-align:center;font-size:1.1rem;border:1px solid #cfd8e3;border-radius:4px;background:#fff;caret-color:transparent}
+.cell input:focus{outline:0}
+.cell.given input{background:#eef3ff;border-color:#bcd0ff;font-weight:700}
+/* thicker borders for 3x3 boxes */
+.cell:nth-child(3n) input{border-right:2px solid #777}
+.cell:nth-child(n+19):nth-child(-n+27) input{border-bottom:2px solid #777}
+.cell:nth-child(n+46):nth-child(-n+54) input{border-bottom:2px solid #777}
+.cell:nth-child(1) input{border-left:2px solid #777}
+.cell:nth-child(10) input{border-left:2px solid #777}
+.cell:nth-child(19) input{border-left:2px solid #777}
+.cell:nth-child(28) input{border-left:2px solid #777}
+/* small responsive */
+@media (max-width:720px){
+  .cell{width:calc(92vw/9 - 4px);height:calc(92vw/9 - 4px)}
+  .cell input{font-size:1.4vw}
+}
+.message{margin-top:12px;color:#333;font-weight:600}
+.hint{color:#666;font-size:0.9rem}
+
+.cell.error input{background:#ffecec;border-color:#ff6b6b}
+.cell.error input:focus{outline:2px solid rgba(255,107,107,0.2)}
+.controls button#saveGame, .controls button#loadGame, .controls button#clearSave{background:#455a64}
+
+.candidates{max-width:640px;margin:8px auto;padding:6px;background:#f1f5f9;border-radius:6px;color:#223}
+.candidates.hidden{display:none}
+.timer{display:inline-block;margin-left:12px;font-weight:700}
+.save-meta{display:inline-block;margin-left:12px;color:#555}
+.controls button#exportGame, .controls button#importGame{background:#00695c}
+.controls button#startTimer, .controls button#pauseTimer, .controls button#resetTimer{background:#8e24aa}
+
+.hidden{display:none}
+
+.leaderboard{max-width:640px;margin:12px auto;padding:8px;border-radius:6px;background:#fff;border:1px solid #e3e8ef}
+.leaderboard h2{margin:0 0 8px;font-size:16px}
+.leaderboard table{width:100%;border-collapse:collapse}
+.leaderboard th,.leaderboard td{padding:6px 8px;border-bottom:1px solid #eef2f7;text-align:left}
+.leaderboard tbody tr:nth-child(odd){background:#fbfdff}
+.controls button#showLeaderboard, .controls button#clearLeaderboard{background:#0277bd}
+
+.toprow{display:flex;align-items:center;gap:12px;justify-content:flex-start;margin-bottom:8px}
+.timer-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:8px;background:#999;vertical-align:middle;opacity:0;transform:scale(.8)}
+.timer-running .timer-dot{background:#ef5350;opacity:1;animation:ping 1s infinite}
+@keyframes ping{0%{transform:scale(.9);opacity:1}50%{transform:scale(1.15);opacity:.6}100%{transform:scale(.9);opacity:1}}
+.timer-running #timer{font-weight:800}
+.back-link{color:#1976d2;text-decoration:none;font-weight:600}
+.back-link:hover{text-decoration:underline}
+.leaderboard label{display:inline-block;margin-bottom:8px}
+
+/* Keypad styles */
+.board-area{display:flex;gap:16px;align-items:flex-start;justify-content:center;margin-top:10px;position:relative}
+.keypad{display:flex;flex-direction:column;gap:8px;align-items:center}
+.keypad .keys{display:grid;grid-template-columns:repeat(3,48px);gap:8px}
+.keypad button{width:48px;height:48px;border-radius:8px;border:0;background:#1976d2;color:#fff;font-size:18px;cursor:pointer}
+.keypad .key-actions button{width:156px;background:#ef5350}
+
+@media (max-width:720px){
+  .board-area{flex-direction:column;align-items:center}
+  .keypad .keys{grid-template-columns:repeat(3,12vw)}
+  .keypad button{width:12vw;height:12vw;font-size:5vw}
+  .keypad .key-actions button{width:36vw}
+}
+
+  /* Pause overlay: covers board and keypad when paused */
+  .pause-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(245,245,245,0.98));backdrop-filter:blur(4px);z-index:30;border-radius:6px;color:#222;font-size:18px;font-weight:700}
+  .pause-overlay.hidden{display:none}
+  .pause-content{max-width:320px;padding:18px;text-align:center}
+  .pause-title{font-size:18px;font-weight:800;margin-bottom:8px}
+  .pause-desc{color:#475569;margin-bottom:12px}
+  .pause-overlay .card-btn{background:#2563eb;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;border:0}
+
+  /* Candidates (notes) rendering inside each cell */
+  .cell .candidates-grid{position:absolute;inset:4px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:1px;font-size:9px;color:#334155}
+  .cell{position:relative}
+  .candidates-grid div{display:flex;align-items:center;justify-content:center;padding:0}
+  .candidate-dot{color:#6b7280}
+
+  /* Highlight same numbers */
+  .cell.same{background:linear-gradient(180deg, #fff8e1, #fff1c2)}
+  /* Active cell highlight (replace blinking caret) */
+  .cell.active{outline:0}
+  .cell.active input{box-shadow:inset 0 0 0 3px rgba(37,99,235,0.12);border-radius:4px}
+  /* Active focus styles handled via .cell.active and input:focus */
+
+  /* Input entry animation */
+  .cell .pop{animation:pop 240ms ease forwards}
+  @keyframes pop{0%{transform:scale(.95);opacity:.7}60%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+
+  /* Win animation */
+  .sudoku-board.win .cell{animation:winPulse 900ms ease-in-out}
+  @keyframes winPulse{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
