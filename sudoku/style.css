@@ -108,7 +108,7 @@ button:active{
   color: white;
 }
 
-.controls button#saveGame, .controls button#loadGame,  .controls button#save-meta{
+.controls button#saveGame, .controls button#loadGame,  .controls button#clearSave,  .controls button#save-meta{
   background: #6b7280;
   color: white;
 }
@@ -123,7 +123,7 @@ button:active{
   color: white;
 }
 
-.controls button#clearLeaderboard,  .controls button#clearSave{
+.controls button#clearLeaderboard{
   background: #dc2626;
   color: white;
 }
