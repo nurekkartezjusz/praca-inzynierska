@@ -7,12 +7,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
+  <header class="site-header">
     <div class="toprow">
+      <h1 class="site-title">Kółko i krzyżyk</h1>
       <a class="back-link" href="../index.html">← Powrót do strony głównej</a>
-      <h1>Kółko i krzyżyk</h1>
     </div>
-
+  </header>
+  <main>
     <div id="status">Tura: <span id="turn">X</span></div>
 
     <div id="board" class="board" aria-label="Plansza kółko i krzyżyk">
@@ -28,7 +29,7 @@
     </div>
 
     <div class="controls">
-      <label class="control-item"><input type="checkbox" id="vsBot"> Gra przeciwko botowi</label>
+      <label class="control-item"><input type="checkbox" id="vsBot"> <span>Gra przeciwko botowi</span></label>
       <label class="control-item">Poziom: <select id="difficulty"><option value="easy">Łatwy (losowy)</option><option value="hard">Trudny (minimax)</option></select></label>
       <label class="control-item">Jesteś: <select id="playerSymbol"><option value="X">X</option><option value="O">O</option></select></label>
       <label class="control-item">Zaczyna: <select id="starter"><option value="X">X</option><option value="O">O</option></select></label>

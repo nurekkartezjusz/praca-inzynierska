@@ -7,31 +7,41 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
+  <header class="site-header">
     <div class="toprow">
+      <h1 class="site-title">Sudoku</h1>
       <a class="back-link" href="../index.html">← Powrót do strony głównej</a>
-      <h1>Sudoku</h1>
     </div>
-
+  </header>
+  <main>
+    
     <div class="controls">
-      <label>Poziom: <select id="difficulty"><option value="easy">Łatwy</option><option value="medium">Średni</option><option value="hard">Trudny</option></select></label>
-      <button id="newGame">Nowa gra</button>
-      <button id="check">Sprawdź</button>
-      <button id="solve">Rozwiąż</button>
-      <button id="reset">Reset</button>
-      <button id="saveGame">Zapisz</button>
-      <button id="loadGame">Wczytaj zapis</button>
-      <button id="clearSave">Wyczyść zapis</button>
-      <label class="control-item"><input type="checkbox" id="showHints"> Pokaż podpowiedzi</label>
-      <label class="control-item"><input type="checkbox" id="notesMode"> Tryb notatek</label>
-      <button id="exportGame">Eksportuj (JSON)</button>
-      <input id="importFile" type="file" accept="application/json" style="display:none">
-      <button id="importGame">Importuj (JSON)</button>
-      <div class="timer" id="timerContainer">Czas: <span id="timer">00:00</span> <span id="timerDot" class="timer-dot" aria-hidden="true"></span></div>
-      <button id="pauseTimer">Pauza</button>
-      <div class="save-meta">Ostatni zapis: <span id="savedAt">-</span></div>
-      <button id="showLeaderboard">Pokaż ranking</button>
-      <button id="clearLeaderboard">Wyczyść ranking</button>
+      <div class="row">
+        <label>Poziom: <select id="difficulty"><option value="easy">Łatwy</option><option value="medium">Średni</option><option value="hard">Trudny</option></select></label>
+        <button id="newGame">Nowa gra</button>
+        <button id="reset">Reset</button>
+        <button id="check">Sprawdź</button>
+        <button id="solve">Rozwiąż</button>
+      </div>
+      <div class="row">
+        <button id="saveGame">Zapisz</button>
+        <button id="loadGame">Wczytaj zapis</button>
+        <button id="clearSave">Wyczyść zapis</button>
+        <div class="save-meta">Ostatni zapis: <span id="savedAt">-</span></div>
+      </div>
+      <div class="row">
+        <button id="exportGame">Eksportuj (JSON)</button>
+        <input id="importFile" type="file" accept="application/json" style="display:none">
+        <button id="importGame">Importuj (JSON)</button>
+        <label class="control-item"><input type="checkbox" id="showHints">Pokaż podpowiedzi</label>
+        <label class="control-item"><input type="checkbox" id="notesMode">Tryb notatek</label>
+      </div>
+      <div class="row">
+        <div class="timer" id="timerContainer">Czas: <span id="timer">00:00</span> <span id="timerDot" class="timer-dot" aria-hidden="true"></span></div>
+        <button id="pauseTimer">Pauza</button>
+        <button id="showLeaderboard">Pokaż ranking</button>
+        <button id="clearLeaderboard">Wyczyść ranking</button>
+      </div>
     </div>
 
     <div class="board-area">
