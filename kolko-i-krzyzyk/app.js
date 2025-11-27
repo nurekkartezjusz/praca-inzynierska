@@ -39,42 +39,21 @@ function handleMove(e){
   this.classList.add('filled');
 
   const winner = checkWinner();
-  if(winner){
-    finished = true;
-    messageEl.textContent = `Wygrywa ${winner}!`;
-    highlightWinning(winner);
-    incrementScore(winner);
-    return;
-  }
-
-  if(board.every(Boolean)){
-    finished = true;
-    messageEl.textContent = 'Remis!';
-    return;
-  }
+  if(winner){ finished = true; messageEl.textContent = `Wygrywa ${winner}!`; highlightWinning(winner); incrementScore(winner); return; }
+  if(board.every(Boolean)){ finished = true; messageEl.textContent = 'Remis!'; return; }
 
   currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
   updateTurn();
-
-  // jeśli gra z botem i teraz jest tura O (bot), wykonaj ruch
-  if(vsBotCheckbox && vsBotCheckbox.checked && !finished && currentPlayer === botPlayer){
-    botMove();
-  }
+  if(vsBotCheckbox?.checked && currentPlayer === botPlayer) botMove();
 }
 
-function checkWinner(){
-  for(const combo of winningCombos){
-    const [a,b,c] = combo;
-    if(board[a] && board[a] === board[b] && board[a] === board[c]){
-      return board[a];
-    }
-  }
+const checkWinner = (b = board) => {
+  for(const [a,b1,c] of winningCombos) if(b[a] && b[a] === b[b1] && b[a] === b[c]) return b[a];
   return null;
-}
+};
 
 function highlightWinning(winner){
-  for(const combo of winningCombos){
-    const [a,b,c] = combo;
+  for(const [a,b,c] of winningCombos){
     if(board[a] === winner && board[b] === winner && board[c] === winner){
       [a,b,c].forEach(i => cells[i].style.background = '#e8f0fe');
     }
@@ -84,174 +63,103 @@ function highlightWinning(winner){
 function reset(){
   board.fill(null);
   cells.forEach(c => { c.textContent = ''; c.style.background=''; c.classList.remove('filled');});
-  // ustaw początkowego gracza według wyboru
-  humanPlayer = (playerSymbolSelect && playerSymbolSelect.value) ? playerSymbolSelect.value : 'X';
+  humanPlayer = playerSymbolSelect?.value || 'X';
   botPlayer = humanPlayer === 'X' ? 'O' : 'X';
-  currentPlayer = (starterSelect && starterSelect.value) ? starterSelect.value : 'X';
+  currentPlayer = starterSelect?.value || 'X';
   finished = false;
   messageEl.textContent = '';
   updateTurn();
-  // jeśli gra z botem i bot zaczyna, niech wykona ruch
-  if(vsBotCheckbox && vsBotCheckbox.checked && currentPlayer === botPlayer){
-    botMove();
-  }
+  if(vsBotCheckbox?.checked && currentPlayer === botPlayer) setTimeout(botMove, 100);
 }
 
 function loadScores(){
-  try{
-    const raw = localStorage.getItem('tictactoe-scores');
-    if(raw){ scores = JSON.parse(raw); }
-  }catch(e){ scores = { X:0, O:0 }; }
+  try{ scores = JSON.parse(localStorage.getItem('tictactoe-scores') || '{"X":0,"O":0}'); }
+  catch(e){ scores = { X:0, O:0 }; }
   updateScoresUI();
 }
 
 function saveScores(){
   try{ localStorage.setItem('tictactoe-scores', JSON.stringify(scores)); }catch(e){}
+  updateScoresUI();
 }
 
 function updateScoresUI(){
-  if(scoreXEl) scoreXEl.textContent = scores.X;
-  if(scoreOEl) scoreOEl.textContent = scores.O;
+  scoreXEl.textContent = scores.X;
+  scoreOEl.textContent = scores.O;
 }
 
 function incrementScore(winner){
   if(!winner) return;
   scores[winner] = (scores[winner]||0) + 1;
   saveScores();
-  updateScoresUI();
 }
 
 function resetScores(){
   scores = { X:0, O:0 };
   saveScores();
-  updateScoresUI();
 }
 
 function botMove(){
   const available = board.map((v,i)=> v ? null : i).filter(i => i !== null);
   if(available.length === 0) return;
-  const difficulty = (difficultySelect && difficultySelect.value) ? difficultySelect.value : 'easy';
+  
+  const difficulty = difficultySelect?.value || 'easy';
+  let moveIdx;
+  
   if(difficulty === 'easy'){
-    const idx = available[Math.floor(Math.random()*available.length)];
-    setTimeout(()=>{ if(!finished && !board[idx]) cells[idx].click(); }, 300);
-    return;
+    moveIdx = available[Math.floor(Math.random()*available.length)];
+  } else if(difficulty === 'medium'){
+    moveIdx = available.find(idx => { const copy = board.slice(); copy[idx] = botPlayer; return checkWinner(copy) === botPlayer; });
+    if(moveIdx === undefined) moveIdx = available.find(idx => { const copy = board.slice(); copy[idx] = humanPlayer; return checkWinner(copy) === humanPlayer; });
+    if(moveIdx === undefined) moveIdx = available[Math.floor(Math.random()*available.length)];
+  } else {
+    const best = minimax(board.slice(), botPlayer, 0);
+    moveIdx = best?.index ?? available[Math.floor(Math.random()*available.length)];
   }
-  if(difficulty === 'medium'){
-    // medium: try to win in one, block opponent in one, else random
-    // try winning move
-    for(const idx of available){
-      const copy = board.slice(); copy[idx] = botPlayer;
-      if(checkWinnerBoard(copy) === botPlayer){
-        setTimeout(()=>{ if(!finished && !board[idx]) cells[idx].click(); }, 250);
-        return;
-      }
-    }
-    // try block opponent
-    for(const idx of available){
-      const copy = board.slice(); copy[idx] = humanPlayer;
-      if(checkWinnerBoard(copy) === humanPlayer){
-        setTimeout(()=>{ if(!finished && !board[idx]) cells[idx].click(); }, 250);
-        return;
-      }
-    }
-    // otherwise random
-    const idx = available[Math.floor(Math.random()*available.length)];
-    setTimeout(()=>{ if(!finished && !board[idx]) cells[idx].click(); }, 300);
-    return;
-  }
-  // hard: minimax
-  const best = minimax(board.slice(), botPlayer, 0);
-  const moveIdx = best.index;
-  if(moveIdx === undefined || moveIdx === null){
-    // fallback random
-    const idx = available[Math.floor(Math.random()*available.length)];
-    setTimeout(()=>{ if(!finished && !board[idx]) cells[idx].click(); }, 300);
-    return;
-  }
+  
   setTimeout(()=>{ if(!finished && !board[moveIdx]) cells[moveIdx].click(); }, 300);
-}
-
-function checkWinnerBoard(bd){
-  for(const combo of winningCombos){
-    const [a,b,c] = combo;
-    if(bd[a] && bd[a] === bd[b] && bd[a] === bd[c]){
-      return bd[a];
-    }
-  }
-  return null;
 }
 
 function minimax(newBoard, player, depth){
   const availSpots = newBoard.map((v,i)=> v ? null : i).filter(i=> i!==null);
-
-  const winner = checkWinnerBoard(newBoard);
+  const winner = checkWinner(newBoard);
+  
   if(winner === botPlayer) return {score: 10 - depth};
   if(winner === humanPlayer) return {score: depth - 10};
   if(availSpots.length === 0) return {score: 0};
 
-  const moves = [];
-
-  for(let i=0;i<availSpots.length;i++){
-    const idx = availSpots[i];
-    const move = {};
-    move.index = idx;
+  const moves = availSpots.map(idx => {
     newBoard[idx] = player;
-
-    if(player === botPlayer){
-      const result = minimax(newBoard, humanPlayer, depth+1);
-      move.score = result.score;
-    } else {
-      const result = minimax(newBoard, botPlayer, depth+1);
-      move.score = result.score;
-    }
-
+    const score = minimax(newBoard, player === botPlayer ? humanPlayer : botPlayer, depth+1).score;
     newBoard[idx] = null;
-    moves.push(move);
-  }
+    return {index: idx, score};
+  });
 
-  let bestMove;
-  if(player === botPlayer){
-    let bestScore = -Infinity;
-    for(const m of moves){ if(m.score > bestScore){ bestScore = m.score; bestMove = m; } }
-  } else {
-    let bestScore = Infinity;
-    for(const m of moves){ if(m.score < bestScore){ bestScore = m.score; bestMove = m; } }
-  }
-
-  return bestMove;
+  return moves.reduce((best, m) => 
+    (player === botPlayer ? m.score > best.score : m.score < best.score) ? m : best
+  );
 }
 
-cells.forEach(cell => cell.addEventListener('click', handleMove));
-resetBtn.addEventListener('click', reset);
-if(resetScoresBtn) resetScoresBtn.addEventListener('click', resetScores);
-// Apply settings with explicit button to avoid accidental resets
 function applySettings(){
-  humanPlayer = (playerSymbolSelect && playerSymbolSelect.value) ? playerSymbolSelect.value : 'X';
+  humanPlayer = playerSymbolSelect?.value || 'X';
   botPlayer = humanPlayer === 'X' ? 'O' : 'X';
-  // starter value sets currentPlayer
-  currentPlayer = (starterSelect && starterSelect.value) ? starterSelect.value : 'X';
+  currentPlayer = starterSelect?.value || 'X';
   settingsApplied = true;
   reset();
 }
-if(applySettingsBtn) applySettingsBtn.addEventListener('click', applySettings);
-// do not auto-reset on select changes; let user apply
-// vsBot checkbox can be toggled mid-game, but if user changes it they should press Apply
 
-// keyboard accessibility: Enter/Space to place
 cells.forEach(cell => {
-  cell.addEventListener('keydown', function(e){
-    if(e.key === 'Enter' || e.key === ' '){
-      e.preventDefault();
-      this.click();
-    }
-  });
+  cell.addEventListener('click', handleMove);
+  cell.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); cell.click(); }});
 });
+resetBtn.addEventListener('click', reset);
+resetScoresBtn?.addEventListener('click', resetScores);
+applySettingsBtn?.addEventListener('click', applySettings);
 
+// inicjalizacja
 loadScores();
-// Initial settings are applied only when user clicks Apply
-// Pre-fill variables so UI shows consistent values
-humanPlayer = (playerSymbolSelect && playerSymbolSelect.value) ? playerSymbolSelect.value : 'X';
+humanPlayer = playerSymbolSelect?.value || 'X';
 botPlayer = humanPlayer === 'X' ? 'O' : 'X';
-currentPlayer = (starterSelect && starterSelect.value) ? starterSelect.value : 'X';
+currentPlayer = starterSelect?.value || 'X';
 updateTurn();
-// jeśli od razu włączono bot i bot zaczyna (tutaj X zawsze zaczyna) - nic do zrobienia teraz
+// nie rob nic jak bot rozpoczyna

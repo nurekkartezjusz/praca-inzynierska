@@ -133,7 +133,7 @@ body{
     font-size: 14px;
 }
 
-/* poprawa responsywnosci */
+/* Poprawa responsywności */
 @media (max-width:900px){
     .main-grid{grid-template-columns:1fr}
     .info{order:2}

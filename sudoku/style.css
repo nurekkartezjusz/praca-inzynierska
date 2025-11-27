@@ -321,7 +321,7 @@ button:active{
   margin-bottom: 8px;
 }
 
-/* Keypad styles */
+/* Style klawiatury */
 .board-area{
   display: flex;
   gap: 16px;
@@ -378,7 +378,7 @@ button:active{
   .keypad .key-actions button{width: 36vw}
 }
 
-/* Pause overlay: covers board and keypad when paused */
+/* Nakładka pauzy: zakrywa planszę i klawiaturę podczas pauzy */
 .pause-overlay{
   position: absolute;
   inset: 0;
@@ -424,7 +424,7 @@ button:active{
   border: 0;
 }
 
-/* Candidates (notes) rendering inside each cell */
+/* Renderowanie kandydatów (notatek) wewnątrz każdej komórki */
 .cell .candidates-grid{
   position: absolute;
   inset: 4px;
@@ -451,12 +451,12 @@ button:active{
   color: #6b7280;
 }
 
-/* Highlight same numbers */
+/* Podświetlenie tych samych liczb */
 .cell.same{
   background: linear-gradient(180deg, #fff8e1, #fff1c2);
 }
 
-/* Active cell highlight (replace blinking caret) */
+/* Podświetlenie aktywnej komórki (zastępuje migający kursor) */
 .cell.active{
   outline: 0;
 }
@@ -466,9 +466,9 @@ button:active{
   border-radius: 4px;
 }
 
-/* Active focus styles handled via .cell.active and input:focus */
+/* Style aktywnego fokusu obsługiwane przez .cell.active i input:focus */
 
-/* Input entry animation */
+/* Animacja wprowadzania wartości */
 .cell .pop{
   animation: pop 240ms ease forwards;
 }
@@ -479,7 +479,7 @@ button:active{
   100%{transform: scale(1); opacity:1}
 }
 
-/* Win animation */
+/* Animacja wygranej */
 .sudoku-board.win .cell{
   animation: winPulse 900ms ease-in-out;
 }
