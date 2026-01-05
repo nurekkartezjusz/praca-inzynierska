@@ -1,25 +1,13 @@
 :root{
     --font-primary: "Inter";
-    --font-secondary: "HelveticaNowDisplay";
     --color-primary: #eb285a;
     --color-primary-contrast: #d91d4f;
     --color-secondary: #006efa;
     --color-secondary-contrast: #005da2;
-    --color-light-blue: #23beff;
     --color-royal-blue: #0069ff;
-    --color-green: #78c81e;
-    --color-orange: #ffb733;
     --color-text: #141e50;
-    --color-gray: #f5f5f5;
     --color-border-gray: #727896;
-    --color-white: #fff;
-    --color-background-gray: #c1c1c1;
-    --color-gray-2: #f4f4f4;
     --color-basic-blue: #cedeff;
-    --gray-location: #999;
-    --color-error: #ce1c4c;
-    --content-width: 1280px;
-    --slim-content-width: 1064px;
 }
 .container{
     display: flex;
@@ -121,7 +109,7 @@
     width: 97%;
     padding: 20px 10px 7px;
     font-size: 16px;
-    border: 1px solid #999;
+    border: 1px solid var(--color-border-gray);
     outline: none;
 }
 .field label {
