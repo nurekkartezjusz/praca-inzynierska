@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Avatar Creator</title>
+</head>
+<body>
+<div class="app">
+    <h1>Kreator awatara</h1>
+    <div class="wyglad">
+        <div class="lewo">
+            <div class="nickname">
+                <label for="nick">Nick gracza</label>
+                <input type="text" id="nick" placeholder="Wpisz nick">
+            </div>
+            <div class="avatar">
+                <img id="skora" class="layer">
+                <img id="usta" class="layer">
+                <img id="oczy" class="layer">
+                <img id="wlosy" class="layer">
+                <img id="koszulka" class="layer">
+                <img id="spodnie" class="layer">
+            </div>
+            <div class="start">
+                <label class="tutorial-check">
+                    <input type="checkbox" id="tutorial">
+                    Chcę przejść tutorial
+                </label>
+                <button class="start-btn" onclick="startGame()">START</button>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="control">
+                <span>Kolor skóry</span>
+                <button onclick="prev('skora')">◀</button>
+                <button onclick="next('skora')">▶</button>
+            </div>
+            <div class="control">
+                <span>Kolor oczu</span>
+                <button onclick="prev('oczy')">◀</button>
+                <button onclick="next('oczy')">▶</button>
+            </div>
+            <div class="control">
+                <span>Usta</span>
+                <button onclick="prev('usta')">◀</button>
+                <button onclick="next('usta')">▶</button>
+            </div>
+            <div class="control">
+                <span>Styl włosów</span>
+                <button onclick="prev('wlosy')">◀</button>
+                <button onclick="next('wlosy')">▶</button>
+            </div>
+            <div class="control">
+                <span>Kolor włosów</span>
+                <button onclick="prevColor('wlosy')">◀</button>
+                <button onclick="nextColor('wlosy')">▶</button>
+            </div>
+            <div class="control">
+                <span>Koszulka</span>
+                <button onclick="prev('koszulka')">◀</button>
+                <button onclick="next('koszulka')">▶</button>
+            </div>
+            <div class="control">
+                <span>Kolor koszulki</span>
+                <button onclick="prevColor('koszulka')">◀</button>
+                <button onclick="nextColor('koszulka')">▶</button>
+            </div>
+            <div class="control">
+                <span>Spodnie</span>
+                <button onclick="prev('spodnie')">◀</button>
+                <button onclick="next('spodnie')">▶</button>
+            </div>
+            <div class="control">
+                <span>Kolor spodni</span>
+                <button onclick="prevColor('spodnie')">◀</button>
+                <button onclick="nextColor('spodnie')">▶</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
