@@ -1,17 +1,20 @@
-FROM python:3.13-slim
+FROM python:3.12
 
 WORKDIR /app
 
-# Zainstaluj zależności systemowe
+# Zainstaluj build tools
 RUN apt-get update && apt-get install -y \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
+
+# Upgrade pip
+RUN pip install --upgrade pip
 
 # Kopiuj requirements.txt
 COPY requirements.txt .
 
 # Zainstaluj zależności Pythona
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Kopiuj kod aplikacji
 COPY main.py database.py models.py schemas.py auth.py ./
