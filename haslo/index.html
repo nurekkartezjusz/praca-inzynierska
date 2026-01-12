@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Login</title>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1><span class="litera">W</span>ielka</h1>
+            <h1><span class="litera">S</span>tudencka</h1>
+            <h1><span class="litera">B</span>atalia</h1>
+        </div>
+        <div class="logow">
+            <div class="password-recovery card">
+                <h2>Resetowanie hasła</h2>
+                <div class="field">
+                    <input type="text" id="email" required>
+                    <label for="email">Adres e-mail powiązany z kontem</label>
+                </div>
+                <button class="reset-password">Wyślij link do resetowania hasła</button>
+            </div>
+            <div class="login card">
+                <h2>Masz konto? Zaloguj się</h2>
+                <button class="logowanie" onclick="window.location.href = '../logowanie/index.html'">Zaloguj się</button>
+            </div>
+            <div class="going-back">
+                <a href="../index.html">Powrót do strony głównej</a>
+            </div>
+        </div>
+    </div>
+    <footer class="site-footer">
+        <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
+    </footer>
+</body>
+</html>
