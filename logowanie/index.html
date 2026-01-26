@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/loader.css">
     <title>Login</title>
 </head>
 <body>
@@ -25,6 +26,7 @@
                     <label for="password">Hasło</label>
                 </div>
                 <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
+                <div class="loader" id="loader" style="display: none;"></div>
                 <button class="logowanie" id="login-btn">Zaloguj się</button>
                 <a href="../haslo/index.html">Zapomniałem hasła</a>
             </div>
@@ -66,15 +68,25 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('error-message');
+            const loader = document.getElementById('loader');
+            const button = document.getElementById('login-btn');
 
             // Resetuj błąd
             errorDiv.style.display = 'none';
             errorDiv.textContent = '';
+            
+            // Pokaż loader
+            loader.style.display = 'block';
+            button.disabled = true;
+            button.style.opacity = '0.6';
 
             // Walidacja
             if (!email || !password) {
                 errorDiv.textContent = 'Proszę wypełnić wszystkie pola';
                 errorDiv.style.display = 'block';
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.style.opacity = '1';
                 return;
             }
 

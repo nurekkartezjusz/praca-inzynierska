@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/loader.css">
     <title>Rejestracja</title>
 </head>
 <body>
@@ -36,8 +37,7 @@
                     <input type="checkbox" id="regulamin" required>
                     <label for="regulamin">Akceptuję regulamin</label>
                 </div>
-                <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
-                <button class="rejestracja" id="register-btn">Zarejestruj się</button>
+                <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>                <div class="loader" id="loader" style="display: none;"></div>                <button class="rejestracja" id="register-btn">Zarejestruj się</button>
             </div>
             <div class="login card">
                 <h2>Masz konto? Zaloguj się</h2>
@@ -80,10 +80,17 @@
             const passwordRepeat = document.getElementById('password-repeat').value;
             const regulamin = document.getElementById('regulamin').checked;
             const errorDiv = document.getElementById('error-message');
+            const loader = document.getElementById('loader');
+            const button = document.getElementById('register-btn');
 
             // Resetuj błąd
             errorDiv.style.display = 'none';
             errorDiv.textContent = '';
+            
+            // Pokaż loader
+            loader.style.display = 'block';
+            button.disabled = true;
+            button.style.opacity = '0.6';
 
             // Walidacja
             if (!username || !email || !password || !passwordRepeat) {
@@ -171,6 +178,11 @@
             } catch (error) {
                 errorDiv.textContent = 'Błąd połączenia z serwerem: ' + error.message;
                 errorDiv.style.display = 'block';
+            } finally {
+                // Ukryj loader
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.style.opacity = '1';
             }
         });
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/loader.css">
     <title>Statystyki gracza</title>
 </head>
 <body>
@@ -91,6 +92,7 @@
                 <button type="button" class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
                 <button type="submit" class="save-profile-btn">Zapisz zmiany</button>
             </div>
+            <div class="loader" id="profile-loader" style="display: none;"></div>
         </form>
     </div>
 </div>
@@ -247,10 +249,14 @@
         const token = localStorage.getItem('access_token');
         const errorDiv = document.getElementById('profile-error');
         const successDiv = document.getElementById('profile-success');
+        const loader = document.getElementById('profile-loader');
         
         // Ukryj poprzednie komunikaty
         errorDiv.style.display = 'none';
         successDiv.style.display = 'none';
+        
+        // Pokaż loader
+        loader.style.display = 'block';
         
         const username = document.getElementById('edit-username').value.trim();
         const email = document.getElementById('edit-email').value.trim();
@@ -325,6 +331,9 @@
         } catch (error) {
             errorDiv.textContent = 'Błąd połączenia z serwerem';
             errorDiv.style.display = 'block';
+        } finally {
+            // Ukryj loader
+            loader.style.display = 'none';
         }
     }
 </script>
