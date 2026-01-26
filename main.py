@@ -25,10 +25,12 @@ origins = [
     "http://localhost:8000",
     "http://localhost:3000",
     "http://localhost:5500",
+    "http://localhost:5501",
     "http://127.0.0.1",
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5500",
+    "http://127.0.0.1:5501",
     "file://",
 ]
 
@@ -48,6 +50,9 @@ def read_root():
 
 @app.post("/api/register", response_model=UserResponse)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
+    print("🔍 DEBUG: Otrzymano żądanie rejestracji")
+    print(f"🔍 DEBUG: Email: {user_data.email}, Username: {user_data.username}")
+    
     # Sprawdzić czy użytkownik już istnieje
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
@@ -73,6 +78,8 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    print(f"✅ Zarejestrowano: {new_user.email} (ID: {new_user.id})")
 
     return new_user
 
