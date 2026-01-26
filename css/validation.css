@@ -1,0 +1,71 @@
+/* Walidacja formularzy */
+.field {
+    position: relative;
+}
+.validation-icon {
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    font-size: 20px;
+}
+.validation-icon.valid {
+    color: #28a745;
+}
+.validation-icon.valid::before {
+    content: '✓';
+}
+.validation-icon.invalid {
+    color: #dc3545;
+}
+.validation-icon.invalid::before {
+    content: '✗';
+}
+
+/* Siła hasła */
+.password-strength {
+    margin-top: 8px;
+}
+.strength-bar {
+    width: 100%;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s;
+    border-radius: 3px;
+}
+.strength-fill.weak {
+    width: 33%;
+    background: #dc3545;
+}
+.strength-fill.medium {
+    width: 66%;
+    background: #ffc107;
+}
+.strength-fill.strong {
+    width: 100%;
+    background: #28a745;
+}
+.strength-text {
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Wymagania hasła */
+.password-requirements {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+    font-size: 13px;
+}
+.password-requirements li {
+    padding: 4px 0;
+    color: #dc3545;
+}
+.password-requirements li.met {
+    color: #28a745;
+}

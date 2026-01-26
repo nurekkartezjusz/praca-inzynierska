@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../css/loader.css">
+    <link rel="stylesheet" href="../css/toast.css">
     <title>Login</title>
 </head>
 <body>
@@ -43,6 +44,7 @@
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
     </footer>
 
+    <script src="../js/toast.js"></script>
     <script>
         const API_URL = 'http://localhost:8000';
 
@@ -124,6 +126,11 @@
             } catch (error) {
                 errorDiv.textContent = 'Błąd połączenia z serwerem: ' + error.message;
                 errorDiv.style.display = 'block';
+            } finally {
+                // Ukryj loader i przywróć przycisk
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.style.opacity = '1';
             }
         });
 

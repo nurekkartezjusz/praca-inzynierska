@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../css/loader.css">
+    <link rel="stylesheet" href="../css/toast.css">
     <title>Statystyki gracza</title>
 </head>
 <body>
@@ -95,8 +96,32 @@
             <div class="loader" id="profile-loader" style="display: none;"></div>
         </form>
     </div>
+    
+    <!-- Przycisk usuń konto -->
+    <div class="delete-account-section">
+        <button class="delete-account-btn" onclick="showDeleteModal()">🗑️ Usuń konto</button>
+    </div>
 </div>
 
+<!-- Modal potwierdzenia usunięcia konta -->
+<div id="delete-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>⚠️ Usuń konto</h3>
+        <p>Ta operacja jest <strong>nieodwracalna</strong>. Wszystkie Twoje dane zostaną trwale usunięte.</p>
+        <div class="form-group">
+            <label for="delete-password">Potwierdź hasło aby usunąć konto</label>
+            <input type="password" id="delete-password" placeholder="Wpisz swoje hasło">
+        </div>
+        <div id="delete-error" class="error-message" style="display: none;"></div>
+        <div class="modal-buttons">
+            <button class="cancel-btn" onclick="hideDeleteModal()">Anuluj</button>
+            <button class="delete-confirm-btn" onclick="deleteAccount()">Usuń na zawsze</button>
+        </div>
+        <div class="loader" id="delete-loader" style="display: none;"></div>
+    </div>
+</div>
+
+<script src="../js/toast.js"></script>
 <script>
     const API_URL = 'http://localhost:8000';
 
@@ -314,8 +339,7 @@
             const data = await response.json();
             
             if (response.ok) {
-                successDiv.textContent = 'Profil zaktualizowany pomyślnie!';
-                successDiv.style.display = 'block';
+                showSuccess('Profil zaktualizowany pomyślnie!');
                 
                 // Odśwież dane użytkownika
                 loadUserData();
@@ -333,6 +357,73 @@
             errorDiv.style.display = 'block';
         } finally {
             // Ukryj loader
+            loader.style.display = 'none';
+        }
+    }
+    
+    // Funkcje modala usuwania konta
+    function showDeleteModal() {
+        document.getElementById('delete-modal').style.display = 'flex';
+        document.getElementById('delete-password').value = '';
+        document.getElementById('delete-error').style.display = 'none';
+    }
+    
+    function hideDeleteModal() {
+        document.getElementById('delete-modal').style.display = 'none';
+    }
+    
+    // Zamknij modal po kliknięciu poza nim
+    document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideDeleteModal();
+        }
+    });
+    
+    async function deleteAccount() {
+        const password = document.getElementById('delete-password').value;
+        const errorDiv = document.getElementById('delete-error');
+        const loader = document.getElementById('delete-loader');
+        
+        // Reset błędu
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+        
+        if (!password) {
+            errorDiv.textContent = 'Podaj hasło aby potwierdzić';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        // Pokaż loader
+        loader.style.display = 'block';
+        
+        try {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch(`${API_URL}/api/account?token=${token}&password=${encodeURIComponent(password)}`, {
+                method: 'DELETE'
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                showSuccess('Konto zostało usunięte. Do zobaczenia!');
+                
+                // Wyczyść localStorage
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user_email');
+                
+                // Przekieruj do strony głównej po 2 sekundach
+                setTimeout(() => {
+                    window.location.href = '../index.html';
+                }, 2000);
+            } else {
+                errorDiv.textContent = data.detail || 'Błąd usuwania konta';
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            errorDiv.textContent = 'Błąd połączenia z serwerem';
+            errorDiv.style.display = 'block';
+        } finally {
             loader.style.display = 'none';
         }
     }

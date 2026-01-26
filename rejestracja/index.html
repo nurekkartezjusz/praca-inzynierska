@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../css/loader.css">
+    <link rel="stylesheet" href="../css/validation.css">
+    <link rel="stylesheet" href="../css/toast.css">
     <title>Rejestracja</title>
 </head>
 <body>
@@ -19,25 +21,42 @@
                 <h2>Rejestracja</h2>
                 <div class="field">
                     <input type="text" id="username" required>
-                    <label for="username">Nazwa użytkownika</label>
+                    <label for="username">Nazwa użytkownika (min. 3 znaki)</label>
+                    <span class="validation-icon" id="username-icon"></span>
                 </div>
                 <div class="field">
                     <input type="email" id="email" required>
                     <label for="email">Adres e-mail</label>
+                    <span class="validation-icon" id="email-icon"></span>
                 </div>
                 <div class="field">
                     <input type="password" id="password" required>
-                    <label for="password">Hasło</label>
+                    <label for="password">Hasło (min. 6 znaków)</label>
+                    <span class="validation-icon" id="password-icon"></span>
+                    <div class="password-strength" id="password-strength" style="display: none;">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strength-fill"></div>
+                        </div>
+                        <span class="strength-text" id="strength-text"></span>
+                    </div>
+                    <ul class="password-requirements" id="password-requirements" style="display: none;">
+                        <li id="req-length">✗ Minimum 6 znaków</li>
+                        <li id="req-letter">✗ Zawiera literę</li>
+                        <li id="req-number">✗ Zawiera cyfrę</li>
+                    </ul>
                 </div>
                 <div class="field">
                     <input type="password" id="password-repeat" required>
                     <label for="password-repeat">Powtórz hasło</label>
+                    <span class="validation-icon" id="password-repeat-icon"></span>
                 </div>
                 <div class="field">
                     <input type="checkbox" id="regulamin" required>
                     <label for="regulamin">Akceptuję regulamin</label>
                 </div>
-                <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>                <div class="loader" id="loader" style="display: none;"></div>                <button class="rejestracja" id="register-btn">Zarejestruj się</button>
+                <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
+                <div class="loader" id="loader" style="display: none;"></div>
+                <button class="btn-primary" id="register-btn">Zarejestruj się</button>
             </div>
             <div class="login card">
                 <h2>Masz konto? Zaloguj się</h2>
@@ -52,8 +71,118 @@
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
     </footer>
 
+    <script src="../js/toast.js"></script>
     <script>
         const API_URL = 'http://localhost:8000';
+        
+        // Walidacja w czasie rzeczywistym
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const passwordRepeatInput = document.getElementById('password-repeat');
+        
+        // Walidacja username
+        usernameInput.addEventListener('input', function() {
+            const icon = document.getElementById('username-icon');
+            if (this.value.length >= 3) {
+                icon.className = 'validation-icon valid';
+            } else if (this.value.length > 0) {
+                icon.className = 'validation-icon invalid';
+            } else {
+                icon.className = 'validation-icon';
+            }
+        });
+        
+        // Walidacja email
+        emailInput.addEventListener('input', function() {
+            const icon = document.getElementById('email-icon');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailRegex.test(this.value)) {
+                icon.className = 'validation-icon valid';
+            } else if (this.value.length > 0) {
+                icon.className = 'validation-icon invalid';
+            } else {
+                icon.className = 'validation-icon';
+            }
+        });
+        
+        // Walidacja hasła i siła
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const icon = document.getElementById('password-icon');
+            const strengthDiv = document.getElementById('password-strength');
+            const strengthFill = document.getElementById('strength-fill');
+            const strengthText = document.getElementById('strength-text');
+            const requirementsDiv = document.getElementById('password-requirements');
+            
+            if (password.length > 0) {
+                strengthDiv.style.display = 'block';
+                requirementsDiv.style.display = 'block';
+                
+                // Sprawdź wymagania
+                const hasLength = password.length >= 6;
+                const hasLetter = /[a-zA-Z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+                
+                // Aktualizuj listę wymagań
+                document.getElementById('req-length').className = hasLength ? 'met' : '';
+                document.getElementById('req-letter').className = hasLetter ? 'met' : '';
+                document.getElementById('req-number').className = hasNumber ? 'met' : '';
+                
+                // Oblicz siłę hasła
+                let strength = 0;
+                if (hasLength) strength++;
+                if (hasLetter) strength++;
+                if (hasNumber) strength++;
+                
+                // Ustaw siłę
+                strengthFill.className = 'strength-fill';
+                if (strength === 3) {
+                    strengthFill.classList.add('strong');
+                    strengthText.textContent = 'Silne hasło';
+                    strengthText.style.color = '#28a745';
+                    icon.className = 'validation-icon valid';
+                } else if (strength === 2) {
+                    strengthFill.classList.add('medium');
+                    strengthText.textContent = 'Średnie hasło';
+                    strengthText.style.color = '#ffc107';
+                    icon.className = 'validation-icon invalid';
+                } else {
+                    strengthFill.classList.add('weak');
+                    strengthText.textContent = 'Słabe hasło';
+                    strengthText.style.color = '#dc3545';
+                    icon.className = 'validation-icon invalid';
+                }
+            } else {
+                strengthDiv.style.display = 'none';
+                requirementsDiv.style.display = 'none';
+                icon.className = 'validation-icon';
+            }
+            
+            // Waliduj ponownie powtórzone hasło
+            if (passwordRepeatInput.value.length > 0) {
+                validatePasswordRepeat();
+            }
+        });
+        
+        // Walidacja powtórzonego hasła
+        function validatePasswordRepeat() {
+            const icon = document.getElementById('password-repeat-icon');
+            const password = passwordInput.value;
+            const passwordRepeat = passwordRepeatInput.value;
+            
+            if (passwordRepeat.length > 0) {
+                if (password === passwordRepeat) {
+                    icon.className = 'validation-icon valid';
+                } else {
+                    icon.className = 'validation-icon invalid';
+                }
+            } else {
+                icon.className = 'validation-icon';
+            }
+        }
+        
+        passwordRepeatInput.addEventListener('input', validatePasswordRepeat);
 
         // Tłumaczenie błędów na polski
         function translateError(msg) {
@@ -92,28 +221,22 @@
             button.disabled = true;
             button.style.opacity = '0.6';
 
-            // Walidacja
+            // Walidacja podstawowa
             if (!username || !email || !password || !passwordRepeat) {
                 errorDiv.textContent = 'Proszę wypełnić wszystkie pola';
                 errorDiv.style.display = 'block';
-                return;
-            }
-
-            if (password !== passwordRepeat) {
-                errorDiv.textContent = 'Hasła się nie zgadzają';
-                errorDiv.style.display = 'block';
-                return;
-            }
-
-            if (password.length < 6) {
-                errorDiv.textContent = 'Hasło musi mieć co najmniej 6 znaków';
-                errorDiv.style.display = 'block';
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.style.opacity = '1';
                 return;
             }
 
             if (!regulamin) {
                 errorDiv.textContent = 'Musisz zaakceptować regulamin';
                 errorDiv.style.display = 'block';
+                loader.style.display = 'none';
+                button.disabled = false;
+                button.style.opacity = '1';
                 return;
             }
 
@@ -154,16 +277,23 @@
                             localStorage.setItem('user_email', email);
                             
                             // Przekieruj do kreacji awatara z parametrem dla nowych użytkowników
-                            window.location.href = '../wybor awatara/index.html?new=true';
+                            showSuccess('Konto utworzone pomyślnie! Stwórz teraz swojego awatara.');
+                            setTimeout(() => {
+                                window.location.href = '../wybor awatara/index.html?new=true';
+                            }, 1500);
                         } else {
                             // Jeśli automatyczne logowanie się nie powiodło, przekieruj do logowania
-                            alert('Rejestracja pomyślna! Zaloguj się.');
-                            window.location.href = '../logowanie/index.html';
+                            showSuccess('Rejestracja pomyślna! Możesz się teraz zalogować.');
+                            setTimeout(() => {
+                                window.location.href = '../logowanie/index.html';
+                            }, 2000);
                         }
                     } catch (loginError) {
                         // Jeśli błąd logowania, przekieruj do logowania
-                        alert('Rejestracja pomyślna! Zaloguj się.');
-                        window.location.href = '../logowanie/index.html';
+                        showSuccess('Rejestracja pomyślna! Możesz się teraz zalogować.');
+                        setTimeout(() => {
+                            window.location.href = '../logowanie/index.html';
+                        }, 2000);
                     }
                 } else {
                     let errorMsg = 'Błąd rejestracji';

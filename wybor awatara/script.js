@@ -104,13 +104,15 @@ async function startGame() {
         });
 
         if (response.ok) {
-            // Przekieruj do strony profilu/statystyk
-            window.location.href = '../statystyki/index.html';
+            showSuccess('Awatar zapisany pomyślnie!');
+            setTimeout(() => {
+                window.location.href = '../statystyki/index.html';
+            }, 1500);
         } else {
-            alert("Błąd zapisywania awatara");
+            showError('Błąd zapisywania awatara');
         }
     } catch (error) {
         console.error("Błąd:", error);
-        alert("Błąd połączenia z serwerem");
+        showError('Błąd połączenia z serwerem');
     }
 }

@@ -359,6 +359,57 @@ def update_profile(profile_data: ProfileUpdate, token: str = Query(...), db: Ses
     }
 
 
+@app.delete("/api/account")
+def delete_account(
+    token: str = Query(...),
+    password: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Usuń konto użytkownika po potwierdzeniu hasła
+    """
+    # Dekoduj token
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Nieprawidłowy token"
+            )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    # Pobierz użytkownika
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Sprawdź hasło
+    if not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowe hasło"
+        )
+    
+    # Usuń użytkownika
+    username = user.username
+    db.delete(user)
+    db.commit()
+    
+    print(f"🗑️  Usunięto konto: {username} ({email})")
+    
+    return {
+        "message": "Konto zostało usunięte pomyślnie"
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
 
