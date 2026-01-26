@@ -1,0 +1,43 @@
+# Environment variables (zawiera hasła i klucze!)
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+server_out.txt
+server_err.txt
+build.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Migration scripts (already executed)
+migrate_*.py
+setup_postgres.py
+
+# Docker
+*.pid
+
+# OS
+.DS_Store
+Thumbs.db

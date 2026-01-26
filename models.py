@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from database import Base
+from datetime import datetime
 
 
 class User(Base):
@@ -9,3 +10,6 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    reset_token = Column(String, nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
+    avatar = Column(Text, nullable=True)  # JSON z konfiguracją awatara

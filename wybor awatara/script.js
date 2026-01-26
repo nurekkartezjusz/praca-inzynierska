@@ -62,19 +62,49 @@ function update(part) {
 }
 window.onload = () => {
     ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"].forEach(update);
+    
+    // Pokaż checkbox tutorial tylko dla nowych użytkowników (po rejestracji)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isNewUser = urlParams.get('new') === 'true';
+    
+    const tutorialSection = document.querySelector('.tutorial-check');
+    if (!isNewUser && tutorialSection) {
+        tutorialSection.style.display = 'none';
+    }
 };
 
-//TO JEST DO ZMIANY
-function startGame() {
-    const nick = document.getElementById("nick").value.trim();
+async function startGame() {
     const tutorial = document.getElementById("tutorial").checked;
 
-    if (!nick) {
-        alert("Podaj nick gracza!");
+    const API_URL = 'http://localhost:8000';
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+        alert("Musisz być zalogowany!");
+        window.location.href = '../logowanie/index.html';
         return;
     }
 
-    console.log("Nick:", nick);
-    console.log("Tutorial:", tutorial);
-    console.log("Avatar:", state);
+    try {
+        // Zapisz awatar do bazy
+        const response = await fetch(`${API_URL}/api/avatar?token=${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                avatar: JSON.stringify(state)
+            })
+        });
+
+        if (response.ok) {
+            // Przekieruj do strony profilu/statystyk
+            window.location.href = '../statystyki/index.html';
+        } else {
+            alert("Błąd zapisywania awatara");
+        }
+    } catch (error) {
+        console.error("Błąd:", error);
+        alert("Błąd połączenia z serwerem");
+    }
 }

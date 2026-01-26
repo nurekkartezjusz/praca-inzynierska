@@ -126,9 +126,38 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Rejestracja pomyślna! Możesz się teraz zalogować.');
-                    // Przekieruj do logowania
-                    window.location.href = '../logowanie/index.html';
+                    // Rejestracja pomyślna - automatycznie zaloguj użytkownika
+                    try {
+                        const loginResponse = await fetch(`${API_URL}/api/login`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                email: email,
+                                password: password
+                            })
+                        });
+
+                        const loginData = await loginResponse.json();
+
+                        if (loginResponse.ok) {
+                            // Zapisz token
+                            localStorage.setItem('access_token', loginData.access_token);
+                            localStorage.setItem('user_email', email);
+                            
+                            // Przekieruj do kreacji awatara z parametrem dla nowych użytkowników
+                            window.location.href = '../wybor awatara/index.html?new=true';
+                        } else {
+                            // Jeśli automatyczne logowanie się nie powiodło, przekieruj do logowania
+                            alert('Rejestracja pomyślna! Zaloguj się.');
+                            window.location.href = '../logowanie/index.html';
+                        }
+                    } catch (loginError) {
+                        // Jeśli błąd logowania, przekieruj do logowania
+                        alert('Rejestracja pomyślna! Zaloguj się.');
+                        window.location.href = '../logowanie/index.html';
+                    }
                 } else {
                     let errorMsg = 'Błąd rejestracji';
                     if (typeof data.detail === 'string') {

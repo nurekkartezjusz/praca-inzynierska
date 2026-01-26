@@ -13,7 +13,7 @@ RUN pip install --upgrade pip
 # Kopiuj requirements.txt
 COPY requirements.txt .
 
-# Zainstaluj zależności Pythona
+# Zainstaluj zależności Pythona (w tym psycopg2-binary dla PostgreSQL/Supabase)
 RUN pip install -r requirements.txt
 
 # Kopiuj kod aplikacji

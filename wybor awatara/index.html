@@ -8,13 +8,10 @@
 </head>
 <body>
 <div class="app">
+    <a href="../index.html" class="home-btn">🏠 Strona główna</a>
     <h1>Kreator awatara</h1>
     <div class="wyglad">
         <div class="lewo">
-            <div class="nickname">
-                <label for="nick">Nick gracza</label>
-                <input type="text" id="nick" placeholder="Wpisz nick">
-            </div>
             <div class="avatar">
                 <img id="skora" class="layer">
                 <img id="usta" class="layer">
@@ -23,12 +20,12 @@
                 <img id="koszulka" class="layer">
                 <img id="spodnie" class="layer">
             </div>
-            <div class="start">
+            <div class="start" id="tutorial-section">
                 <label class="tutorial-check">
                     <input type="checkbox" id="tutorial">
                     Chcę przejść tutorial
                 </label>
-                <button class="start-btn" onclick="startGame()">START</button>
+                <button class="start-btn" onclick="startGame()">ZAPISZ</button>
             </div>
         </div>
         <div class="controls">

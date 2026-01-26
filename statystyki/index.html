@@ -8,14 +8,21 @@
 </head>
 <body>
 <div class="app">
+    <a href="../index.html" class="home-btn">🏠 Strona główna</a>
     <div class="calosc">
         <div class="lewo">
             <div class="nickname">
-                <h1>B4S14</h1>
+                <h1 id="username">&nbsp;</h1>
             </div>
             <div class="avatar">
-                <img src="img/avatar 1.png" alt="Awatar" class="layer">
+                <img id="skora" class="layer">
+                <img id="usta" class="layer">
+                <img id="oczy" class="layer">
+                <img id="wlosy" class="layer">
+                <img id="koszulka" class="layer">
+                <img id="spodnie" class="layer">
             </div>
+            <button class="zmien-wyglad-btn" onclick="window.location.href='../wybor awatara/index.html'">Zmień wygląd</button>
         </div>
         <div class="statystyki">
             <h2>Statystyki</h2>
@@ -37,6 +44,283 @@
             </div>
         </div>
     </div>
+    
+    <!-- Edycja profilu -->
+    <div class="edycja-profilu">
+        <h2>Edycja profilu</h2>
+        <div class="error-message" id="profile-error" style="display: none;"></div>
+        <div class="success-message" id="profile-success" style="display: none;"></div>
+        
+        <!-- Wybór opcji -->
+        <div class="edit-options" id="edit-options">
+            <button class="edit-option-btn" onclick="showEditSection('username')">
+                👤 Zmień nazwę użytkownika
+            </button>
+            <button class="edit-option-btn" onclick="showEditSection('email')">
+                📧 Zmień adres email
+            </button>
+            <button class="edit-option-btn" onclick="showEditSection('password')">
+                🔒 Zmień hasło
+            </button>
+        </div>
+        
+        <!-- Formularz edycji -->
+        <form id="profile-form" onsubmit="updateProfile(event)" style="display: none;">
+            <div class="form-group" id="username-group" style="display: none;">
+                <label for="edit-username">Nowa nazwa użytkownika</label>
+                <input type="text" id="edit-username" placeholder="Wpisz nową nazwę użytkownika">
+            </div>
+            
+            <div class="form-group" id="email-group" style="display: none;">
+                <label for="edit-email">Nowy adres email</label>
+                <input type="email" id="edit-email" placeholder="Wpisz nowy adres email">
+            </div>
+            
+            <div class="form-group" id="password-group" style="display: none;">
+                <label for="new-password">Nowe hasło</label>
+                <input type="password" id="new-password" placeholder="Wpisz nowe hasło (min. 6 znaków)">
+            </div>
+            
+            <div class="form-group">
+                <label for="current-password">Potwierdź obecne hasło</label>
+                <input type="password" id="current-password" placeholder="Wpisz obecne hasło" required>
+                <a href="../haslo/index.html" class="forgot-password-link">Nie pamiętam hasła</a>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="button" class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
+                <button type="submit" class="save-profile-btn">Zapisz zmiany</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script>
+    const API_URL = 'http://localhost:8000';
+
+    // Konfiguracja kolorów awatara
+    const colors = {
+        wlosy: ["czarne", "blond", "braz"],
+        koszulka: ["czarna", "czerwona", "niebieska", "zielona", "biala", "rozowa"],
+        spodnie: ["czarne", "biale", "szare", "niebieskie"]
+    };
+
+    // Renderuj awatar na podstawie state
+    function renderAvatar(avatarState) {
+        const parts = ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"];
+        
+        parts.forEach(part => {
+            const img = document.getElementById(part);
+            let path = "";
+            
+            if (colors[part]) {
+                const styleNum = avatarState[part];
+                const colorIndex = avatarState[part + "ColorIndex"];
+                const color = colors[part][colorIndex];
+                path = `../wybor%20awatara/img/${part}/${part}${styleNum}_${color}.png`;
+            } else {
+                path = `../wybor%20awatara/img/${part}/${part}${avatarState[part]}.png`;
+            }
+            
+            img.src = path;
+        });
+    }
+
+    // Pobierz dane użytkownika
+    async function loadUserData() {
+        const token = localStorage.getItem('access_token');
+        
+        if (!token) {
+            // Brak tokenu - przekieruj do logowania
+            window.location.href = '../logowanie/index.html';
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/api/me?token=${token}`);
+            
+            if (response.ok) {
+                const userData = await response.json();
+                
+                // Wyświetl nickname
+                document.getElementById('username').textContent = userData.username;
+                
+                // Renderuj awatar
+                if (userData.avatar) {
+                    const avatarState = JSON.parse(userData.avatar);
+                    renderAvatar(avatarState);
+                } else {
+                    // Domyślny awatar jeśli użytkownik go nie stworzył
+                    const defaultAvatar = {
+                        skora: 1,
+                        usta: 1,
+                        oczy: 1,
+                        wlosy: 1,
+                        wlosyColorIndex: 0,
+                        koszulka: 1,
+                        koszulkaColorIndex: 0,
+                        spodnie: 1,
+                        spodnieColorIndex: 0
+                    };
+                    renderAvatar(defaultAvatar);
+                }
+            } else {
+                // Token nieważny - przekieruj do logowania
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user_email');
+                window.location.href = '../logowanie/index.html';
+            }
+        } catch (error) {
+            console.error('Błąd pobierania danych użytkownika:', error);
+            document.getElementById('username').textContent = 'Błąd';
+        }
+    }
+
+    // Załaduj dane przy starcie
+    loadUserData();
+    
+    let currentEditMode = null;
+    
+    // Pokaż sekcję edycji
+    function showEditSection(mode) {
+        currentEditMode = mode;
+        
+        // Ukryj opcje wyboru
+        document.getElementById('edit-options').style.display = 'none';
+        
+        // Pokaż formularz
+        document.getElementById('profile-form').style.display = 'block';
+        
+        // Ukryj wszystkie pola
+        document.getElementById('username-group').style.display = 'none';
+        document.getElementById('email-group').style.display = 'none';
+        document.getElementById('password-group').style.display = 'none';
+        
+        // Wyczyść pola
+        document.getElementById('edit-username').value = '';
+        document.getElementById('edit-email').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('current-password').value = '';
+        
+        // Pokaż odpowiednie pole
+        if (mode === 'username') {
+            document.getElementById('username-group').style.display = 'block';
+        } else if (mode === 'email') {
+            document.getElementById('email-group').style.display = 'block';
+        } else if (mode === 'password') {
+            document.getElementById('password-group').style.display = 'block';
+        }
+        
+        // Ukryj komunikaty
+        document.getElementById('profile-error').style.display = 'none';
+        document.getElementById('profile-success').style.display = 'none';
+    }
+    
+    // Anuluj edycję
+    function cancelEdit() {
+        currentEditMode = null;
+        
+        // Pokaż opcje wyboru
+        document.getElementById('edit-options').style.display = 'flex';
+        
+        // Ukryj formularz
+        document.getElementById('profile-form').style.display = 'none';
+        
+        // Wyczyść pola
+        document.getElementById('profile-form').reset();
+        
+        // Ukryj komunikaty
+        document.getElementById('profile-error').style.display = 'none';
+        document.getElementById('profile-success').style.display = 'none';
+    }
+    
+    // Aktualizuj profil
+    async function updateProfile(event) {
+        event.preventDefault();
+        
+        const token = localStorage.getItem('access_token');
+        const errorDiv = document.getElementById('profile-error');
+        const successDiv = document.getElementById('profile-success');
+        
+        // Ukryj poprzednie komunikaty
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+        
+        const username = document.getElementById('edit-username').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        
+        // Walidacja - sprawdź czy wypełniono odpowiednie pole
+        if (currentEditMode === 'username' && !username) {
+            errorDiv.textContent = 'Wpisz nową nazwę użytkownika';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (currentEditMode === 'email' && !email) {
+            errorDiv.textContent = 'Wpisz nowy adres email';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (currentEditMode === 'password' && !newPassword) {
+            errorDiv.textContent = 'Wpisz nowe hasło';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        // Wymagane obecne hasło
+        if (!currentPassword) {
+            errorDiv.textContent = 'Podaj obecne hasło aby dokonać zmian';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        try {
+            const updateData = {
+                current_password: currentPassword
+            };
+            
+            // Dodaj tylko zmieniane pole
+            if (currentEditMode === 'username' && username) {
+                updateData.username = username;
+            } else if (currentEditMode === 'email' && email) {
+                updateData.email = email;
+            } else if (currentEditMode === 'password' && newPassword) {
+                updateData.new_password = newPassword;
+            }
+            
+            const response = await fetch(`${API_URL}/api/profile?token=${token}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                successDiv.textContent = 'Profil zaktualizowany pomyślnie!';
+                successDiv.style.display = 'block';
+                
+                // Odśwież dane użytkownika
+                loadUserData();
+                
+                // Wróć do opcji wyboru po 2 sekundach
+                setTimeout(() => {
+                    cancelEdit();
+                }, 2000);
+            } else {
+                errorDiv.textContent = data.detail || 'Błąd aktualizacji profilu';
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            errorDiv.textContent = 'Błąd połączenia z serwerem';
+            errorDiv.style.display = 'block';
+        }
+    }
+</script>
 </body>
 </html>

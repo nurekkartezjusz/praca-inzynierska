@@ -22,6 +22,23 @@ body {
     font-family: var(--font-primary);
     color: var(--color-text);
 }
+.home-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.home-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
 .app {
     background: var(--color-basic-blue);
     padding: 40px;
@@ -50,12 +67,32 @@ body {
     border: 4px solid var(--color-border-gray);
     border-radius: 6px;
     overflow: hidden;
+    position: relative;
 }
 .avatar img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
     image-rendering: pixelated;
+}
+.zmien-wyglad-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: var(--font-primary);
+}
+.zmien-wyglad-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 .statystyki {
     width: 300px;
@@ -82,6 +119,133 @@ body {
 }
 .stat:last-child {
     border-bottom: none;
+}
+.edycja-profilu {
+    width: 100%;
+    max-width: 600px;
+    margin: 40px auto 0;
+    background: var(--color-gray-2);
+    border: 2px solid var(--color-border-gray);
+    border-radius: 12px;
+    padding: 30px;
+}
+.edycja-profilu h2 {
+    margin: 0 0 20px 0;
+    text-align: center;
+    font-size: 22px;
+    color: var(--color-text);
+}
+.edit-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.edit-option-btn {
+    background: white;
+    border: 2px solid var(--color-border-gray);
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: var(--font-primary);
+    color: var(--color-text);
+    text-align: left;
+}
+.edit-option-btn:hover {
+    background: var(--color-basic-blue);
+    border-color: var(--color-royal-blue);
+    transform: translateX(5px);
+}
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+.cancel-btn {
+    flex: 1;
+    background: white;
+    color: var(--color-text);
+    border: 2px solid var(--color-border-gray);
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: var(--font-primary);
+}
+.cancel-btn:hover {
+    background: var(--color-gray-2);
+}
+.save-profile-btn {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: var(--font-primary);
+}
+.form-group {
+    margin-bottom: 20px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--color-text);
+}
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--color-border-gray);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: var(--font-primary);
+    transition: border-color 0.3s;
+}
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-royal-blue);
+}
+.forgot-password-link {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--color-royal-blue);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.forgot-password-link:hover {
+    color: var(--color-secondary-contrast);
+    text-decoration: underline;
+}
+.save-profile-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+.error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #fcc;
+}
+.success-message {
+    background: #efe;
+    color: #3c3;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #cfc;
 }
 @media (max-width: 700px) {
     .wyglad {
