@@ -142,6 +142,12 @@
             if (response.ok) {
                 const userData = await response.json();
                 
+                // Sprawdź czy użytkownik ma awatar - jeśli nie, przekieruj do kreatora
+                if (!userData.avatar) {
+                    window.location.href = '../wybor awatara/index.html?new=true';
+                    return;
+                }
+                
                 // Wyświetl nickname
                 document.getElementById('username').textContent = userData.username;
                 

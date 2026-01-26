@@ -71,6 +71,12 @@ window.onload = () => {
     if (!isNewUser && tutorialSection) {
         tutorialSection.style.display = 'none';
     }
+    
+    // Ukryj przycisk strony głównej dla nowych użytkowników (po rejestracji)
+    const homeBtn = document.getElementById('home-btn');
+    if (isNewUser && homeBtn) {
+        homeBtn.style.display = 'none';
+    }
 };
 
 async function startGame() {
