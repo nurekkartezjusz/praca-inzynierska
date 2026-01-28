@@ -169,7 +169,7 @@ async def request_password_reset(reset_request: PasswordResetRequest, db: Sessio
                 <body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
                     <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden;">
                         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
-                            <h1 style="color: white; margin: 0; font-size: 28px;">🎮 Wielka Studencka Batalla</h1>
+                            <h1 style="color: white; margin: 0; font-size: 28px;">🎮 Wielka Studencka Batalia</h1>
                         </div>
                         <div style="padding: 30px;">
                             <h2 style="color: #333; margin-top: 0;">Resetowanie hasła</h2>
@@ -197,9 +197,9 @@ async def request_password_reset(reset_request: PasswordResetRequest, db: Sessio
             """
             
             params = {
-                "from": "Wielka Studencka Batalla <onboarding@resend.dev>",
+                "from": "Wielka Studencka Batalia <onboarding@resend.dev>",
                 "to": [user.email],
-                "subject": "Wielka Studencka Batalla - Kod resetowania hasła",
+                "subject": "Wielka Studencka Batalia - Kod resetowania hasła",
                 "html": html_body,
             }
             
@@ -369,15 +369,8 @@ def delete_account(
     Usuń konto użytkownika po potwierdzeniu hasła
     """
     # Dekoduj token
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Nieprawidłowy token"
-            )
-    except JWTError:
+    email = decode_token(token)
+    if email is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Nieprawidłowy token"
