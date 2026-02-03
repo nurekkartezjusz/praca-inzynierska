@@ -105,8 +105,14 @@ async function startGame() {
 
         if (response.ok) {
             showSuccess('Awatar zapisany pomyślnie!');
+            
+            // Sprawdź czy to nowy użytkownik
+            const urlParams = new URLSearchParams(window.location.search);
+            const isNewUser = urlParams.get('new') === 'true';
+            
             setTimeout(() => {
-                window.location.href = '../statystyki/index.html';
+                // Nowy użytkownik -> strona główna, istniejący -> profil
+                window.location.href = isNewUser ? '../index.html' : '../statystyki/index.html';
             }, 1500);
         } else {
             showError('Błąd zapisywania awatara');

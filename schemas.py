@@ -1,4 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
+from datetime import datetime
+from typing import Optional
 
 
 class UserCreate(BaseModel):
@@ -63,3 +65,32 @@ class ProfileUpdate(BaseModel):
         if v and not v.replace('_', '').replace('-', '').isalnum():
             raise ValueError('Nazwa użytkownika może zawierać tylko litery, cyfry, _ i -')
         return v
+
+
+# Schematy dla znajomych
+class FriendRequest(BaseModel):
+    addressee_username: str  # Nazwa użytkownika osoby, do której wysyłamy zaproszenie
+
+
+class FriendshipResponse(BaseModel):
+    id: int
+    requester: UserResponse
+    addressee: UserResponse
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class FriendResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    avatar: str | None = None
+    friendship_status: str
+    friendship_id: int
+
+    class Config:
+        from_attributes = True

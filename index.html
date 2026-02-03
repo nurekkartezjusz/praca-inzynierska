@@ -100,8 +100,9 @@
             <div class="profile-menu" id="profile-menu">
                 <div class="profile-menu-item" onclick="window.location.href='statystyki/index.html'">
                     � Profil i Statystyki
-                </div>
-                <div class="profile-menu-item" onclick="logout()" style="color: #dc3545;">
+                </div>                <div class="profile-menu-item" onclick="window.location.href='znajomi/index.html'">
+                    👥 Znajomi
+                </div>                <div class="profile-menu-item" onclick="logout()" style="color: #dc3545;">
                     🚪 Wyloguj się
                 </div>
             </div>
@@ -110,33 +111,112 @@
 
     <header class="site-header">
         <div class="container">
-            <h1 class="site-title">🎲 Mini Gry 🧩</h1>
-            <p class="site-sub">Kilka prostych gier stworzonych jako projekt — wybierz i zagraj.</p>
+            <h1 class="site-title">🎲 Wielka Studencka Batalla 🎮</h1>
+            <p class="site-sub">Graj w planszówkę z przyjaciółmi i rozwiązuj zadania!</p>
         </div>
     </header>
     <main class="container main-grid">
         <section class="cards">
-            <article class="card">
-                <div class="card-media">⭕❌</div>
-                <h2>Kółko i krzyżyk</h2>
-                <p class="card-desc">Gra dla dwóch graczy lub przeciwko botowi. Wybierz poziom trudności i zagraj szybki mecz.</p><br>
-                <a class="card-btn" href="kolko-i-krzyzyk/index.html">Otwórz grę</a>
-            </article>
-
-            <article class="card">
-                <div class="card-media">🔢</div>
-                <h2>Sudoku</h2>
-                <p class="card-desc">Generowanie plansz, podpowiedzi, timer i ranking — rozwiązuj i zapisuj wyniki.</p><br>
-                <a class="card-btn" href="sudoku/index.html">Otwórz grę</a>
+            <!-- Główna gra - duży kafelek -->
+            <article class="card main-game">
+                <div class="card-media main-game-icon">🎲</div>
+                <h2 style="font-size: 2em; margin: 20px 0;">Zagraj w Wielką Studencką Batalię</h2>
+                <p class="card-desc">Rozpocznij przygodę na planszy pełnej wyzwań! Graj z znajomymi, rzucaj kostką i rywalizuj w mini grach.</p><br>
+                <a class="card-btn main-game-btn" href="plansza/index.html">🎮 Rozpocznij grę</a>
             </article>
         </section>
 
         <aside class="info">
+            <h3>🎯 Mini Gry</h3>
+            <p>Podczas rozgrywki możesz trafić na różne wyzwania:</p>
+            <div class="mini-games-list">
+                <div class="mini-game-link" onclick="window.location.href='kolko-i-krzyzyk/index.html'">
+                    <span class="game-icon">⭕❌</span>
+                    <span class="game-name">Kółko i krzyżyk</span>
+                </div>
+                <div class="mini-game-link" onclick="window.location.href='sudoku/index.html'">
+                    <span class="game-icon">🔢</span>
+                    <span class="game-name">Sudoku</span>
+                </div>
+            </div>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
             <h3>O projekcie</h3>
-            <p>Projekt zawiera proste przeglądarkowe gry napisane w HTML/CSS/JS. Wszystkie ustawienia i wyniki są zapisywane w lokalnej pamięci przeglądarki.</p>
+            <p>Wielka Studencka Batalla to interaktywna gra planszowa z wyzwaniami i mini grami. Zaproś znajomych i rywalizujcie ze sobą!</p>
             <p class="small">Repozytorium: <code>inzynierka-basic</code></p>
         </aside>
     </main>
+
+    <style>
+        .main-game {
+            grid-column: span 2;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .main-game-icon {
+            font-size: 5em !important;
+            margin-bottom: 10px;
+        }
+        .main-game h2 {
+            color: white;
+        }
+        .main-game .card-desc {
+            color: rgba(255,255,255,0.95);
+            font-size: 1.1em;
+        }
+        .main-game-btn {
+            background: white !important;
+            color: #667eea !important;
+            font-size: 1.3em !important;
+            padding: 15px 40px !important;
+            font-weight: bold !important;
+        }
+        .main-game-btn:hover {
+            transform: scale(1.05) !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+        }
+        .mini-games-list {
+            margin-top: 15px;
+        }
+        .mini-game-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .mini-game-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+            border-color: #764ba2;
+        }
+        .game-icon {
+            font-size: 1.5em;
+        }
+        .game-name {
+            font-weight: 600;
+        }
+        @media (max-width: 768px) {
+            .main-game {
+                grid-column: span 1;
+                padding: 30px 20px;
+            }
+            .main-game-icon {
+                font-size: 3em !important;
+            }
+            .main-game h2 {
+                font-size: 1.5em !important;
+            }
+        }
+    </style>
 
     <footer class="site-footer">
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>

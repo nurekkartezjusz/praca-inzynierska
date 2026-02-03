@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Znajomi - Wielka Studencka Batalla</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/toast.css">
+</head>
+<body>
+    <div class="container">
+        <h1>👥 Znajomi</h1>
+        
+        <!-- Wyszukiwanie użytkowników -->
+        <div class="search-section">
+            <h2>🔍 Szukaj użytkowników</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Wpisz nazwę użytkownika...">
+                <button onclick="searchUsers()">Szukaj</button>
+            </div>
+            <div id="searchResults" class="user-list"></div>
+        </div>
+
+        <!-- Zaproszenia -->
+        <div class="requests-section">
+            <h2>📨 Zaproszenia do znajomych (<span id="requestCount">0</span>)</h2>
+            <div id="friendRequests" class="user-list"></div>
+        </div>
+
+        <!-- Lista znajomych -->
+        <div class="friends-section">
+            <h2>✅ Moi znajomi (<span id="friendCount">0</span>)</h2>
+            <div id="friendsList" class="user-list"></div>
+        </div>
+
+        <div class="actions">
+            <button onclick="window.location.href='/'" class="btn-secondary">Powrót do strony głównej</button>
+            <button onclick="logout()" class="btn-danger">Wyloguj</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+    <script src="../js/toast.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

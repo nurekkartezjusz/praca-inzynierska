@@ -7,8 +7,12 @@ import os
 import resend
 
 from database import engine, get_db, Base
-from models import User
-from schemas import UserCreate, UserLogin, UserResponse, Token, PasswordResetRequest, PasswordReset, AvatarUpdate, ProfileUpdate
+from models import User, Friendship, FriendshipStatus
+from schemas import (
+    UserCreate, UserLogin, UserResponse, Token,
+    PasswordResetRequest, PasswordReset, AvatarUpdate, ProfileUpdate,
+    FriendRequest, FriendshipResponse, FriendResponse
+)
 from auth import (
     get_password_hash,
     verify_password,
@@ -401,6 +405,386 @@ def delete_account(
     return {
         "message": "Konto zostało usunięte pomyślnie"
     }
+
+
+# ============================================
+# ENDPOINTY DLA ZNAJOMYCH
+# ============================================
+
+@app.post("/api/friends/request")
+def send_friend_request(
+    friend_request: FriendRequest,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Wysyła zaproszenie do znajomych"""
+    # Sprawdź token
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    # Pobierz użytkownika wysyłającego
+    requester = db.query(User).filter(User.email == email).first()
+    if not requester:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Znajdź użytkownika, do którego wysyłamy zaproszenie
+    addressee = db.query(User).filter(
+        User.username == friend_request.addressee_username
+    ).first()
+    
+    if not addressee:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Nie można zaprosić samego siebie
+    if requester.id == addressee.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Nie możesz zaprosić samego siebie"
+        )
+    
+    # Sprawdź czy zaproszenie już istnieje
+    existing_friendship = db.query(Friendship).filter(
+        ((Friendship.requester_id == requester.id) & (Friendship.addressee_id == addressee.id)) |
+        ((Friendship.requester_id == addressee.id) & (Friendship.addressee_id == requester.id))
+    ).first()
+    
+    if existing_friendship:
+        if existing_friendship.status == FriendshipStatus.ACCEPTED:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Już jesteście znajomymi"
+            )
+        elif existing_friendship.status == FriendshipStatus.PENDING:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Zaproszenie już zostało wysłane"
+            )
+    
+    # Utwórz nowe zaproszenie
+    new_friendship = Friendship(
+        requester_id=requester.id,
+        addressee_id=addressee.id,
+        status=FriendshipStatus.PENDING
+    )
+    
+    db.add(new_friendship)
+    db.commit()
+    db.refresh(new_friendship)
+    
+    print(f"✅ Wysłano zaproszenie: {requester.username} -> {addressee.username}")
+    
+    return {
+        "message": f"Wysłano zaproszenie do {addressee.username}",
+        "friendship_id": new_friendship.id
+    }
+
+
+@app.get("/api/friends/requests")
+def get_friend_requests(
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Pobiera oczekujące zaproszenia do znajomych"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz zaproszenia skierowane do tego użytkownika
+    requests = db.query(Friendship).filter(
+        (Friendship.addressee_id == user.id) &
+        (Friendship.status == FriendshipStatus.PENDING)
+    ).all()
+    
+    result = []
+    for req in requests:
+        requester = db.query(User).filter(User.id == req.requester_id).first()
+        result.append({
+            "friendship_id": req.id,
+            "requester": UserResponse.model_validate(requester),
+            "created_at": req.created_at
+        })
+    
+    return result
+
+
+@app.post("/api/friends/accept/{friendship_id}")
+def accept_friend_request(
+    friendship_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Akceptuje zaproszenie do znajomych"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz zaproszenie
+    friendship = db.query(Friendship).filter(Friendship.id == friendship_id).first()
+    
+    if not friendship:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Zaproszenie nie znalezione"
+        )
+    
+    # Sprawdź czy to zaproszenie jest skierowane do tego użytkownika
+    if friendship.addressee_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nie możesz zaakceptować tego zaproszenia"
+        )
+    
+    if friendship.status != FriendshipStatus.PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="To zaproszenie zostało już przetworzone"
+        )
+    
+    # Akceptuj zaproszenie
+    friendship.status = FriendshipStatus.ACCEPTED
+    friendship.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    
+    requester = db.query(User).filter(User.id == friendship.requester_id).first()
+    print(f"✅ Zaakceptowano zaproszenie: {user.username} <-> {requester.username}")
+    
+    return {
+        "message": f"Zaakceptowano zaproszenie od {requester.username}",
+        "friend": UserResponse.model_validate(requester)
+    }
+
+
+@app.post("/api/friends/reject/{friendship_id}")
+def reject_friend_request(
+    friendship_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Odrzuca zaproszenie do znajomych"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz zaproszenie
+    friendship = db.query(Friendship).filter(Friendship.id == friendship_id).first()
+    
+    if not friendship:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Zaproszenie nie znalezione"
+        )
+    
+    # Sprawdź czy to zaproszenie jest skierowane do tego użytkownika
+    if friendship.addressee_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nie możesz odrzucić tego zaproszenia"
+        )
+    
+    if friendship.status != FriendshipStatus.PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="To zaproszenie zostało już przetworzone"
+        )
+    
+    # Usuń zaproszenie zamiast zmieniać status
+    db.delete(friendship)
+    db.commit()
+    
+    requester = db.query(User).filter(User.id == friendship.requester_id).first()
+    print(f"❌ Odrzucono zaproszenie: {user.username} <- {requester.username}")
+    
+    return {"message": "Odrzucono zaproszenie"}
+
+
+@app.get("/api/friends")
+def get_friends(
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Pobiera listę znajomych"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz zaakceptowane znajomości
+    friendships = db.query(Friendship).filter(
+        ((Friendship.requester_id == user.id) | (Friendship.addressee_id == user.id)) &
+        (Friendship.status == FriendshipStatus.ACCEPTED)
+    ).all()
+    
+    friends = []
+    for friendship in friendships:
+        # Znajdź drugiego użytkownika (nie tego zalogowanego)
+        friend_id = friendship.addressee_id if friendship.requester_id == user.id else friendship.requester_id
+        friend = db.query(User).filter(User.id == friend_id).first()
+        
+        friends.append({
+            "id": friend.id,
+            "username": friend.username,
+            "email": friend.email,
+            "avatar": friend.avatar,
+            "friendship_id": friendship.id,
+            "friendship_status": "accepted"
+        })
+    
+    return friends
+
+
+@app.delete("/api/friends/{friendship_id}")
+def remove_friend(
+    friendship_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Usuwa znajomego"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz znajomość
+    friendship = db.query(Friendship).filter(Friendship.id == friendship_id).first()
+    
+    if not friendship:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Znajomość nie znaleziona"
+        )
+    
+    # Sprawdź czy użytkownik jest częścią tej znajomości
+    if friendship.requester_id != user.id and friendship.addressee_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Nie możesz usunąć tej znajomości"
+        )
+    
+    # Usuń znajomość
+    db.delete(friendship)
+    db.commit()
+    
+    print(f"🗑️  Usunięto znajomość ID: {friendship_id}")
+    
+    return {"message": "Usunięto znajomego"}
+
+
+@app.get("/api/users/search")
+def search_users(
+    query: str = Query(..., min_length=1),
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Wyszukuje użytkowników po nazwie użytkownika"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    current_user = db.query(User).filter(User.email == email).first()
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Wyszukaj użytkowników (max 10 wyników)
+    users = db.query(User).filter(
+        User.username.ilike(f"%{query}%"),
+        User.id != current_user.id  # Nie pokazuj siebie
+    ).limit(10).all()
+    
+    results = []
+    for user in users:
+        # Sprawdź status znajomości
+        friendship = db.query(Friendship).filter(
+            ((Friendship.requester_id == current_user.id) & (Friendship.addressee_id == user.id)) |
+            ((Friendship.requester_id == user.id) & (Friendship.addressee_id == current_user.id))
+        ).first()
+        
+        status = "none"
+        friendship_id = None
+        
+        if friendship:
+            if friendship.status == FriendshipStatus.ACCEPTED:
+                status = "friends"
+            elif friendship.status == FriendshipStatus.PENDING:
+                if friendship.requester_id == current_user.id:
+                    status = "pending_sent"
+                else:
+                    status = "pending_received"
+            friendship_id = friendship.id
+        
+        results.append({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "avatar": user.avatar,
+            "friendship_status": status,
+            "friendship_id": friendship_id
+        })
+    
+    return results
 
 
 if __name__ == "__main__":

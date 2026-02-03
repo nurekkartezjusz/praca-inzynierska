@@ -4,8 +4,109 @@
   <meta charset="UTF-8" />
   <title>Plansza</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .top-menu {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+    .menu-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .menu-btn.friends {
+      background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    }
+    .menu-btn.games {
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      position: relative;
+    }
+    .games-dropdown {
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      min-width: 200px;
+      display: none;
+      overflow: hidden;
+    }
+    .games-dropdown.show {
+      display: block;
+    }
+    .games-dropdown-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid #f0f0f0;
+      color: #333;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .games-dropdown-item:last-child {
+      border-bottom: none;
+    }
+    .games-dropdown-item:hover {
+      background: #f8f9fa;
+    }
+  </style>
 </head>
 <body>
+  <div class="top-menu">
+    <div style="position: relative;">
+      <button class="menu-btn games" onclick="toggleGamesMenu()">🎮 Mini gry</button>
+      <div class="games-dropdown" id="games-menu">
+        <a href="../kolko-i-krzyzyk/" class="games-dropdown-item" target="_blank">
+          <span>⭕❌</span>
+          <span>Kółko i krzyżyk</span>
+        </a>
+        <a href="../sudoku/" class="games-dropdown-item" target="_blank">
+          <span>🔢</span>
+          <span>Sudoku</span>
+        </a>
+      </div>
+    </div>
+    <a href="../znajomi/" class="menu-btn friends">👥 Znajomi</a>
+    <a href="../statystyki/" class="menu-btn">📊 Profil</a>
+    <a href="../" class="menu-btn">🏠 Menu</a>
+  </div>
+
+  <script>
+    function toggleGamesMenu() {
+      const menu = document.getElementById('games-menu');
+      menu.classList.toggle('show');
+    }
+
+    // Zamknij menu po kliknięciu poza nim
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('games-menu');
+      const gamesBtn = document.querySelector('.menu-btn.games');
+      if (!gamesBtn.contains(e.target) && menu.classList.contains('show')) {
+        menu.classList.remove('show');
+      }
+    });
+  </script>
+
   <div class="board">
     <div class="cell c0">0</div>
     <div class="cell c1">1</div>
