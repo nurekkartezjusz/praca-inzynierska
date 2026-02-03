@@ -762,17 +762,17 @@ def search_users(
             ((Friendship.requester_id == user.id) & (Friendship.addressee_id == current_user.id))
         ).first()
         
-        status = "none"
+        friendship_status = "none"
         friendship_id = None
         
         if friendship:
             if friendship.status == FriendshipStatus.ACCEPTED:
-                status = "friends"
+                friendship_status = "friends"
             elif friendship.status == FriendshipStatus.PENDING:
                 if friendship.requester_id == current_user.id:
-                    status = "pending_sent"
+                    friendship_status = "pending_sent"
                 else:
-                    status = "pending_received"
+                    friendship_status = "pending_received"
             friendship_id = friendship.id
         
         results.append({
@@ -780,7 +780,7 @@ def search_users(
             "username": user.username,
             "email": user.email,
             "avatar": user.avatar,
-            "friendship_status": status,
+            "friendship_status": friendship_status,
             "friendship_id": friendship_id
         })
     
