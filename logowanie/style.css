@@ -169,3 +169,13 @@
 .rejestracja:active{
     transform: translateY(2px);
 }
+.input-box{
+    position: relative;
+}
+.eye-icon{
+    position: absolute;
+    right: 0.75rem;
+    top: 25%;
+    width: 24px;
+    cursor: pointer;
+}

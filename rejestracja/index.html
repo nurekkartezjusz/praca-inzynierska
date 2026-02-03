@@ -30,9 +30,12 @@
                     <span class="validation-icon" id="email-icon"></span>
                 </div>
                 <div class="field">
-                    <input type="password" id="password" required>
+                    <div class="input-box">
+                            <input type="password" id="password" class="password-input" required> 
+                            <img src="img/view.png" alt="view" class="eye-icon">         
+                    </div>
                     <label for="password">Hasło (min. 6 znaków)</label>
-                    <span class="validation-icon" id="password-icon"></span>
+                    
                     <div class="password-strength" id="password-strength" style="display: none;">
                         <div class="strength-bar">
                             <div class="strength-fill" id="strength-fill"></div>
@@ -71,7 +74,29 @@
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
     </footer>
 
+
     <script src="../js/toast.js"></script>
+
+    
+    <script>
+        // Skrypt show/hide password
+            const eyeIcons = document.querySelectorAll(".eye-icon");
+
+        eyeIcons.forEach(icon => {
+        icon.addEventListener("click", () => {
+            const input = icon.previousElementSibling;
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.src = "img/hide.png";
+            } else {
+                input.type = "password";
+                icon.src = "img/view.png";
+            }
+        });
+    });
+
+    </script>
     <script>
         const API_URL = 'http://localhost:8000';
         
