@@ -22,7 +22,12 @@ DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_na
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"connect_timeout": 10},
+    connect_args={
+        "connect_timeout": 10,
+        "sslmode": "require",
+        "options": "-c client_encoding=UTF8"
+    },
+    pool_pre_ping=True,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
