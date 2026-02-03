@@ -38,6 +38,29 @@
       background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
       position: relative;
     }
+    .menu-btn.fullscreen {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    }
+    .fullscreen-btn-corner {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .fullscreen-btn-corner:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
     .games-dropdown {
       position: absolute;
       top: 50px;
@@ -69,6 +92,73 @@
     .games-dropdown-item:hover {
       background: #f8f9fa;
     }
+    .game-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .game-modal.show {
+      display: flex;
+    }
+    .game-modal-content {
+      background: white;
+      border-radius: 15px;
+      width: 85%;
+      height: 85%;
+      max-width: 1000px;
+      max-height: 700px;
+      position: relative;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .game-modal-header {
+      padding: 15px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px 15px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .game-modal-header h3 {
+      margin: 0;
+      font-size: 1.2em;
+    }
+    .game-modal-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .game-modal-close:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .game-modal-iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      border-radius: 0 0 15px 15px;
+      overflow: auto;
+    }
+    .game-modal-iframe.scale {
+      zoom: 0.75;
+    }
   </style>
 </head>
 <body>
@@ -76,14 +166,14 @@
     <div style="position: relative;">
       <button class="menu-btn games" onclick="toggleGamesMenu()">🎮 Mini gry</button>
       <div class="games-dropdown" id="games-menu">
-        <a href="../kolko-i-krzyzyk/" class="games-dropdown-item" target="_blank">
+        <div class="games-dropdown-item" onclick="openGame('kolko', 'Kółko i krzyżyk')">
           <span>⭕❌</span>
           <span>Kółko i krzyżyk</span>
-        </a>
-        <a href="../sudoku/" class="games-dropdown-item" target="_blank">
+        </div>
+        <div class="games-dropdown-item" onclick="openGame('sudoku', 'Sudoku')">
           <span>🔢</span>
           <span>Sudoku</span>
-        </a>
+        </div>
       </div>
     </div>
     <a href="../znajomi/" class="menu-btn friends">👥 Znajomi</a>
@@ -91,10 +181,102 @@
     <a href="../" class="menu-btn">🏠 Menu</a>
   </div>
 
+  <!-- Przycisk pełnego ekranu w prawym dolnym rogu -->
+  <button class="fullscreen-btn-corner" onclick="toggleBoardFullscreen()" id="fullscreen-btn">
+    ⛶ Pełny ekran
+  </button>
+
+  <!-- Modal dla mini gier -->
+  <div class="game-modal" id="game-modal">
+    <div class="game-modal-content">
+      <div class="game-modal-header">
+        <h3 id="game-title">Mini Gra</h3>
+        <button class="game-modal-close" onclick="closeGame()">×</button>
+      </div>
+      <iframe id="game-iframe" class="game-modal-iframe"></iframe>
+    </div>
+  </div>
+
   <script>
+    let currentGame = null;
+
     function toggleGamesMenu() {
       const menu = document.getElementById('games-menu');
       menu.classList.toggle('show');
+    }
+
+    function openGame(gameType, gameTitle) {
+      const modal = document.getElementById('game-modal');
+      const iframe = document.getElementById('game-iframe');
+      const title = document.getElementById('game-title');
+      
+      // Ustaw tytuł
+      title.textContent = gameTitle;
+      
+      // Załaduj grę tylko jeśli to inna gra lub pierwszy raz
+      if (currentGame !== gameType) {
+        if (gameType === 'kolko') {
+          iframe.src = '../kolko-i-krzyzyk/index.html';
+          iframe.classList.remove('scale');
+        } else if (gameType === 'sudoku') {
+          iframe.src = '../sudoku/index.html';
+          iframe.classList.add('scale');
+        }
+        currentGame = gameType;
+      }
+      
+      // Pokaż modal
+      modal.classList.add('show');
+      
+      // Zamknij dropdown
+      document.getElementById('games-menu').classList.remove('show');
+    }
+
+    function closeGame() {
+      const modal = document.getElementById('game-modal');
+      
+      // Ukryj modal (NIE czyść iframe - zachowaj stan gry)
+      modal.classList.remove('show');
+    }
+
+    // Funkcja do przełączania pełnego ekranu dla całej planszy
+    function toggleBoardFullscreen() {
+      const elem = document.documentElement;
+      const btn = document.getElementById('fullscreen-btn');
+      
+      if (!document.fullscreenElement) {
+        // Wejdź w pełny ekran
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+          elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE11 */
+          elem.msRequestFullscreen();
+        }
+      } else {
+        // Wyjdź z pełnego ekranu
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    // Aktualizuj tekst przycisku pełnego ekranu
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+    document.addEventListener('msfullscreenchange', updateFullscreenButton);
+
+    function updateFullscreenButton() {
+      const btn = document.getElementById('fullscreen-btn');
+      if (document.fullscreenElement) {
+        btn.innerHTML = '⛶ Wyjdź';
+      } else {
+        btn.innerHTML = '⛶ Pełny ekran';
+      }
     }
 
     // Zamknij menu po kliknięciu poza nim
@@ -103,6 +285,20 @@
       const gamesBtn = document.querySelector('.menu-btn.games');
       if (!gamesBtn.contains(e.target) && menu.classList.contains('show')) {
         menu.classList.remove('show');
+      }
+    });
+
+    // Zamknij modal po kliknięciu w tło
+    document.getElementById('game-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeGame();
+      }
+    });
+
+    // Zamknij modal klawiszem ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeGame();
       }
     });
   </script>
