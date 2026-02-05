@@ -1,0 +1,34 @@
+Wstępna optymalizacja
+
+1. Klasy gracze
+    Leniuch
+    + start 2 monty
+    - trudniejsze pytania
+    Mądrala
+    + 1 mądrość
+    + łatwiejsze pytania
+    - start bez monet
+    Sportowiec
+    + hp
+    + automaty dają mu więcej życia
+    + krótsze praktyki ( 2 kolejki zamiast 3 )
+
+2. Start - za każde przejście pobierana moneta (czesne). Jeśli ktoś
+nie ma monet jest zapisywane jako dług studencki. max 2 długi potem kara
+
+Po zapłaceniu czesnego gracz wybiera:
+moneta/hp/szczescie
+
+Brak monet = utrata kryształka
+Brak kryształkow = cofnięcie piętra
+
+3. Pola
+    Sala = 1 pytanie -> +1 kryształek
+    Aula = 2 pytania -> +1 kryształek
+    Łazienki = 
+    
+
+    Dziekanat = +1 
+
+4. Zasoby
+    Moneta - w grze nie tylko wiedza ma kluczowe znaczenie, ale również umiejętne zarządzanie zasobami finansowymi. Podczas rywalizacji uczestnicy mogą zarówno zdobywać monety, jak i je tracić.

@@ -1,0 +1,26 @@
+:root{
+    --font-primary: "Inter";
+    --color-primary: #eb285a;
+    --color-primary-contrast: #d91d4f;
+    --color-secondary: #006efa;
+    --color-secondary-contrast: #005da2;
+    --color-royal-blue: #0069ff;
+    --color-text: #141e50;
+    --color-border-gray: #727896;
+    --color-basic-blue: #cedeff;
+}
+*{ 
+    box-sizing: border-box;
+    background-color: var(--color-basic-blue);
+}
+.container{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+.left-column, .right-column{
+    display: flex;
+    flex-direction: column;
+}
+.card-flex{
+    display: flex;
+}

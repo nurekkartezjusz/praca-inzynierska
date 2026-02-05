@@ -58,7 +58,7 @@ SECRET_KEY=twoj-sekret-klucz-zmien-to-na-produkcje
 # Stwórz środowisko
 python -m venv .venv
 .venv\Scripts\activate  # Windows
-pip install -r requirements.txt
+.venv\Scripts\activate
 
 # Uruchom backend
 uvicorn main:app --reload
@@ -94,7 +94,7 @@ cd inzynierka-basic
 python -m venv .venv
 
 # Aktywuj (Windows):
-.venv\Scripts\activate
+python -m venv .venv
 
 # Aktywuj (Linux/Mac):
 source .venv/bin/activate
