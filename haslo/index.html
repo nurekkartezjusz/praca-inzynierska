@@ -36,12 +36,14 @@
                     <label for="reset-token">Kod resetowania (6 cyfr)</label>
                 </div>
                 <div class="field">
-                    <input type="password" id="new-password" required placeholder=" ">
+                    <input type="password" id="new-password" class="password-input" required placeholder=" ">
                     <label for="new-password">Nowe hasło (min. 6 znaków)</label>
+                    <img src="img/hide.png" alt="view" class="eye-icon"> 
                 </div>
                 <div class="field">
-                    <input type="password" id="confirm-password" required placeholder=" ">
+                    <input type="password" id="confirm-password" class="password-input" required placeholder=" ">
                     <label for="confirm-password">Potwierdź nowe hasło</label>
+                    <img src="img/hide.png" alt="view" class="eye-icon"> 
                 </div>
                 <div id="error-message-2" style="color: red; margin-bottom: 10px; display: none;"></div>
                 <div id="success-message" style="color: #4CAF50; margin-bottom: 10px; display: none;"></div>
@@ -178,6 +180,24 @@
             document.getElementById('reset-token').value = '';
             document.getElementById('new-password').value = '';
             document.getElementById('confirm-password').value = '';
+        });
+    </script>
+    <script>
+        const eyeIcons = document.querySelectorAll(".eye-icon");
+
+        eyeIcons.forEach(icon => {
+            icon.addEventListener("click", () =>{
+                const input = icon.parentElement.querySelector(".password-input");
+
+                if(input.type === "password"){
+                    input.type = "text";
+                    icon.src = "img/view.png";
+                }else{
+                    input.type = "password";
+                    icon.src = "img/hide.png";
+                }
+            })
+            
         });
     </script>
 </body>

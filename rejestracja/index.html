@@ -32,7 +32,7 @@
                 <div class="field">
                     <input type="password" id="password" class="password-input" required placeholder=" ">       
                     <label for="password">Hasło (min. 6 znaków)</label>
-                    <img src="img/view.png" alt="view" class="eye-icon">  
+                    <img src="img/hide.png" alt="view" class="eye-icon">  
 
                     <div class="password-strength" id="password-strength" style="display: none;">
                         <div class="strength-bar">
@@ -84,14 +84,16 @@
 
         eyeIcons.forEach(icon => {
         icon.addEventListener("click", () => {
-            const input = icon.previousElementSibling;
+            const input = icon.parentElement.querySelector(".password-input");
+
+            if (!input) return;
 
             if (input.type === "password") {
                 input.type = "text";
-                icon.src = "img/hide.png";
+                icon.src = "img/view.png";
             } else {
                 input.type = "password";
-                icon.src = "img/view.png";
+                icon.src = "img/hide.png";
             }
         });
     });

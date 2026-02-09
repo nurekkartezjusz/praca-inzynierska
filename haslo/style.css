@@ -68,7 +68,7 @@
 }
 @media (max-width: 768px){
     .logo h1 {
-        font-size: 5rem;
+        font-size: 4.5rem;
     }
 }
 .logow{
@@ -126,6 +126,7 @@
     font-size: 16px;
     border: 1px solid var(--color-border-gray);
     outline: none;
+    z-index: 1;
 }
 .field label {
     position: absolute;
@@ -149,6 +150,17 @@
     color: var(--color-text);
     font-weight: 600;
     width: fit-content;
+}
+.eye-icon{
+    position: absolute;
+    right: 0.75rem;
+    top: 25%;
+    width: 24px;
+    cursor: pointer;
+    z-index: 10;
+}
+.field input:focus ~ .eye-icon {
+    transform: translateY(0);
 }
 .password-recovery{
     flex: 2;
