@@ -19,13 +19,13 @@
     text-size-adjust: 100%;
     margin: 50px;
 }
-.card {
+.card{
     padding: 30px;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-@media (max-width: 768px) {
+@media (max-width: 768px){
     .container {
         flex-direction: column;
     }
@@ -33,28 +33,43 @@
 .logo{
     flex: 1;
     display: flex;
+    height: 100%;
     flex-direction: column;
-    gap: 5px;
-    color: var(--color-text);
-    font-family: var(--font-primary);
-    padding: 20px;
-    font-size: 1.5rem;
-    padding-left: 150px;
     justify-content: center;
+    text-align: center;
+    font-family: var(--font-primary);
+    color: var(--color-text);
+    z-index: 1;
 }
 .logo h1{
-    display: flex;
-    font-size: 80px;
-    font-weight: bold;
-    margin: 0;
-}
-.litera{
-    color: var(--color-royal-blue);
     font-size: 5rem;
+    gap: 0.5em;
     font-weight: bold;
-    display: inline-block;
-    width: 1em;
-    text-align: center;
+    margin: 5px 0;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+.logo h1::first-letter{
+    color: var(--color-royal-blue);
+    font-size: 1.15em;
+    font-weight: bold;
+}
+@media (min-width: 768px){
+    .logo {
+        position: fixed;
+        top: 50%;
+        left: 2.5vw;
+        transform: translateY(-50%);
+        z-index: 999;
+    }
+    .logow {
+        margin-left: 30vw;
+    }
+}
+@media (max-width: 768px){
+    .logo h1 {
+        font-size: 5rem;
+    }
 }
 .logow{
     flex: 2;
@@ -123,11 +138,26 @@
     transition: 0.25s ease;
 }
 .field input:focus + label,
-.field input:valid + label {
-    top: 6px;
+.field input:not(:placeholder-shown) + label {
+    top: 7px;
     font-size: 12px;
     color: var(--color-text);
 }
+.input-box{
+    position: relative;
+}
+.eye-icon{
+    position: absolute;
+    right: 0.75rem;
+    top: 25%;
+    width: 24px;
+    cursor: pointer;
+}
+.field input:focus ~ .eye-icon {
+    transform: translateY(0);
+}
+
+
 .login a{
     text-decoration: none;
     font-size: 0.8rem;
@@ -144,6 +174,11 @@
     font-family: var(--font-primary);
     background: var(--color-basic-blue);
     padding: 30px;
+}
+.going-back a{
+    text-decoration: none;
+    font-family: var(--font-primary);
+    color: var(--color-text);
 }
 .rejestracja{
     background: var(--color-secondary);

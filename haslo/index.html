@@ -10,18 +10,16 @@
 <body>
     <div class="container">
         <div class="logo">
-            <h1><span class="litera">W</span>ielka</h1>
-            <h1><span class="litera">S</span>tudencka</h1>
-            <h1><span class="litera">B</span>atalia</h1>
+            <h1>Wielka</h1>
+            <h1>Studencka</h1>
+            <h1>Batalia</h1>
         </div>
         <div class="logow">
             <div class="password-recovery card" id="step1">
                 <h2>Resetowanie hasła - Krok 1</h2>
-                <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
-                    Podaj email, a otrzymasz 6-cyfrowy kod do resetowania hasła.
-                </p>
+                <p>Podaj email, a otrzymasz 6-cyfrowy kod do resetowania hasła.</p>
                 <div class="field">
-                    <input type="text" id="email" required>
+                    <input type="text" id="email" required placeholder=" ">
                     <label for="email">Adres e-mail powiązany z kontem</label>
                 </div>
                 <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
@@ -30,25 +28,25 @@
 
             <div class="password-recovery card" id="step2" style="display: none;">
                 <h2>Resetowanie hasła - Krok 2</h2>
-                <p style="margin-bottom: 15px; color: #4CAF50; font-size: 0.9em; font-weight: bold;">
+                <p>
                     ✓ Kod został wysłany! Wpisz go poniżej wraz z nowym hasłem.
                 </p>
                 <div class="field">
-                    <input type="text" id="reset-token" required maxlength="6" placeholder="np. 123456">
+                    <input type="text" id="reset-token" required maxlength="6" placeholder=" ">
                     <label for="reset-token">Kod resetowania (6 cyfr)</label>
                 </div>
                 <div class="field">
-                    <input type="password" id="new-password" required>
+                    <input type="password" id="new-password" required placeholder=" ">
                     <label for="new-password">Nowe hasło (min. 6 znaków)</label>
                 </div>
                 <div class="field">
-                    <input type="password" id="confirm-password" required>
+                    <input type="password" id="confirm-password" required placeholder=" ">
                     <label for="confirm-password">Potwierdź nowe hasło</label>
                 </div>
                 <div id="error-message-2" style="color: red; margin-bottom: 10px; display: none;"></div>
                 <div id="success-message" style="color: #4CAF50; margin-bottom: 10px; display: none;"></div>
                 <button class="reset-password" id="reset-password-btn">Zresetuj hasło</button>
-                <button class="reset-password" id="back-btn" style="background: #666; margin-top: 10px;">Wróć i wpisz email ponownie</button>
+                <button class="reset-password" id="back-btn">Wróć i wpisz email ponownie</button>
             </div>
 
             <div class="login card">
@@ -56,7 +54,7 @@
                 <button class="logowanie" onclick="window.location.href = '../logowanie/index.html'">Zaloguj się</button>
             </div>
             <div class="going-back">
-                <a href="../index.html">Powrót do strony głównej</a>
+                <a href="../index.html">← Powrót do strony głównej</a>
             </div>
         </div>
     </div>

@@ -33,28 +33,43 @@
 .logo{
     flex: 1;
     display: flex;
+    height: 100%;
     flex-direction: column;
-    gap: 5px;
-    color: var(--color-text);
-    font-family: var(--font-primary);
-    padding: 20px;
-    font-size: 1.5rem;
-    padding-left: 150px;
     justify-content: center;
+    text-align: center;
+    font-family: var(--font-primary);
+    color: var(--color-text);
+    z-index: 1;
 }
 .logo h1{
-    display: flex;
-    font-size: 80px;
-    font-weight: bold;
-    margin: 0;
-}
-.litera{
-    color: var(--color-royal-blue);
     font-size: 5rem;
+    gap: 0.5em;
     font-weight: bold;
-    display: inline-block;
-    width: 1em;
-    text-align: center;
+    margin: 5px 0;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+.logo h1::first-letter{
+    color: var(--color-royal-blue);
+    font-size: 1.15em;
+    font-weight: bold;
+}
+@media (min-width: 768px){
+    .logo {
+        position: fixed;
+        top: 50%;
+        left: 2.5vw;
+        transform: translateY(-50%);
+        z-index: 999;
+    }
+    .logow {
+        margin-left: 30vw;
+    }
+}
+@media (max-width: 768px){
+    .logo h1 {
+        font-size: 5rem;
+    }
 }
 .logow{
     flex: 2;
@@ -123,8 +138,8 @@
     transition: 0.25s ease;
 }
 .field input:focus + label,
-.field input:valid + label {
-    top: 6px;
+.field input:not(:placeholder-shown) + label {
+    top: 7px;
     font-size: 12px;
     color: var(--color-text);
 }
@@ -137,6 +152,12 @@
     top: 25%;
     width: 24px;
     cursor: pointer;
+}
+.field input:focus ~ .eye-icon {
+    transform: translateY(0);
+}
+.field input:not(:placeholder-shown) ~ .eye-icon {
+    transform: translateY(-113%);
 }
 
 .login a{
@@ -156,7 +177,7 @@
     background: var(--color-basic-blue);
     padding: 30px;
 }
-.rejestracja{
+.btn-primary{
     background: var(--color-secondary);
     border: 1px solid white;
     color: #fff;
@@ -174,9 +195,84 @@
     border-radius: 5px;
     transition: background 0.7s, transform 0.3s;
 }
-.rejestracja:hover{
+.btn-primary:hover{
     background: var(--color-secondary-contrast);
 }
-.rejestracja:active{
+.btn-primary:active{
     transform: translateY(2px);
+}
+
+.checkbox-field{
+    display: flex;
+    align-items: center;
+    font-family: var(--font-primary);
+    font-size: 0.8rem;
+    color: var(--color-text);
+    margin-top: 12px;
+    margin-bottom: 12px;
+    margin-left: 1px;
+}
+
+.checkbox-field input{
+    display: none;
+}
+
+.checkbox-field label{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-field .checkmark{
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--color-border-gray);
+    border-radius: 5px;
+    position: relative;
+    transition: 0.2s ease;
+    background: white;
+}
+
+.checkbox-field label:hover .checkmark{
+    border-color: var(--color-secondary);
+}
+
+.checkbox-field input:checked + label .checkmark{
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+.checkbox-field .checkmark::after{
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: 0.2s ease;
+}
+
+.checkbox-field input:checked + label .checkmark::after{
+    transform: rotate(45deg) scale(1);
+}
+
+.checkbox-field input:focus-visible + label .checkmark{
+    box-shadow: 0 0 0 3px rgba(0, 110, 250, 0.25);
+}
+
+.checkbox-field a{
+    text-decoration: underline;
+    text-transform: capitalize;
+    color: var(--color-text);
+}
+
+.going-back a{
+    text-decoration: none;
+    font-family: var(--font-primary);
+    color: var(--color-text);
 }
