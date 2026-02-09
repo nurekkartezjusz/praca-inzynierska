@@ -13,8 +13,7 @@ Wstępna optymalizacja
     + automaty dają mu więcej życia
     + krótsze praktyki ( 2 kolejki zamiast 3 )
 
-2. Start - za każde przejście pobierana moneta (czesne). Jeśli ktoś
-nie ma monet jest zapisywane jako dług studencki. max 2 długi potem kara
+2. Start - za każde przejście pobierana moneta (czesne).
 
 Po zapłaceniu czesnego gracz wybiera:
 moneta/hp/szczescie
@@ -25,10 +24,26 @@ Brak kryształkow = cofnięcie piętra
 3. Pola
     Sala = 1 pytanie -> +1 kryształek
     Aula = 2 pytania -> +1 kryształek
-    Łazienki = 
-    
+    Łazienki = puste pola 
+    Biblioteka = mozliwosc uzyskania podpowiedzi kosztem utraty monety
+    Praktyki - pozbywa cię 3 kolejek (w przypadku sportowca 2)
+    Dziekanat - spłata czesnego z góry, wymiana 2 monety - 1hp, 3 monety - 1 kryształek (tylko raz na 1 piętro), kupienie karty skróc praktyki (zamiast 3 kolejek tylko 1, raz na piętro). ZATWIERDZENIE ZEJŚĆIA NIŻEJ
+    Szansa - karta losowego boosta (przelew od rodzicow itp + inne karty urodziny itp)
 
-    Dziekanat = +1 
+    Uwaga! Pole na ostatnim piętrze:
+    Sala - trudniejsze pytania
+    Aula - 1 kryształek tylko przy pełnym sukcesie
+    Dziekanat - musisz tam stanac by ukoczyc gre i wybrac opcje obrona
+    Stołówka - brak boosta
+    Biblioteka - wymina 2 monet za 1 kryształek
+    Czesne - 3 monety
+
 
 4. Zasoby
     Moneta - w grze nie tylko wiedza ma kluczowe znaczenie, ale również umiejętne zarządzanie zasobami finansowymi. Podczas rywalizacji uczestnicy mogą zarówno zdobywać monety, jak i je tracić.
+    Kryształki - pełnią kluczową rolę w przejściu rozgrywki. Bez nich uczestnik nie będzie mógł przechodzić na kolejne piętra. Za poprawne odpowiedzi na pytania gracz otrzymuje kryształki.
+
+ 5. Dodatkowe reguły:
+  - zebranie wystraczającej ilosci krysztalkow umozliwai przejscie na kolejne pietro
+  - dwoch graczy nie moze zajmowac tego samego pola
+  - w celu przejscia gry, trzeba przejsc przez wszystkie pietra   

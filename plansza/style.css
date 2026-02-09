@@ -32,7 +32,7 @@ body {
   justify-content: center;
   font-weight: bold;
   color: #495057;
-  font-size: 18px;
+  font-size: 10px;
   transition: all 0.3s ease;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
