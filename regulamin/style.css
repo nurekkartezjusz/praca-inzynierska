@@ -1,5 +1,5 @@
 :root{
-    --font-primary: "Inter";
+    --font-primary: "Inter", "Verdana", "Tahoma", "Segoe UI";
     --color-primary: #eb285a;
     --color-primary-contrast: #d91d4f;
     --color-secondary: #006efa;
@@ -58,7 +58,7 @@ body{
 }
 @media (max-width: 768px) {
     .logo h1 {
-        font-size: 2.6rem;
+        font-size: clamp(1.2rem, 8vw, 3.5rem);
     }
 }
 .content-wrapper {

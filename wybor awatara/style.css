@@ -1,5 +1,5 @@
 :root{
-    --font-primary: "Inter";
+    --font-primary: "Inter", "Verdana", "Tahoma", "Segoe UI";
     --color-primary: #eb285a;
     --color-primary-contrast: #d91d4f;
     --color-secondary: #006efa;
