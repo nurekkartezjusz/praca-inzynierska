@@ -1,3 +1,14 @@
+:root{
+  --class-font: "Noto Serif Ahom", serif;
+}
+.noto-serif-ahom-regular {
+  font-family: "Noto Serif Ahom", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
 body {
   margin: 0;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -364,4 +375,78 @@ body {
 
 .game-modal-iframe.scale {
   zoom: 0.75;
+}
+
+/* Style do wyboru klasy */
+.overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popup{
+  height: 440px;
+  width: 863px;
+  background-color: #667EEA;
+  display: flex;
+  flex-direction: column;
+}
+h1{
+  color: #D91D4F;
+  font-size: 20px;
+  text-align: center;
+  font-family: var(--class-font);
+}
+.cards{
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+}
+.card{
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  width: 240px;
+  background-color: #5267C7;
+  padding: 17px 0;
+  color: white;
+  text-align: center;
+  box-sizing: border-box;
+  gap: 8px;
+}
+.card h2{
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  font-family: var(--class-font);
+}
+.card p{
+  color: white;
+  font-size: 11px;
+  text-align: center;
+  font-family: var(--class-font);
+}
+.card img{
+  width: auto;
+  height: 180px;
+  object-fit: contain;
+}
+.class-btn{
+  width: 160px;
+  height: 35px;
+  text-transform: uppercase;
+  color: white;
+  gap: 20px;
+  border: 2px solid black;
+  padding: 8px 20px;
+  margin-top: 15px;
+  display: flex;
+  justify-content:space-around;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  font-size: 10px;
+  background: linear-gradient( rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2) ), #D91D4F;
 }
