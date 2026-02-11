@@ -73,7 +73,7 @@
     }
 }
 @media (max-width: 768px){
-    .logo h1 {
+    .logo h1{
         font-size: 4.5rem;
     }
 }
@@ -165,7 +165,6 @@
 .field input:not(:placeholder-shown) ~ .eye-icon {
     transform: translateY(-113%);
 }
-
 .login a{
     text-decoration: none;
     font-size: 0.8rem;
@@ -207,7 +206,6 @@
 .btn-primary:active{
     transform: translateY(2px);
 }
-
 .checkbox-field{
     display: flex;
     align-items: center;
@@ -218,11 +216,9 @@
     margin-bottom: 12px;
     margin-left: 1px;
 }
-
 .checkbox-field input{
     display: none;
 }
-
 .checkbox-field label{
     display: flex;
     align-items: center;
@@ -230,7 +226,6 @@
     cursor: pointer;
     user-select: none;
 }
-
 .checkbox-field .checkmark{
     width: 18px;
     height: 18px;
@@ -240,16 +235,13 @@
     transition: 0.2s ease;
     background: white;
 }
-
 .checkbox-field label:hover .checkmark{
     border-color: var(--color-secondary);
 }
-
 .checkbox-field input:checked + label .checkmark{
     background: var(--color-secondary);
     border-color: var(--color-secondary);
 }
-
 .checkbox-field .checkmark::after{
     content: "";
     position: absolute;
@@ -262,21 +254,17 @@
     transform: rotate(45deg) scale(0);
     transition: 0.2s ease;
 }
-
 .checkbox-field input:checked + label .checkmark::after{
     transform: rotate(45deg) scale(1);
 }
-
 .checkbox-field input:focus-visible + label .checkmark{
     box-shadow: 0 0 0 3px rgba(0, 110, 250, 0.25);
 }
-
 .checkbox-field a{
     text-decoration: underline;
     text-transform: capitalize;
     color: var(--color-text);
 }
-
 .going-back a{
     text-decoration: none;
     font-family: var(--font-primary);

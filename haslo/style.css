@@ -83,7 +83,7 @@
     flex-direction: column;
     gap: 10px;
 }
-.login h2, .rejestr h2{
+.login h2{
     font-weight: 1000;
     font-size: 2rem;
 }
