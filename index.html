@@ -5,90 +5,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Mini Gry — Strona Główna</title>
         <meta name="description" content="Katalog prostych gier: Kółko i krzyżyk oraz Sudoku" />
-        <link rel="stylesheet" href="css/style.css" />
-        <style>
-            .user-profile {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                display: none;
-                align-items: center;
-                gap: 10px;
-                background: white;
-                padding: 10px 15px;
-                border-radius: 50px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                z-index: 1000;
-            }
-            .user-profile.logged-in {
-                display: flex;
-            }
-            .profile-icon {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-size: 18px;
-                font-weight: bold;
-            }
-            .profile-dropdown {
-                position: relative;
-            }
-            .profile-menu {
-                position: absolute;
-                top: 60px;
-                right: 0;
-                background: white;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                min-width: 200px;
-                display: none;
-                overflow: hidden;
-            }
-            .profile-menu.show {
-                display: block;
-            }
-            .profile-menu-item {
-                padding: 12px 20px;
-                cursor: pointer;
-                transition: background 0.2s;
-                border-bottom: 1px solid #f0f0f0;
-            }
-            .profile-menu-item:last-child {
-                border-bottom: none;
-            }
-            .profile-menu-item:hover {
-                background: #f8f9fa;
-            }
-            .profile-email {
-                font-size: 14px;
-                color: #666;
-                max-width: 150px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .login-button {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                padding: 10px 20px;
-                border-radius: 25px;
-                text-decoration: none;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                z-index: 1000;
-            }
-            .login-button:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            }
-        </style>
+        <link rel="stylesheet" href="css/style-glowne.css" />
 </head>
 <body>
     <!-- Profil użytkownika (dla zalogowanych) -->
@@ -111,7 +28,13 @@
 
     <header class="site-header">
         <div class="container">
-            <h1 class="site-title">🎲 Wielka Studencka Batalia 🎮</h1>
+            <div class="logo">
+                <h1>
+                    <span>Wielka</span>
+                    <span>Studencka</span>
+                    <span>Batalia</span>
+                </h1>
+            </div>
             <p class="site-sub">Graj w planszówkę z przyjaciółmi i rozwiązuj zadania!</p>
         </div>
     </header>
@@ -145,78 +68,6 @@
             <p class="small">Repozytorium: <code>inzynierka-basic</code></p>
         </aside>
     </main>
-
-    <style>
-        .main-game {
-            grid-column: span 2;
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-        }
-        .main-game-icon {
-            font-size: 5em !important;
-            margin-bottom: 10px;
-        }
-        .main-game h2 {
-            color: white;
-        }
-        .main-game .card-desc {
-            color: rgba(255,255,255,0.95);
-            font-size: 1.1em;
-        }
-        .main-game-btn {
-            background: white !important;
-            color: #667eea !important;
-            font-size: 1.3em !important;
-            padding: 15px 40px !important;
-            font-weight: bold !important;
-        }
-        .main-game-btn:hover {
-            transform: scale(1.05) !important;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
-        }
-        .mini-games-list {
-            margin-top: 15px;
-        }
-        .mini-game-link {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 15px;
-            margin: 8px 0;
-            background: #f8f9fa;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .mini-game-link:hover {
-            background: #667eea;
-            color: white;
-            transform: translateX(5px);
-            border-color: #764ba2;
-        }
-        .game-icon {
-            font-size: 1.5em;
-        }
-        .game-name {
-            font-weight: 600;
-        }
-        @media (max-width: 768px) {
-            .main-game {
-                grid-column: span 1;
-                padding: 30px 20px;
-            }
-            .main-game-icon {
-                font-size: 3em !important;
-            }
-            .main-game h2 {
-                font-size: 1.5em !important;
-            }
-        }
-    </style>
 
     <footer class="site-footer">
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
