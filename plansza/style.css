@@ -1,13 +1,10 @@
 :root{
-  --class-font: "Noto Serif Ahom", serif;
+  --class-font: "Press Start 2P", system-ui;
 }
-.noto-serif-ahom-regular {
-  font-family: "Noto Serif Ahom", serif;
-  font-weight: 400;
+.press-start-2p-regular {
+  font-family: "Press Start 2P", system-ui;
   font-style: normal;
 }
-
-
 
 body {
   margin: 0;
@@ -392,12 +389,23 @@ body {
   background-color: #667EEA;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+}
+.inside{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 10px;
 }
 h1{
   color: #D91D4F;
   font-size: 20px;
   text-align: center;
   font-family: var(--class-font);
+  margin: 0 0 15px 0;
+  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 .cards{
   display: flex;
@@ -425,28 +433,32 @@ h1{
 }
 .card p{
   color: white;
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 14px;
   text-align: center;
   font-family: var(--class-font);
+  padding: 0 14px;
 }
 .card img{
   width: auto;
   height: 180px;
   object-fit: contain;
 }
+.buttons{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 96px;
+}
 .class-btn{
   width: 160px;
-  height: 35px;
   text-transform: uppercase;
   color: white;
-  gap: 20px;
-  border: 2px solid black;
+  font-family: var(--class-font);
   padding: 8px 20px;
   margin-top: 15px;
-  display: flex;
-  justify-content:space-around;
-  align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  font-size: 10px;
+  border: 2px solid black;
+  box-shadow: 0 10px 4px rgba(0, 0, 0, 0.25);
+  font-size: 12px;
   background: linear-gradient( rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2) ), #D91D4F;
 }
