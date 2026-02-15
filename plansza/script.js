@@ -101,3 +101,5 @@ document.addEventListener('keydown', function(e) {
     closeGame();
   }
 });
+
+// Czy jesteś pewien swojego wyboru

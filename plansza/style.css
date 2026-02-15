@@ -379,6 +379,7 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -412,6 +413,7 @@ h1{
   gap: 5px;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
 }
 .card{
   display: flex;
@@ -461,4 +463,32 @@ h1{
   box-shadow: 0 10px 4px rgba(0, 0, 0, 0.25);
   font-size: 12px;
   background: linear-gradient( rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2) ), #D91D4F;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.class-btn:active{
+  transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
+}
+.class-btn:hover{
+  transform: scale(0.97) translateY(2px); box-shadow: 0 8px 3px rgba(0, 0, 0, 0.25);
+}
+
+@media(max-width: 900px){
+  .card{
+    width: calc(50% - 10px);
+    display: none;
+  }
+  .buttons{
+    display: none;
+  }
+}
+@media(max-width: 600px){
+  .card{
+    width: 100%;
+    display: none;
+  }
+  .buttons{
+    display: none;
+  }
+}
+
+
