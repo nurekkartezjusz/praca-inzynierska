@@ -51,16 +51,6 @@ body{
     font-size: 1.15em;
     font-weight: bold;
 }
-@media (min-width: 769px){
-    .logo h1 {
-        font-size: clamp(2.5rem, 5vw, 3.5rem);
-    }
-}
-@media (max-width: 768px){
-    .logo h1 {
-        font-size: clamp(1.2rem, 6vw, 2.5rem);
-    }
-}
 .content-wrapper{
     width: 100%;
     max-width: 900px;
@@ -113,4 +103,14 @@ body{
     text-decoration: none;
     font-family: var(--font-primary);
     color: var(--color-text);
+}
+@media (min-width: 769px){
+    .logo h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+    }
+}
+@media (max-width: 768px){
+    .logo h1 {
+        font-size: clamp(1.2rem, 6vw, 2.5rem);
+    }
 }

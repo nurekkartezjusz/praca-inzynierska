@@ -46,16 +46,6 @@ body{
 	text-transform:uppercase;
 	letter-spacing:-1px;
 }
-@media (min-width:769px){
-	.logo h1{
-		font-size:clamp(2.5rem,5vw,3.5rem);
-	}
-}
-@media (max-width:768px){
-	.logo h1{
-		font-size:clamp(1.2rem,6vw,2.5rem);
-	}
-}
 .logo h1 span{
 	background:linear-gradient(to bottom,#ffffff 50%,#cedeff 100%);
 	-webkit-background-clip:text;
@@ -256,6 +246,16 @@ body{
 }
 .small{
 	color:var(--color-border-gray);
+}
+@media (min-width:769px){
+	.logo h1{
+		font-size:clamp(2.5rem,5vw,3.5rem);
+	}
+}
+@media (max-width:768px){
+	.logo h1{
+		font-size:clamp(1.2rem,6vw,2.5rem);
+	}
 }
 @media (max-width:900px){
 	.main-grid{

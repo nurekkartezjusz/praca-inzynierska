@@ -5,24 +5,20 @@
   --accent: #2563eb;
   --header: #0f172a;
 }
-
 *{
     box-sizing: border-box;
 }
-
 body{
     background: var(--bg);
     color: #1e293b;
     font-family: Inter,Segoe UI,Roboto,Arial,sans-serif;
     margin: 0;
 }
-
 .container{
     margin: 0 auto;
     max-width: 980px;
     padding: 5px;
 }
-
 .site-header{
     background: var(--header);
     color: #fff;
@@ -30,32 +26,27 @@ body{
     text-align: center;
     box-shadow: 0 4px 18px rgba(0,0,0,0.18);
 }
-
 .site-title{
     font-size: 32px;
     margin: 0;
     font-weight: 600;
 }
-
 .site-sub{
     color: #cbd5e1;
     margin: 6px 0 0;
     font-size: 15px;
 }
-
 .main-grid{
     display: grid;
     gap: 32px;
     grid-template-columns: 1fr 320px;
     padding: 36px 0;
 }
-
 .cards{
     display: grid;
     gap: 22px;
     grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
 }
-
 .card{
     display: flex;
     flex-direction: column;
@@ -66,29 +57,24 @@ body{
     padding: 22px;
     transition: transform .15s ease, box-shadow .15s ease;
 }
-
 .card:hover{
     transform: translateY(-4px);
     box-shadow: 0 10px 28px rgba(0,0,0,0.08);
 }
-
 .card-media{
     font-size: 36px;
     margin-bottom: 10px;
 }
-
 .card h2{
     margin: 0 0 10px;
     font-size: 20px;
     font-weight: 600;
 }
-
 .card-desc{
     color: var(--muted);
     margin-bottom: 16px;
     font-size: 15px;
 }
-
 .card-btn{
     background: var(--accent);
     border-radius: 8px;
@@ -98,32 +84,26 @@ body{
     transition: background .15s;
     align-self: flex-start;
 }
-
 .card-btn:hover{
     background: #143fb3;
 }
-
 .info{
     background: #fff;
     border-radius: 14px;
     padding: 30px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 }
-
 .info:hover{
     transform: translateY(-3px);
     box-shadow: 0 10px 28px rgba(0,0,0,0.08);
 }
-
 .info h3{
     margin-top: 0;
 }
-
 .small{
     color: var(--muted);
     font-size: 13px;
 }
-
 .site-footer{
     margin-top: 40px;
     border-top: 1px solid #e2e8f0;
@@ -132,13 +112,6 @@ body{
     text-align: center;
     font-size: 14px;
 }
-
-/* Poprawa responsywności */
-@media (max-width:900px){
-    .main-grid{grid-template-columns:1fr}
-    .info{order:2}
-}
-
 button{
     background: var(--accent);
     border: 0;
@@ -148,7 +121,10 @@ button{
     cursor: pointer;
     transition: background .15s;
 }
-
 button:hover{
   background:#143fb3;
+}
+@media (max-width:900px){
+    .main-grid{grid-template-columns:1fr}
+    .info{order:2}
 }

@@ -25,11 +25,6 @@
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-}
 .logo{
     flex: 1;
     display: flex;
@@ -53,29 +48,6 @@
     color: var(--color-royal-blue);
     font-size: 1.15em;
     font-weight: bold;
-}
-@media (min-width: 769px){
-    .logo{
-        position: fixed;
-        top: 50%;
-        left: 2vw;
-        transform: translateY(-50%);
-        z-index: 999;
-        width: 30vw; 
-        min-width: 300px;
-    }
-    .logo h1{
-        font-size: clamp(2.7rem, 5vw, 5.5rem);
-        white-space: normal;
-    }
-    .logow{
-        padding-left: 31.5vw;
-    }
-}
-@media (max-width: 768px){
-    .logo h1{
-        font-size: 4.5rem;
-    }
 }
 .logow{
     flex: 2;
@@ -275,4 +247,30 @@
     padding: 1rem 0;
     font-size: 0.9rem;
     color: var(--color-text);
+}
+@media (min-width: 769px){
+    .logo{
+        position: fixed;
+        top: 50%;
+        left: 2vw;
+        transform: translateY(-50%);
+        z-index: 999;
+        width: 30vw; 
+        min-width: 300px;
+    }
+    .logo h1{
+        font-size: clamp(2.7rem, 5vw, 5.5rem);
+        white-space: normal;
+    }
+    .logow{
+        padding-left: 31.5vw;
+    }
+}
+@media (max-width: 768px){
+    .logo h1{
+        font-size: 4.5rem;
+    }
+    .container {
+        flex-direction: column;
+    }
 }
