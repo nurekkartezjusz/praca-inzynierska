@@ -1,0 +1,15 @@
+[build]
+  # Brak buildu - to tylko statyczne pliki HTML/CSS/JS
+  command = "echo 'No build needed'"
+  publish = "."
+
+# Wyłącz automatyczne wykrywanie Pythona
+[build.environment]
+  NODE_VERSION = "none"
+  PYTHON_VERSION = "none"
+
+# Przekierowania dla SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
