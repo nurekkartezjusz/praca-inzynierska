@@ -24,6 +24,7 @@ COPY index.html ./
 COPY css/ ./css/
 COPY js/ ./js/
 COPY haslo/ ./haslo/
+COPY karty/ ./karty/
 COPY kolko-i-krzyzyk/ ./kolko-i-krzyzyk/
 COPY logowanie/ ./logowanie/
 COPY plansza/ ./plansza/

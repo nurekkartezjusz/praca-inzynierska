@@ -6,16 +6,13 @@ Aplikacja webowa z grami i systemem użytkowników.
 
 ## 📖 Spis treści
 
-1. [👥 Szybki start dla członków zespołu](#-szybki-start-dla-członków-zespołu)
-2. [🚀 Szybki start - Supabase (Python lokalnie)](#-szybki-start---supabase-zalecane)
-3. [🐳 Szybki start - Docker](#-szybki-start---docker)
-4. [Technologie](#-technologie)
-3. [Technologie](#-technologie)
-4. [Funkcje](#-funkcje)
-5. [Zarządzanie użytkownikami](#-zarządzanie-użytkownikami)
-6. [Rozwiązywanie problemów](#-rozwiązywanie-problemów)
-7. [API Dokumentacja](#-api-dokumentacja)
-8. [Notatki dla zespołu](#-notatki-dla-zespołu)
+1. [👥 Szybki start](#-szybki-start)
+2. [📦 Technologie](#-technologie)
+3. [🎮 Funkcje](#-funkcje)
+4. [🔒 Bezpieczeństwo](#-bezpieczeństwo)
+5. [📝 API Dokumentacja](#-api-dokumentacja)
+6. [🐛 Rozwiązywanie problemów](#-rozwiązywanie-problemów)
+7. [🔧 Deployment](#-deployment)
 
 ---
 
@@ -201,35 +198,44 @@ docker-compose down
 - **Backend:** FastAPI, SQLAlchemy, PostgreSQL/Supabase
 - **Frontend:** HTML, CSS, JavaScript (Vanilla)
 - **Autentykacja:** JWT tokens, Argon2 hashing
-- **Deployment:** Docker, Docker Compose
+- **Deployment:** Docker na Render.com
+- **Baza danych:** Supabase PostgreSQL
 
 ## 📁 Struktura projektu
 
 ```
-├── main.py              # API endpoints
-├── database.py          # Konfiguracja bazy
-├── models.py            # Modele SQLAlchemy
+├── main.py              # API endpoints + serwowanie frontendu
+├── database.py          # Konfiguracja połączenia z Supabase
+├── models.py            # Modele SQLAlchemy (User, Friendship, GameInvitation)
 ├── schemas.py           # Schematy Pydantic
 ├── auth.py              # Autentykacja JWT
 ├── requirements.txt     # Zależności Python
-├── docker-compose.yml   # Konfiguracja Docker
+├── Dockerfile           # Konfiguracja Docker
+├── index.html           # Strona główna
 ├── rejestracja/         # Strona rejestracji
 ├── logowanie/           # Strona logowania
+├── haslo/               # Resetowanie hasła
 ├── plansza/             # Dashboard użytkownika
-└── kolko-i-krzyzyk/     # Gra kółko i krzyżyk
+├── znajomi/             # System znajomych i zaproszeń do gier
+├── statystyki/          # Profil i statystyki użytkownika
+├── wybor awatara/       # Kreator awatara
+├── kolko-i-krzyzyk/     # Gra kółko i krzyżyk
 └── sudoku/              # Gra Sudoku
 ```
 
 ## 🎮 Funkcje
 
 - ✅ Rejestracja i logowanie użytkowników
-- ✅ **Resetowanie hasła** (z 6-cyfrowym kodem)
+- ✅ Resetowanie hasła (6-cyfrowy kod przez email)
 - ✅ JWT autentykacja
 - ✅ Bezpieczne hashowanie haseł (Argon2)
+- ✅ System znajomych (dodawanie, akceptacja, odrzucanie)
+- ✅ Zaproszenia do gier (Wielka Studencka Batalla, Kółko i krzyżyk, Sudoku)
+- ✅ Kreator awatara
+- ✅ Profil użytkownika i statystyki
 - ✅ Gra: Kółko i krzyżyk
 - ✅ Gra: Sudoku
-- 🔄 System awatarów
-- 🔄 Statystyki użytkownika
+- 🔄 Wielka Studencka Batalla (w rozwoju)
 
 ## 🔒 Bezpieczeństwo
 
@@ -247,43 +253,24 @@ Po uruchomieniu serwera, dokumentacja API dostępna pod:
 
 ---
 
-## 🛠️ Zarządzanie użytkownikami
 
-### Dodaj testowych użytkowników
-```bash
-# Lokalnie (Python):
-python add_test_users.py
-
-# Docker:
-docker exec -it inzynierka-backend python add_test_users.py
-```
-
-### Pokaż wszystkich użytkowników
-```bash
-# Lokalnie:
-python add_test_users.py --show
-
-# Docker:
-docker exec -it inzynierka-backend python add_test_users.py --show
-```
-
----
 
 ## 🐛 Rozwiązywanie problemów
 
 ### Port 8000 zajęty
 ```bash
-# Zatrzymaj Docker:
-docker-compose down
-
-# Lub znajdź i zabij proces:
+# Znajdź i zabij proces:
 netstat -ano | findstr ":8000"
 taskkill /PID NUMER_PID /F
 ```
 
-### ModuleNotFoundError: psycopg2
+### ModuleNotFoundError
 ```bash
-pip install psycopg2-binary
+# Upewnij się, że środowisko jest aktywowane:
+.venv\Scripts\activate
+
+# Przeinstaluj zależności:
+pip install -r requirements.txt
 ```
 
 ### Błąd połączenia z bazą
@@ -292,15 +279,9 @@ pip install psycopg2-binary
 - Test połączenia: `python -c "from database import engine; engine.connect(); print('OK!')"`
 
 ### Frontend nie łączy się z backendem
-- Backend musi być uruchomiony: http://localhost:8000
-- Sprawdź konsolę przeglądarki (F12) - jakie błędy?
-- Sprawdź CORS w `main.py`
-
-### Docker: Przebuduj obraz
-```bash
-docker-compose build --no-cache
-docker-compose up
-```
+- Backend musi być uruchomiony
+- Sprawdź konsolę przeglądarki (F12)
+- Sprawdź czy `API_URL` w plikach frontend jest ustawiony na `/api`
 
 ---
 
@@ -312,78 +293,45 @@ Po uruchomieniu backendu:
 
 ---
 
-## 🔧 Notatki dla zespołu
+## 🔧 Deployment
 
-### ⚠️ BEZPIECZEŃSTWO - Plik .env
+### Produkcja (Render.com)
 
-**NIE COMMITUJ pliku `.env` na GitHub!** 
+Aplikacja jest wdrożona na Render.com:
+- **URL:** https://wielka-studencka-batalia.onrender.com
+- **Deployment:** Automatyczny z GitHub (branch: main)
+- **Docker:** Tak (używa Dockerfile)
+- **Baza danych:** Supabase PostgreSQL
+- **Free Tier:** Serwis usypia po 15 min nieaktywności (cold start ~30s)
+
+### Zmienne środowiskowe na Render
+
+W dashboard Render dodaj te zmienne:
+```
+DATABASE_USER=postgres.eogfleacrxibjeobbxjr
+DATABASE_PASSWORD=...
+DATABASE_HOST=aws-1-eu-central-1.pooler.supabase.com
+DATABASE_PORT=5432
+DATABASE_NAME=postgres
+SECRET_KEY=...
+RESEND_API_KEY=...
+```
+
+### Podsumowanie architektury
+
+- **Frontend i Backend:** Serwowane z jednej domeny przez FastAPI
+- **API:** Dostępne pod ścieżką `/api/*`
+- **Statyczne pliki:** Serwowane przez FastAPI StaticFiles
+- **CORS:** Skonfigurowany dla wszystkich originów (development)
+
+### ⚠️ BEZPIECZEŃSTWO
+
+**NIE COMMITUJ pliku `.env` na GitHub!**
 - `.env` zawiera hasła i jest w `.gitignore`
-- Udostępniaj plik `.env` prywatnie (Teams, Discord, szyfrowany)
-- Każda osoba z zespołu musi mieć własną kopię `.env`
-
-**Zasady dla zespołu:**
-1. **NIE COMMITUJ `.env` na GitHub!** - Jest w `.gitignore`
-2. **NIE WKLEJAJ haseł na czacie publicznym** - Używaj prywatnych wiadomości
-3. **NIE ZMIENIAJ haseł bez powiadomienia** - Wszyscy muszą zaktualizować `.env`
-
-### Przydatne komendy dla zespołu
-
-**Backend:**
-```bash
-# Uruchom
-uvicorn main:app --reload
-
-# Sprawdź połączenie z bazą
-python -c "from database import engine; engine.connect(); print('OK!')"
-```
-
-**Użytkownicy:**
-```bash
-# Dodaj testowych użytkowników
-python add_test_users.py
-
-# Pokaż wszystkich
-python add_test_users.py --show
-```
-
-### Co zostało naprawione?
-
-**Problem:** Dane nie zapisywały się do Supabase.
-
-**Przyczyny:**
-1. Brakowało sterownika `psycopg2-binary` ✅ NAPRAWIONE
-2. Docker używał lokalnej bazy, nie Supabase
-
-**Rozwiązanie:**
-- ✅ `psycopg2-binary` dodane do `requirements.txt`
-- ✅ Wszystko (Python i Docker) używa Supabase przez plik `.env`
-
-### Kluczowe informacje
-
-1. **Baza danych:** Tylko Supabase (w chmurze)
-2. **Plik .env:** Wymagany zawsze (zawiera dane do Supabase)
-3. Backend musi działać na porcie 8000
-4. Frontend łączy się z `http://localhost:8000`
-
-### Zmiana adresu IP (Docker, dostęp z innych komputerów)
-
-1. Znajdź IP komputera: `ipconfig` (IPv4 Address)
-2. W `rejestracja/index.html` zmień:
-```javascript
-const API_URL = 'http://TWOJE_IP:8000';  // zamiast localhost
-```
-3. Inny komputer może wejść: `http://TWOJE_IP:5500/rejestracja/`
+- Zmienne produkcyjne dodaj bezpośrednio w Render Dashboard
 
 ---
 
 ## 📄 Licencja
 
 Projekt edukacyjny © 2026
-
-# Sprawdź typy
-mypy .
-```
-
-## 📄 Licencja
-
-Projekt edukacyjny
