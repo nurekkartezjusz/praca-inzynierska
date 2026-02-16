@@ -65,7 +65,7 @@ def read_root():
     return {"message": "Wielka Studencka Batalla API"}
 
 
-@api.post("/api/register", response_model=UserResponse)
+@api.post("/register", response_model=UserResponse)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     print("🔍 DEBUG: Otrzymano żądanie rejestracji")
     print(f"🔍 DEBUG: Email: {user_data.email}, Username: {user_data.username}")
@@ -101,7 +101,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@api.post("/api/login", response_model=Token)
+@api.post("/login", response_model=Token)
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
     # Znaleźć użytkownika po emailu
     user = db.query(User).filter(User.email == user_data.email).first()
@@ -122,7 +122,7 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@api.post("/api/verify-token")
+@api.post("/verify-token")
 def verify_token(token: str):
     email = decode_token(token)
     if email is None:
@@ -133,7 +133,7 @@ def verify_token(token: str):
     return {"email": email}
 
 
-@api.get("/api/me", response_model=UserResponse)
+@api.get("/me", response_model=UserResponse)
 def get_current_user(token: str, db: Session = Depends(get_db)):
     email = decode_token(token)
     if email is None:
@@ -152,7 +152,7 @@ def get_current_user(token: str, db: Session = Depends(get_db)):
     return user
 
 
-@api.post("/api/password-reset-request")
+@api.post("/password-reset-request")
 async def request_password_reset(reset_request: PasswordResetRequest, db: Session = Depends(get_db)):
     """Generuje token resetowania hasła i wysyła email"""
     user = db.query(User).filter(User.email == reset_request.email).first()
@@ -242,7 +242,7 @@ async def request_password_reset(reset_request: PasswordResetRequest, db: Sessio
         }
 
 
-@api.post("/api/password-reset")
+@api.post("/password-reset")
 def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
     """Resetuje hasło używając tokenu"""
     user = db.query(User).filter(User.reset_token == reset_data.token).first()
@@ -277,7 +277,7 @@ def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
     return {"message": "Hasło zostało zresetowane pomyślnie"}
 
 
-@api.post("/api/avatar")
+@api.post("/avatar")
 def update_avatar(avatar_data: AvatarUpdate, token: str, db: Session = Depends(get_db)):
     """Zapisuje awatar użytkownika"""
     email = decode_token(token)
@@ -303,7 +303,7 @@ def update_avatar(avatar_data: AvatarUpdate, token: str, db: Session = Depends(g
     return {"message": "Awatar zapisany pomyślnie"}
 
 
-@api.put("/api/profile")
+@api.put("/profile")
 def update_profile(profile_data: ProfileUpdate, token: str = Query(...), db: Session = Depends(get_db)):
     """Aktualizuje dane profilu użytkownika"""
     email = decode_token(token)
@@ -369,7 +369,7 @@ def update_profile(profile_data: ProfileUpdate, token: str = Query(...), db: Ses
     }
 
 
-@api.delete("/api/account")
+@api.delete("/account")
 def delete_account(
     token: str = Query(...),
     password: str = Query(...),
@@ -417,7 +417,7 @@ def delete_account(
 # ENDPOINTY DLA ZNAJOMYCH
 # ============================================
 
-@api.post("/api/friends/request")
+@api.post("/friends/request")
 def send_friend_request(
     friend_request: FriendRequest,
     token: str = Query(...),
@@ -495,7 +495,7 @@ def send_friend_request(
     }
 
 
-@api.get("/api/friends/requests")
+@api.get("/friends/requests")
 def get_friend_requests(
     token: str = Query(...),
     db: Session = Depends(get_db)
@@ -533,7 +533,7 @@ def get_friend_requests(
     return result
 
 
-@api.post("/api/friends/accept/{friendship_id}")
+@api.post("/friends/accept/{friendship_id}")
 def accept_friend_request(
     friendship_id: int,
     token: str = Query(...),
@@ -590,7 +590,7 @@ def accept_friend_request(
     }
 
 
-@api.post("/api/friends/reject/{friendship_id}")
+@api.post("/friends/reject/{friendship_id}")
 def reject_friend_request(
     friendship_id: int,
     token: str = Query(...),
@@ -643,7 +643,7 @@ def reject_friend_request(
     return {"message": "Odrzucono zaproszenie"}
 
 
-@api.get("/api/friends")
+@api.get("/friends")
 def get_friends(
     token: str = Query(...),
     db: Session = Depends(get_db)
@@ -687,7 +687,7 @@ def get_friends(
     return friends
 
 
-@api.delete("/api/friends/{friendship_id}")
+@api.delete("/friends/{friendship_id}")
 def remove_friend(
     friendship_id: int,
     token: str = Query(...),
@@ -733,7 +733,7 @@ def remove_friend(
     return {"message": "Usunięto znajomego"}
 
 
-@api.get("/api/users/search")
+@api.get("/users/search")
 def search_users(
     query: str = Query(..., min_length=1),
     token: str = Query(...),
@@ -797,7 +797,7 @@ def search_users(
 # Endpointy dla zaproszeń do gier
 # ============================================
 
-@api.post("/api/game-invitations/send")
+@api.post("/game-invitations/send")
 def send_game_invitation(
     invitation: GameInvitationCreate,
     token: str = Query(...),
@@ -871,7 +871,7 @@ def send_game_invitation(
     }
 
 
-@api.get("/api/game-invitations/received")
+@api.get("/game-invitations/received")
 def get_received_game_invitations(
     token: str = Query(...),
     db: Session = Depends(get_db)
@@ -916,7 +916,7 @@ def get_received_game_invitations(
     return results
 
 
-@api.post("/api/game-invitations/accept/{invitation_id}")
+@api.post("/game-invitations/accept/{invitation_id}")
 def accept_game_invitation(
     invitation_id: int,
     token: str = Query(...),
@@ -975,7 +975,7 @@ def accept_game_invitation(
     }
 
 
-@api.post("/api/game-invitations/decline/{invitation_id}")
+@api.post("/game-invitations/decline/{invitation_id}")
 def decline_game_invitation(
     invitation_id: int,
     token: str = Query(...),
@@ -1032,3 +1032,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
