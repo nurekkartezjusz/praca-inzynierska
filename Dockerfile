@@ -32,7 +32,7 @@ COPY regulamin/ ./regulamin/
 COPY rejestracja/ ./rejestracja/
 COPY statystyki/ ./statystyki/
 COPY sudoku/ ./sudoku/
-COPY "wybor awatara/" "./wybor awatara/"
+COPY ["wybor awatara/", "./wybor awatara/"]
 COPY zasady/ ./zasady/
 COPY znajomi/ ./znajomi/
 
