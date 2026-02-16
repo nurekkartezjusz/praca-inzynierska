@@ -1,0 +1,7 @@
+requirements.txt
+*.py
+__pycache__/
+.venv/
+.env
+Dockerfile
+docker-compose.yml

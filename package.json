@@ -1,0 +1,8 @@
+{
+  "name": "wielka-studencka-batalla-frontend",
+  "version": "1.0.0",
+  "description": "Frontend aplikacji Wielka Studencka Batalla",
+  "scripts": {
+    "build": "echo 'No build needed - static HTML/CSS/JS'"
+  }
+}
