@@ -19,6 +19,23 @@ RUN pip install -r requirements.txt
 # Kopiuj kod aplikacji
 COPY main.py database.py models.py schemas.py auth.py ./
 
+# Kopiuj wszystkie pliki frontendu
+COPY index.html ./
+COPY css/ ./css/
+COPY js/ ./js/
+COPY haslo/ ./haslo/
+COPY karty/ ./karty/
+COPY kolko-i-krzyzyk/ ./kolko-i-krzyzyk/
+COPY logowanie/ ./logowanie/
+COPY plansza/ ./plansza/
+COPY regulamin/ ./regulamin/
+COPY rejestracja/ ./rejestracja/
+COPY statystyki/ ./statystyki/
+COPY sudoku/ ./sudoku/
+COPY "wybor awatara/" "./wybor awatara/"
+COPY zasady/ ./zasady/
+COPY znajomi/ ./znajomi/
+
 # Expose port
 EXPOSE 8000
 
