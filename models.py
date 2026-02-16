@@ -11,6 +11,13 @@ class FriendshipStatus(enum.Enum):
     REJECTED = "rejected"
 
 
+class GameInvitationStatus(enum.Enum):
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    DECLINED = "declined"
+    EXPIRED = "expired"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -30,5 +37,17 @@ class Friendship(Base):
     requester_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     addressee_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status = Column(Enum(FriendshipStatus), default=FriendshipStatus.PENDING)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class GameInvitation(Base):
+    __tablename__ = "game_invitations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    inviter_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    invitee_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    game_type = Column(String, nullable=False)  # 'wielka-studencka-batalla', 'kolko-i-krzyzyk', 'sudoku'
+    status = Column(Enum(GameInvitationStatus), default=GameInvitationStatus.PENDING)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

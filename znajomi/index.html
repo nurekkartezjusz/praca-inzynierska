@@ -31,6 +31,12 @@
             <div id="friendRequests" class="user-list"></div>
         </div>
 
+        <!-- Zaproszenia do gier -->
+        <div class="game-invitations-section">
+            <h2>🎮 Zaproszenia do gier (<span id="gameInvitationCount">0</span>)</h2>
+            <div id="gameInvitations" class="user-list"></div>
+        </div>
+
         <!-- Lista znajomych -->
         <div class="friends-section">
             <h2>✅ Moi znajomi (<span id="friendCount">0</span>)</h2>
@@ -40,6 +46,33 @@
         <div class="actions">
             <button onclick="window.location.href='/'" class="btn-secondary">Powrót do strony głównej</button>
             <button onclick="logout()" class="btn-danger">Wyloguj</button>
+        </div>
+    </div>
+
+    <!-- Modal wyboru gry -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎮 Wybierz grę</h2>
+                <span class="close" onclick="closeGameModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Do jakiej gry chcesz zaprosić <strong id="invitedUsername"></strong>?</p>
+                <div class="game-options">
+                    <div class="game-card" onclick="selectGame('wielka-studencka-batalla')">
+                        <div class="game-icon">🎲</div>
+                        <div class="game-name">Wielka Studencka Batalla</div>
+                    </div>
+                    <div class="game-card" onclick="selectGame('kolko-i-krzyzyk')">
+                        <div class="game-icon">❌⭕</div>
+                        <div class="game-name">Kółko i krzyżyk</div>
+                    </div>
+                    <div class="game-card" onclick="selectGame('sudoku')">
+                        <div class="game-icon">🔢</div>
+                        <div class="game-name">Sudoku</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

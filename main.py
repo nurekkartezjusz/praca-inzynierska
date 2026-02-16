@@ -7,11 +7,12 @@ import os
 import resend
 
 from database import engine, get_db, Base
-from models import User, Friendship, FriendshipStatus
+from models import User, Friendship, FriendshipStatus, GameInvitation, GameInvitationStatus
 from schemas import (
     UserCreate, UserLogin, UserResponse, Token,
     PasswordResetRequest, PasswordReset, AvatarUpdate, ProfileUpdate,
-    FriendRequest, FriendshipResponse, FriendResponse
+    FriendRequest, FriendshipResponse, FriendResponse,
+    GameInvitationCreate, GameInvitationResponse
 )
 from auth import (
     get_password_hash,
@@ -785,6 +786,234 @@ def search_users(
         })
     
     return results
+
+
+# ============================================
+# Endpointy dla zaproszeń do gier
+# ============================================
+
+@app.post("/api/game-invitations/send")
+def send_game_invitation(
+    invitation: GameInvitationCreate,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Wysyła zaproszenie do gry"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    inviter = db.query(User).filter(User.email == email).first()
+    if not inviter:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Znajdź użytkownika, do którego wysyłamy zaproszenie
+    invitee = db.query(User).filter(User.username == invitation.invitee_username).first()
+    if not invitee:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Sprawdź czy użytkownicy są znajomymi
+    friendship = db.query(Friendship).filter(
+        ((Friendship.requester_id == inviter.id) & (Friendship.addressee_id == invitee.id)) |
+        ((Friendship.requester_id == invitee.id) & (Friendship.addressee_id == inviter.id))
+    ).first()
+    
+    if not friendship or friendship.status != FriendshipStatus.ACCEPTED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Możesz zapraszać tylko znajomych"
+        )
+    
+    # Sprawdź czy nie ma już aktywnego zaproszenia
+    existing_invitation = db.query(GameInvitation).filter(
+        GameInvitation.inviter_id == inviter.id,
+        GameInvitation.invitee_id == invitee.id,
+        GameInvitation.status == GameInvitationStatus.PENDING
+    ).first()
+    
+    if existing_invitation:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Masz już aktywne zaproszenie do tego użytkownika"
+        )
+    
+    # Stwórz zaproszenie
+    new_invitation = GameInvitation(
+        inviter_id=inviter.id,
+        invitee_id=invitee.id,
+        game_type=invitation.game_type,
+        status=GameInvitationStatus.PENDING
+    )
+    
+    db.add(new_invitation)
+    db.commit()
+    db.refresh(new_invitation)
+    
+    print(f"🎮 Zaproszenie do gry wysłane: {inviter.username} -> {invitee.username} ({invitation.game_type})")
+    
+    return {
+        "message": f"Zaproszenie do gry wysłane do {invitee.username}",
+        "invitation_id": new_invitation.id
+    }
+
+
+@app.get("/api/game-invitations/received")
+def get_received_game_invitations(
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Pobiera otrzymane zaproszenia do gier"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz wszystkie oczekujące zaproszenia
+    invitations = db.query(GameInvitation).filter(
+        GameInvitation.invitee_id == user.id,
+        GameInvitation.status == GameInvitationStatus.PENDING
+    ).order_by(GameInvitation.created_at.desc()).all()
+    
+    results = []
+    for inv in invitations:
+        inviter = db.query(User).filter(User.id == inv.inviter_id).first()
+        results.append({
+            "id": inv.id,
+            "inviter": {
+                "id": inviter.id,
+                "username": inviter.username,
+                "email": inviter.email,
+                "avatar": inviter.avatar
+            },
+            "game_type": inv.game_type,
+            "status": inv.status.value,
+            "created_at": inv.created_at
+        })
+    
+    return results
+
+
+@app.post("/api/game-invitations/accept/{invitation_id}")
+def accept_game_invitation(
+    invitation_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Akceptuje zaproszenie do gry"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz zaproszenie
+    invitation = db.query(GameInvitation).filter(GameInvitation.id == invitation_id).first()
+    if not invitation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Zaproszenie nie znalezione"
+        )
+    
+    # Sprawdź czy użytkownik jest odbiorcą zaproszenia
+    if invitation.invitee_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="To nie Twoje zaproszenie"
+        )
+    
+    # Sprawdź czy zaproszenie jest w statusie PENDING
+    if invitation.status != GameInvitationStatus.PENDING:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Zaproszenie nie jest już aktywne"
+        )
+    
+    # Zaktualizuj status
+    invitation.status = GameInvitationStatus.ACCEPTED
+    invitation.updated_at = datetime.utcnow()
+    db.commit()
+    
+    inviter = db.query(User).filter(User.id == invitation.inviter_id).first()
+    
+    print(f"✅ Zaproszenie zaakceptowane: {user.username} zaakceptował zaproszenie od {inviter.username}")
+    
+    return {
+        "message": "Zaproszenie zaakceptowane",
+        "game_type": invitation.game_type,
+        "inviter": inviter.username
+    }
+
+
+@app.post("/api/game-invitations/decline/{invitation_id}")
+def decline_game_invitation(
+    invitation_id: int,
+    token: str = Query(...),
+    db: Session = Depends(get_db)
+):
+    """Odrzuca zaproszenie do gry"""
+    email = decode_token(token)
+    if email is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Nieprawidłowy token"
+        )
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Użytkownik nie znaleziony"
+        )
+    
+    # Pobierz zaproszenie
+    invitation = db.query(GameInvitation).filter(GameInvitation.id == invitation_id).first()
+    if not invitation:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Zaproszenie nie znalezione"
+        )
+    
+    # Sprawdź czy użytkownik jest odbiorcą zaproszenia
+    if invitation.invitee_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="To nie Twoje zaproszenie"
+        )
+    
+    # Zaktualizuj status
+    invitation.status = GameInvitationStatus.DECLINED
+    invitation.updated_at = datetime.utcnow()
+    db.commit()
+    
+    print(f"❌ Zaproszenie odrzucone: {user.username} odrzucił zaproszenie")
+    
+    return {"message": "Zaproszenie odrzucone"}
 
 
 if __name__ == "__main__":

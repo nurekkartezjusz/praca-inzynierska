@@ -94,3 +94,21 @@ class FriendResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Schematy dla zaproszeń do gier
+class GameInvitationCreate(BaseModel):
+    invitee_username: str
+    game_type: str  # 'wielka-studencka-batalla', 'kolko-i-krzyzyk', 'sudoku'
+
+
+class GameInvitationResponse(BaseModel):
+    id: int
+    inviter: UserResponse
+    invitee: UserResponse
+    game_type: str
+    status: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

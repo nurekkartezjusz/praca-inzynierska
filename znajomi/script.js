@@ -161,7 +161,10 @@ function createUserCard(user, type) {
         `;
     } else if (type === 'friend') {
         status = '<span class="status friends">Znajomy</span>';
-        actions = `<button class="btn-danger-small" onclick="removeFriend(${user.friendship_id}, '${user.username}')">Usuń</button>`;
+        actions = `
+            <button class="btn-invite-game" onclick="inviteToGame('${user.username}')">🎮 Zaproś do gry</button>
+            <button class="btn-danger-small" onclick="removeFriend(${user.friendship_id}, '${user.username}')">Usuń</button>
+        `;
     }
 
     return `
@@ -256,6 +259,67 @@ async function rejectFriendRequest(friendshipId) {
     }
 }
 
+// Zmienna przechowująca użytkownika do zaproszenia
+let currentInvitedUser = null;
+
+// Zaproś znajomego do gry - otwórz modal
+function inviteToGame(username) {
+    currentInvitedUser = username;
+    document.getElementById('invitedUsername').textContent = username;
+    const modal = document.getElementById('gameModal');
+    modal.style.display = 'flex';
+    modal.classList.add('show');
+}
+
+// Zamknij modal wyboru gry
+function closeGameModal() {
+    const modal = document.getElementById('gameModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+    currentInvitedUser = null;
+}
+
+// Wybierz grę i wyślij zaproszenie
+async function selectGame(game) {
+    if (!currentInvitedUser) return;
+    
+    const gameNames = {
+        'wielka-studencka-batalla': 'Wielka Studencka Batalla',
+        'kolko-i-krzyzyk': 'Kółko i krzyżyk',
+        'sudoku': 'Sudoku'
+    };
+    
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/api/game-invitations/send?token=${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                invitee_username: currentInvitedUser,
+                game_type: game
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || 'Błąd wysyłania zaproszenia');
+        }
+
+        showToast(`🎮 Zaproszenie do gry "${gameNames[game]}" zostało wysłane do ${currentInvitedUser}!`, 'success');
+        closeGameModal();
+        loadGameInvitations(); // Odśwież listę zaproszeń
+    } catch (error) {
+        console.error('Błąd:', error);
+        showToast(error.message, 'error');
+        closeGameModal();
+    }
+}
+
 // Usuń znajomego
 async function removeFriend(friendshipId, username) {
     if (!confirm(`Czy na pewno chcesz usunąć ${username} ze znajomych?`)) {
@@ -283,6 +347,137 @@ async function removeFriend(friendshipId, username) {
     }
 }
 
+// ============================================
+// Zaproszenia do gier
+// ============================================
+
+// Pobierz otrzymane zaproszenia do gier
+async function loadGameInvitations() {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/api/game-invitations/received?token=${token}`);
+        
+        if (!response.ok) {
+            throw new Error('Błąd pobierania zaproszeń do gier');
+        }
+
+        const invitations = await response.json();
+        const invitationsDiv = document.getElementById('gameInvitations');
+        const countSpan = document.getElementById('gameInvitationCount');
+        
+        if (countSpan) {
+            countSpan.textContent = invitations.length;
+        }
+
+        if (!invitationsDiv) return;
+
+        if (invitations.length === 0) {
+            invitationsDiv.innerHTML = '<div class="empty-state">Brak zaproszeń do gier</div>';
+            return;
+        }
+
+        const gameNames = {
+            'wielka-studencka-batalla': 'Wielka Studencka Batalla',
+            'kolko-i-krzyzyk': 'Kółko i krzyżyk',
+            'sudoku': 'Sudoku'
+        };
+
+        invitationsDiv.innerHTML = invitations.map(inv => {
+            const initials = getInitials(inv.inviter.username);
+            return `
+                <div class="user-card game-invitation-card">
+                    <div class="user-info">
+                        <div class="avatar-preview">${initials}</div>
+                        <div class="user-details">
+                            <div class="username">${inv.inviter.username}</div>
+                            <div class="game-type">zaprasza Cię do gry: <strong>${gameNames[inv.game_type]}</strong></div>
+                            <div class="invitation-time">${formatTime(inv.created_at)}</div>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-success" onclick="acceptGameInvitation(${inv.id}, '${inv.game_type}')">Zagraj</button>
+                        <button class="btn-danger-small" onclick="declineGameInvitation(${inv.id})">Odrzuć</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        console.error('Błąd:', error);
+        showToast('Błąd pobierania zaproszeń do gier', 'error');
+    }
+}
+
+// Formatuj czas
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Teraz';
+    if (diffMins < 60) return `${diffMins} min temu`;
+    
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} godz. temu`;
+    
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} dni temu`;
+}
+
+// Zaakceptuj zaproszenie do gry
+async function acceptGameInvitation(invitationId, gameType) {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/api/game-invitations/accept/${invitationId}?token=${token}`, {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || 'Błąd akceptowania zaproszenia');
+        }
+
+        showToast(`✅ Zaproszenie zaakceptowane! Przechodzę do gry...`, 'success');
+        
+        // Przekieruj do odpowiedniej gry
+        const gameUrls = {
+            'wielka-studencka-batalla': '/plansza/',
+            'kolko-i-krzyzyk': '/kolko-i-krzyzyk/',
+            'sudoku': '/sudoku/'
+        };
+        
+        setTimeout(() => {
+            window.location.href = gameUrls[gameType] || '/plansza/';
+        }, 1500);
+    } catch (error) {
+        console.error('Błąd:', error);
+        showToast(error.message, 'error');
+    }
+}
+
+// Odrzuć zaproszenie do gry
+async function declineGameInvitation(invitationId) {
+    try {
+        const token = getToken();
+        const response = await fetch(`${API_URL}/api/game-invitations/decline/${invitationId}?token=${token}`, {
+            method: 'POST'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || 'Błąd odrzucania zaproszenia');
+        }
+
+        showToast(data.message, 'success');
+        loadGameInvitations();
+    } catch (error) {
+        console.error('Błąd:', error);
+        showToast(error.message, 'error');
+    }
+}
+
 // Wyszukiwanie na Enter
 document.getElementById('searchInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
@@ -303,3 +498,17 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 checkAuth();
 loadFriendRequests();
 loadFriends();
+loadGameInvitations();
+
+// Auto-odświeżanie zaproszeń co 30 sekund
+setInterval(() => {
+    loadGameInvitations();
+}, 30000);
+
+// Zamknij modal po kliknięciu poza nim
+window.onclick = function(event) {
+    const modal = document.getElementById('gameModal');
+    if (event.target === modal) {
+        closeGameModal();
+    }
+};
