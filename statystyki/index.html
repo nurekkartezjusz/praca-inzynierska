@@ -164,7 +164,7 @@
         }
 
         try {
-            const response = await fetch(`${API_URL}/api/me?token=${token}`);
+            const response = await fetch(`${API_URL}/me?token=${token}`);
             
             if (response.ok) {
                 const userData = await response.json();
@@ -328,7 +328,7 @@
                 updateData.new_password = newPassword;
             }
             
-            const response = await fetch(`${API_URL}/api/profile?token=${token}`, {
+            const response = await fetch(`${API_URL}/profile?token=${token}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -399,7 +399,7 @@
         
         try {
             const token = localStorage.getItem('access_token');
-            const response = await fetch(`${API_URL}/api/account?token=${token}&password=${encodeURIComponent(password)}`, {
+            const response = await fetch(`${API_URL}/account?token=${token}&password=${encodeURIComponent(password)}`, {
                 method: 'DELETE'
             });
             

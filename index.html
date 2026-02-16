@@ -89,7 +89,7 @@
 
             try {
                 // Sprawdź czy token jest ważny
-                const response = await fetch(`${API_URL}/api/me?token=${token}`);
+                const response = await fetch(`${API_URL}/me?token=${token}`);
                 
                 if (response.ok) {
                     const userData = await response.json();
