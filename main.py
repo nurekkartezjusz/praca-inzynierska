@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from datetime import timedelta, datetime, timezone
 import secrets
@@ -25,7 +26,11 @@ from auth import (
 # Tworzenie tabel w bazie danych
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Wielka Studencka Batalla - API", version="1.0.0")
+# Aplikacja główna
+app = FastAPI(title="Wielka Studencka Batalla", version="1.0.0")
+
+# API Router z prefixem
+api = FastAPI(title="Wielka Studencka Batalla - API", version="1.0.0")
 
 # Konfiguracja Resend
 resend.api_key = os.getenv("RESEND_API_KEY", "")
@@ -45,7 +50,7 @@ origins = [
     "file://",
 ]
 
-app.add_middleware(
+api.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Pozwól wszystkim origin podczas developmentu
     allow_credentials=True,
@@ -55,12 +60,12 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@api.get("/")
 def read_root():
     return {"message": "Wielka Studencka Batalla API"}
 
 
-@app.post("/api/register", response_model=UserResponse)
+@api.post("/api/register", response_model=UserResponse)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     print("🔍 DEBUG: Otrzymano żądanie rejestracji")
     print(f"🔍 DEBUG: Email: {user_data.email}, Username: {user_data.username}")
@@ -96,7 +101,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     return new_user
 
 
-@app.post("/api/login", response_model=Token)
+@api.post("/api/login", response_model=Token)
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
     # Znaleźć użytkownika po emailu
     user = db.query(User).filter(User.email == user_data.email).first()
@@ -117,7 +122,7 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/api/verify-token")
+@api.post("/api/verify-token")
 def verify_token(token: str):
     email = decode_token(token)
     if email is None:
@@ -128,7 +133,7 @@ def verify_token(token: str):
     return {"email": email}
 
 
-@app.get("/api/me", response_model=UserResponse)
+@api.get("/api/me", response_model=UserResponse)
 def get_current_user(token: str, db: Session = Depends(get_db)):
     email = decode_token(token)
     if email is None:
@@ -147,7 +152,7 @@ def get_current_user(token: str, db: Session = Depends(get_db)):
     return user
 
 
-@app.post("/api/password-reset-request")
+@api.post("/api/password-reset-request")
 async def request_password_reset(reset_request: PasswordResetRequest, db: Session = Depends(get_db)):
     """Generuje token resetowania hasła i wysyła email"""
     user = db.query(User).filter(User.email == reset_request.email).first()
@@ -237,7 +242,7 @@ async def request_password_reset(reset_request: PasswordResetRequest, db: Sessio
         }
 
 
-@app.post("/api/password-reset")
+@api.post("/api/password-reset")
 def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
     """Resetuje hasło używając tokenu"""
     user = db.query(User).filter(User.reset_token == reset_data.token).first()
@@ -272,7 +277,7 @@ def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
     return {"message": "Hasło zostało zresetowane pomyślnie"}
 
 
-@app.post("/api/avatar")
+@api.post("/api/avatar")
 def update_avatar(avatar_data: AvatarUpdate, token: str, db: Session = Depends(get_db)):
     """Zapisuje awatar użytkownika"""
     email = decode_token(token)
@@ -298,7 +303,7 @@ def update_avatar(avatar_data: AvatarUpdate, token: str, db: Session = Depends(g
     return {"message": "Awatar zapisany pomyślnie"}
 
 
-@app.put("/api/profile")
+@api.put("/api/profile")
 def update_profile(profile_data: ProfileUpdate, token: str = Query(...), db: Session = Depends(get_db)):
     """Aktualizuje dane profilu użytkownika"""
     email = decode_token(token)
@@ -364,7 +369,7 @@ def update_profile(profile_data: ProfileUpdate, token: str = Query(...), db: Ses
     }
 
 
-@app.delete("/api/account")
+@api.delete("/api/account")
 def delete_account(
     token: str = Query(...),
     password: str = Query(...),
@@ -412,7 +417,7 @@ def delete_account(
 # ENDPOINTY DLA ZNAJOMYCH
 # ============================================
 
-@app.post("/api/friends/request")
+@api.post("/api/friends/request")
 def send_friend_request(
     friend_request: FriendRequest,
     token: str = Query(...),
@@ -490,7 +495,7 @@ def send_friend_request(
     }
 
 
-@app.get("/api/friends/requests")
+@api.get("/api/friends/requests")
 def get_friend_requests(
     token: str = Query(...),
     db: Session = Depends(get_db)
@@ -528,7 +533,7 @@ def get_friend_requests(
     return result
 
 
-@app.post("/api/friends/accept/{friendship_id}")
+@api.post("/api/friends/accept/{friendship_id}")
 def accept_friend_request(
     friendship_id: int,
     token: str = Query(...),
@@ -585,7 +590,7 @@ def accept_friend_request(
     }
 
 
-@app.post("/api/friends/reject/{friendship_id}")
+@api.post("/api/friends/reject/{friendship_id}")
 def reject_friend_request(
     friendship_id: int,
     token: str = Query(...),
@@ -638,7 +643,7 @@ def reject_friend_request(
     return {"message": "Odrzucono zaproszenie"}
 
 
-@app.get("/api/friends")
+@api.get("/api/friends")
 def get_friends(
     token: str = Query(...),
     db: Session = Depends(get_db)
@@ -682,7 +687,7 @@ def get_friends(
     return friends
 
 
-@app.delete("/api/friends/{friendship_id}")
+@api.delete("/api/friends/{friendship_id}")
 def remove_friend(
     friendship_id: int,
     token: str = Query(...),
@@ -728,7 +733,7 @@ def remove_friend(
     return {"message": "Usunięto znajomego"}
 
 
-@app.get("/api/users/search")
+@api.get("/api/users/search")
 def search_users(
     query: str = Query(..., min_length=1),
     token: str = Query(...),
@@ -792,7 +797,7 @@ def search_users(
 # Endpointy dla zaproszeń do gier
 # ============================================
 
-@app.post("/api/game-invitations/send")
+@api.post("/api/game-invitations/send")
 def send_game_invitation(
     invitation: GameInvitationCreate,
     token: str = Query(...),
@@ -866,7 +871,7 @@ def send_game_invitation(
     }
 
 
-@app.get("/api/game-invitations/received")
+@api.get("/api/game-invitations/received")
 def get_received_game_invitations(
     token: str = Query(...),
     db: Session = Depends(get_db)
@@ -911,7 +916,7 @@ def get_received_game_invitations(
     return results
 
 
-@app.post("/api/game-invitations/accept/{invitation_id}")
+@api.post("/api/game-invitations/accept/{invitation_id}")
 def accept_game_invitation(
     invitation_id: int,
     token: str = Query(...),
@@ -970,7 +975,7 @@ def accept_game_invitation(
     }
 
 
-@app.post("/api/game-invitations/decline/{invitation_id}")
+@api.post("/api/game-invitations/decline/{invitation_id}")
 def decline_game_invitation(
     invitation_id: int,
     token: str = Query(...),
@@ -1014,6 +1019,13 @@ def decline_game_invitation(
     print(f"❌ Zaproszenie odrzucone: {user.username} odrzucił zaproszenie")
     
     return {"message": "Zaproszenie odrzucone"}
+
+
+# Montowanie API pod /api
+app.mount("/api", api)
+
+# Serwowanie plików statycznych (frontend)
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
 
 
 if __name__ == "__main__":
