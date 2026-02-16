@@ -82,7 +82,7 @@ window.onload = () => {
 async function startGame() {
     const tutorial = document.getElementById("tutorial").checked;
 
-    const API_URL = 'http://localhost:8000';
+    const API_URL = 'https://wielka-studencka-batalia.onrender.com';
     const token = localStorage.getItem('access_token');
 
     if (!token) {

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000';
+const API_URL = 'https://wielka-studencka-batalia.onrender.com';
 
 // Sprawdź czy użytkownik jest zalogowany
 function checkAuth() {
