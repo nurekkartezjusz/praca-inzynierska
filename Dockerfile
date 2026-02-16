@@ -22,5 +22,5 @@ COPY main.py database.py models.py schemas.py auth.py ./
 # Expose port
 EXPOSE 8000
 
-# Run aplikacja
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run aplikacja (Render używa zmiennej $PORT)
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
