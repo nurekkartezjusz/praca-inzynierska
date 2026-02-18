@@ -375,7 +375,6 @@ body {
 }
 
 /* Style do wyboru klasy */
-
 .overlay{
   position: fixed;
   inset: 0;
@@ -403,7 +402,6 @@ body {
   font-size: 20px;
   text-align: center;
   font-family: var(--class-font);
-  margin: 0 0 15px 0;
   text-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
 .cards-wrapper{
@@ -430,17 +428,21 @@ body {
 .front, .back{
   background-color: #5267c7;
   padding: 17px 0;
-  text-align: center;
   box-sizing: border-box;
   gap: 8px;
   position: absolute;
   backface-visibility: hidden;
 }
-.front h2{
+.front h2, .back h2{
   color: white;
   font-size: 12px;
   text-align: center;
   font-family: var(--class-font);
+}
+.front{
+  text-align: center;
+}
+.front h2{
   padding: 0 14px;
 }
 .front p{
@@ -460,7 +462,29 @@ body {
   height: 300px;
   width: 240px;
   transform: rotateY(180deg);
+  padding: 0 10px;
 }
+.back p{
+  color: white;
+  font-size: 12px;
+  line-height: 14px;
+  font-family: var(--class-font);
+}
+.back .stats p{
+    margin: 3px 0;
+}
+.stars, .hearts{
+  display: flex;
+  height: 25px;
+  gap: 5px;
+}
+.back .cytat{
+  text-align: center;
+}
+.back h2{
+  padding-top: 18px;
+}
+
 .buttons{
   display: flex;
   justify-content: center;
