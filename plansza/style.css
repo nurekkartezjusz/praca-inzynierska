@@ -375,6 +375,7 @@ body {
 }
 
 /* Style do wyboru klasy */
+
 .overlay{
   position: fixed;
   inset: 0;
@@ -384,12 +385,10 @@ body {
   justify-content: center;
   align-items: center;
 }
-.popup{
+.class-popup{
   height: 440px;
   width: 863px;
-  background-color: #667EEA;
-  display: flex;
-  flex-direction: column;
+  background-color: #667eea;
   cursor: pointer;
 }
 .inside{
@@ -397,43 +396,54 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
   padding: 10px;
 }
-h1{
+.inside h1{
   color: #D91D4F;
   font-size: 20px;
   text-align: center;
   font-family: var(--class-font);
   margin: 0 0 15px 0;
-  text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  text-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
-.cards{
+.cards-wrapper{
   display: flex;
-  gap: 5px;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 10px;
 }
-.card{
-  display: flex;
-  flex-direction: column;
+.container{
   height: 300px;
   width: 240px;
-  background-color: #5267C7;
+}
+.card{
+  height: 100%;
+  width: 100%;;
+  position: relative;
+  transition: transform 1500ms;
+  transform-style: preserve-3d;
+}
+.container:hover > .card{
+    cursor: pointer;
+    transform: rotateY(180deg);
+}
+.front, .back{
+  background-color: #5267c7;
   padding: 17px 0;
-  color: white;
   text-align: center;
   box-sizing: border-box;
   gap: 8px;
+  position: absolute;
+  backface-visibility: hidden;
 }
-.card h2{
+.front h2{
   color: white;
   font-size: 12px;
   text-align: center;
   font-family: var(--class-font);
+  padding: 0 14px;
 }
-.card p{
+.front p{
   color: white;
   font-size: 12px;
   line-height: 14px;
@@ -441,10 +451,15 @@ h1{
   font-family: var(--class-font);
   padding: 0 14px;
 }
-.card img{
+.front img{
   width: auto;
   height: 180px;
   object-fit: contain;
+}
+.back{
+  height: 300px;
+  width: 240px;
+  transform: rotateY(180deg);
 }
 .buttons{
   display: flex;
@@ -460,35 +475,14 @@ h1{
   padding: 8px 20px;
   margin-top: 15px;
   border: 2px solid black;
-  box-shadow: 0 10px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 4px rgba(0,0,0,0.25);
   font-size: 12px;
-  background: linear-gradient( rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2) ), #D91D4F;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
+  transition: transform 0.15s ease, box-shadow 0.15 ease;
 }
 .class-btn:active{
-  transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0, 0, 0, 0.25);
+  transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0,0,0,0.25);
 }
 .class-btn:hover{
-  transform: scale(0.97) translateY(2px); box-shadow: 0 8px 3px rgba(0, 0, 0, 0.25);
+  transform: scale(0.97) translateY(2px); box-shadow: 0 8px 3px rgba(0,0,0,0.25);
 }
-
-@media(max-width: 900px){
-  .card{
-    width: calc(50% - 10px);
-    display: none;
-  }
-  .buttons{
-    display: none;
-  }
-}
-@media(max-width: 600px){
-  .card{
-    width: 100%;
-    display: none;
-  }
-  .buttons{
-    display: none;
-  }
-}
-
-
