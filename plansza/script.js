@@ -103,3 +103,16 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Czy jesteś pewien swojego wyboru
+document.addEventListener("DOMContentLoaded", () => {
+
+  document.getElementById('btn-sportowiec').addEventListener("click", () => {
+    alert("Wybrales sportowca");
+  });
+  document.getElementById('btn-leniuch').addEventListener("click", () => {
+    alert("Wybrales leniucha");
+  });
+  document.getElementById('btn-madrala').addEventListener("click", () => {
+    alert("Wybrales madrale");
+  });
+
+});
