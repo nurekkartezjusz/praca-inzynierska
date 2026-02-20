@@ -32,13 +32,13 @@
     ⛶ Pełny ekran
   </button>
 
-  <!-- Modal dla mini gier -->
-  <div class="game-modal" id="game-modal">
-    <div class="game-modal-content">
-      <div class="game-modal-header">
-        <h3 id="game-title">Mini Gra</h3>
-        <button class="game-modal-close" onclick="closeGame()">×</button>
-      </div>
+    <!-- Modal dla mini gier -->
+    <div class="game-modal" id="game-modal">
+      <div class="game-modal-content">
+        <div class="game-modal-header">
+          <h3 id="game-title">Mini Gra</h3>
+          <button class="game-modal-close" onclick="closeGame()">×</button>
+        </div>
       <iframe id="game-iframe" class="game-modal-iframe"></iframe>
     </div>
   </div>
@@ -46,252 +46,337 @@
   <script src="script.js"></script>
 
   <div class="board">
+        <!--Piętro I-->
+        <div class="cell c0 start">Start I</div>
+        <div class="cell c1 sala">Sala</div>
+        <div class="cell c2 sala">Sala</div>
+        <div class="cell c3 lazienka">Łazienka</div>
+        <div class="cell c4 aula">Aula</div>
+        <div class="cell c5 sala">Sala</div>
+        <div class="cell c6 dziekanat">Dziekanat</div>
+        <div class="cell c7 sala">Sala</div>
+        <div class="cell c8 sala">Sala</div>
+        <div class="cell c9 lazienka">Łazienka</div>
+        <div class="cell c10 sala">Sala</div>
+        <div class="cell c11 praktyki">Praktyki</div>
+        <div class="cell c12 sala">Sala</div>
+        <div class="cell c13 sala">Sala</div>
+        <div class="cell c14 lazienka">Łazienka</div>
+        <div class="cell c15 szansa">Szansa</div>
+        <div class="cell c16 aula">Aula</div>
+        <div class="cell c17 biblioteka">Biblioteka</div>
+        <div class="cell c18 sala">Sala</div>
+        <div class="cell c19 strefarelaksu">Strefa relaksu</div> <!-- Poprawia szczescie gracza -->
+        <div class="cell c20 sala">Sala</div>
+        <div class="cell c21 lazienka">Łazienka</div>
+        <div class="cell c22 sala">Sala</div>
+        <div class="cell c23 aula">Aula</div>
+        <div class="cell c24 lazienka">Łazienka</div>
+        <div class="cell c25 sala">Sala</div>
+        <div class="cell c26 dziekanat">Dziekanat</div>
+        <div class="cell c27 sala">Sala</div>
+        <div class="cell c28 sala">Sala</div>
+        <div class="cell c29 lazienka">Łazienka</div>
+        <div class="cell c30 praktyki">Praktyki</div>
+        <div class="cell c31 sala">Sala</div>
+        <div class="cell c32 sala">Sala</div>
+        <div class="cell c33 szansa">Szansa</div>
+        <div class="cell c34 lazienka">Łazienka</div>
+        <div class="cell c35 aula">Aula</div>
+        <div class="cell c36 sala">Sala</div>
+        <div class="cell c37 biblioteka">Biblioteka</div>
+        <div class="cell c38 szansa">Szansa</div> 
+        <div class="cell c39 dziekanat">Dziekanat</div>
+        <div class="cell c40 sala">Sala</div>
+        <div class="cell c41 aula">Aula</div>
+        <div class="cell c42 szansa">Szansa</div>
+        <div class="cell c43 sala">Sala</div>
+        <div class="cell c44 sala">Sala</div>
+        <div class="cell c45 lazienka">Łazienka</div>
+        <div class="cell c46 sala">Sala</div>
+        <div class="cell c47 praktyki">Praktyki</div>
+        <div class="cell c48 sala">Sala</div>
+        <div class="cell c49 sala">Sala</div>
+        <!--Piętro II-->
+        <div class="cell c50 start">Start II</div>
+        <div class="cell c51 sala">Sala</div>
+        <div class="cell c52 lazienka">Łazienka</div>
+        <div class="cell c53 sala">Sala</div>
+        <div class="cell c54 sala">Sala</div>
+        <div class="cell c55 dziekanat">Dziekanat</div>
+        <div class="cell c56 szansa">Szansa</div>
+        <div class="cell c57 aula">Aula</div>
+        <div class="cell c58 sala">Sala</div>
+        <div class="cell c59 sala">Sala</div>
+        <div class="cell c60 lazienka">Łazienka</div>
+        <div class="cell c61 sala">Sala</div>
+        <div class="cell c62 praktyki">Praktyki</div>
+        <div class="cell c63 sala">Sala</div>
+        <div class="cell c64 sala">Sala</div>
+        <div class="cell c65 biblioteka">Biblioteka</div>
+        <div class="cell c66 sala">Sala</div>
+        <div class="cell c67 aula">Aula</div>
+        <div class="cell c68 sala">Sala</div>
+        <div class="cell c69 aula">Aula</div>
+        <div class="cell c70 lazienka">Łazienka</div>
+        <div class="cell c71 szansa">Szansa</div>
+        <div class="cell c72 sala">Sala</div>
+        <div class="cell c73 dziekanat">Dziekanat</div>
+        <div class="cell c74 sala">Sala</div>
+        <div class="cell c75 sala">Sala</div>
+        <div class="cell c76 aula">Aula</div>
+        <div class="cell c77 lazienka">Łazienka</div>
+        <div class="cell c78 biblioteka">Biblioteka</div>
+        <div class="cell c79 strefarelaksu">Strefa relaksu</div>
+        <div class="cell c80 sala">Sala</div>
+        <div class="cell c81 aula">Aula</div>
+        <div class="cell c82 sala">Sala</div>
+        <div class="cell c83 szansa">Szansa</div>
+        <!--Piętro III-->
+        <div class="cell c84 start">Start III</div>
+        <div class="cell c85 sala">Sala</div>
+        <div class="cell c86 praktyki">Praktyki</div>
+        <div class="cell c87 aula">Aula</div>
+        <div class="cell c88 dziekanat">Dziekanat</div>
+        <div class="cell c89 sala">Sala</div>
+        <div class="cell c90 szansa">Szansa</div>
+        <div class="cell c91 sala">Sala</div>
+        <div class="cell c92 aula">Aula</div>
+        <div class="cell c93 lazienka">Łazienka</div>
+        <div class="cell c94 sala">Sala</div>
+        <div class="cell c95 biblioteka">Biblioteka</div>
+        <div class="cell c96 sala">Sala</div>
+        <div class="cell c97 praktyki">Praktyki</div>
+        <div class="cell c98 sala">Sala</div>
+        <div class="cell c99 aula">Aula</div>
+        <div class="cell c100 lazienka">Łazienka</div>
+        <div class="cell c101 szansa">Szansa</div>
+        <!--Korytarz-->
+        <div class="cell k0 korytarz"></div>
+        <div class="cell k1 korytarz"></div>
+        <div class="cell k2 korytarz"></div>
+        <div class="cell k3 korytarz"></div>
+        <div class="cell k4 korytarz"></div>
+        <div class="cell k5 korytarz"></div>
+        <div class="cell k6 korytarz"></div>
+        <div class="cell k7 korytarz"></div>
+        <div class="cell k8 korytarz"></div>
+        <div class="cell k9 korytarz"></div>
+        <div class="cell k10 korytarz"></div>
+        <div class="cell k11 korytarz"></div>
+        <div class="cell k12 korytarz"></div>
+        <div class="cell k13 korytarz"></div>
+        <div class="cell k14 korytarz"></div>
+        <div class="cell k15 korytarz"></div>
+        <div class="cell k16 korytarz"></div>
+        <div class="cell k17 korytarz"></div>
+        <div class="cell k18 korytarz"></div>
+        <div class="cell k19 korytarz"></div>
+        <div class="cell k20 korytarz"></div>
+        <div class="cell k21 korytarz"></div>
+        <div class="cell k22 korytarz"></div>
+        <div class="cell k23 korytarz"></div>
+        <div class="cell k24 korytarz"></div>
+        <div class="cell k25 korytarz"></div>
+        <div class="cell k26 korytarz"></div>
+        <div class="cell k27 korytarz"></div>
+        <div class="cell k28 korytarz"></div>
+        <div class="cell k29 korytarz"></div>
+        <div class="cell k30 korytarz"></div>
+        <div class="cell k31 korytarz"></div>
+        <div class="cell k32 korytarz"></div>
+        <div class="cell k33 korytarz"></div>
+        <div class="cell k34 korytarz"></div>
+        <div class="cell k35 korytarz"></div>
+        <div class="cell k36 korytarz"></div>
+        <div class="cell k37 korytarz"></div>
+        <div class="cell k38 korytarz"></div>
+        <div class="cell k39 korytarz"></div>
+        <div class="cell k40 korytarz"></div>
+        <div class="cell k41 korytarz"></div>
+        <div class="cell k42 korytarz"></div>
+        <div class="cell k43 korytarz"></div>
+        <div class="cell k44 korytarz"></div>
+        <div class="cell k45 korytarz"></div>
+        <div class="cell k46 korytarz"></div>
+        <div class="cell k47 korytarz"></div>
+        <div class="cell k48 korytarz"></div>
+        <div class="cell k49 korytarz"></div>
+        <div class="cell k50 korytarz"></div>
+        <div class="cell k51 korytarz"></div>
+        <div class="cell k52 korytarz"></div>
+        <div class="cell k53 korytarz"></div>
+        <div class="cell k54 korytarz"></div>
+        <div class="cell k55 korytarz"></div>
+        <div class="cell k56 korytarz"></div>
+        <div class="cell k57 korytarz"></div>
+        <div class="cell k58 korytarz"></div>
+        <div class="cell k59 korytarz"></div>
+        <div class="cell k60 korytarz"></div>
+        <div class="cell k61 korytarz"></div>
+        <div class="cell k62 korytarz"></div>
+        <div class="cell k63 korytarz"></div>
+        <div class="cell k64 korytarz"></div>
+        <div class="cell k65 korytarz"></div>
+        <div class="cell k66 korytarz"></div>
+        <div class="cell k67 korytarz"></div>
+        <div class="cell k68 korytarz"></div>
+        <div class="cell k69 korytarz"></div>
+        <div class="cell k70 korytarz"></div>
+        <div class="cell k71 korytarz"></div>
+        <div class="cell k72 korytarz"></div>
+        <div class="cell k73 korytarz"></div>
+        <div class="cell k74 korytarz"></div>
+        <div class="cell k75 korytarz"></div>
+        <div class="cell k76 korytarz"></div>
+        <div class="cell k77 korytarz"></div>
 
-    <!-- Piętro I-->
-
-    <div class="cell c0">Start I</div>
-    <div class="cell c1">Sala</div>
-    <div class="cell c2">Sala</div>
-    <div class="cell c3">Łazienka</div>
-    <div class="cell c4">Aula</div>
-    <div class="cell c5">Sala</div>
-    <div class="cell c6">Dziekanat</div>
-    <div class="cell c7">Sala</div>
-    <div class="cell c8">Sala</div>
-    <div class="cell c9">Łazienka</div>
-    <div class="cell c10">Sala</div>
-    <div class="cell c11">Praktyki</div>
-    <div class="cell c12">Sala</div>
-    <div class="cell c13">Sala</div>
-    <div class="cell c14">Łazienka</div>
-    <div class="cell c15">Szansa</div>
-    <div class="cell c16">Aula</div>
-    <div class="cell c17">Biblioteka</div>
-    <div class="cell c18">Sala</div>
-    <div class="cell c19">Strefa relaksu</div> <!-- Poprawia szczescie gracza -->
-    <div class="cell c20">Sala</div>
-    <div class="cell c21">Łazienka</div>
-    <div class="cell c22">Sala</div>
-    <div class="cell c23">Aula</div>
-    <div class="cell c24">Łazienka</div>
-    <div class="cell c25">Sala</div>
-    <div class="cell c26">Dziekanat</div>
-    <div class="cell c27">Sala</div>
-    <div class="cell c28">Sala</div>
-    <div class="cell c29">Łazienka</div>
-    <div class="cell c30">Praktyki</div>
-    <div class="cell c31">Sala</div>
-    <div class="cell c32">Sala</div>
-    <div class="cell c33">Szansa</div>
-    <div class="cell c34">Łazienka</div>
-    <div class="cell c35">Aula</div>
-    <div class="cell c36">Sala</div>
-    <div class="cell c37">Biblioteka</div>
-
-    <!-- Piętro II-->
-
-    <div class="cell c38">Start II</div> <!-- Start na nowym piętrze -->
-    <div class="cell c39">Dziekanat</div>
-    <div class="cell c40">Sala</div>
-    <div class="cell c41">Aula</div>
-    <div class="cell c42">Szansa</div>
-    <div class="cell c43">Sala</div>
-    <div class="cell c44">Sala</div>
-    <div class="cell c45">Łazienka</div>
-    <div class="cell c46">Sala</div>
-    <div class="cell c47">Praktyki</div>
-    <div class="cell c48">Sala</div>
-    <div class="cell c49">Sala</div>
-    <div class="cell c50">Szansa</div>
-    <div class="cell c51">Sala</div>
-    <div class="cell c52">Łazienka</div>
-    <div class="cell c53">Sala</div>
-    <div class="cell c54">Sala</div>
-    <div class="cell c55">Dziekanat</div>
-    <div class="cell c56">Szansa</div>
-    <div class="cell c57">Aula</div>
-    <div class="cell c58">Sala</div>
-    <div class="cell c59">Sala</div>
-    <div class="cell c60">Łazienka</div>
-    <div class="cell c61">Sala</div>
-    <div class="cell c62">Praktyki</div>
-    <div class="cell c63">Sala</div>
-    <div class="cell c64">Sala</div>
-    <div class="cell c65">Biblioteka</div>
-    <div class="cell c66">Sala</div>
-    <div class="cell c67">Aula</div>
-
-    <!-- Piętro III-->
-
-    <div class="cell c68">Start III</div> <!-- Start na nowym piętrze -->
-    <div class="cell c69">Aula</div>
-    <div class="cell c70">Łazienka</div>
-    <div class="cell c71">Szansa</div>
-    <div class="cell c72">Sala</div>
-    <div class="cell c73">Dziekanat</div>
-    <div class="cell c74">Sala</div>
-    <div class="cell c75">Sala</div>
-    <div class="cell c76">Aula</div>
-    <div class="cell c77">Łazienka</div>
-    <div class="cell c78">Biblioteka</div>
-    <div class="cell c79">Strefa relaksu</div>
-    <div class="cell c80">Sala</div>
-    <div class="cell c81">Aula</div>
-    <div class="cell c82">Sala</div>
-    <div class="cell c83">Szansa</div>
-    <div class="cell c84">Sala</div>
-    <div class="cell c85">Sala</div>
-    <div class="cell c86">Praktyki</div>
-    <div class="cell c87">Aula</div>
-    <div class="cell c88">Dziekanat</div>
-    <div class="cell c89">Sala</div>
 
 
-
-   
-     <div class="overlay">
-        <div class="class-popup">
-          <div class="inside">
-            <h1>Wybierz klase</h1>
-              <div class="cards-wrapper">
-                <div class="container">
-                  <div class="card">
-                    <div class="front">
-                      <h2>Sportowiec</h2>
-                      <img src="img/sportowiec.png" alt="sportowiec">
-                      <p>"Byłem na treningu."</p>
+    <!--
+      <div class="overlay">
+          <div class="class-popup">
+            <div class="inside">
+              <h1>Wybierz klase</h1>
+                <div class="cards-wrapper">
+                  <div class="container">
+                    <div class="card">
+                      <div class="front">
+                        <h2>Sportowiec</h2>
+                        <img src="img/sportowiec.png" alt="sportowiec">
+                        <p>"Byłem na treningu."</p>
+                      </div>
+                      <div class="back">
+                        <h2>Statystyki</h2>
+                        <div class="stats">
+                          <p>Szczeście:</p>
+                          <div class="stars">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                          </div>
+                          <p>Madrość:</p>
+                          <div class="stars">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                          </div>
+                          <p>Hp:</p>
+                          <div class="hearts">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                          </div>
+                        </div> 
+                          <p class="cytat">Zajec nie bylo... znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś sie zaliczy.</p>
+                      </div>
                     </div>
-                    <div class="back">
-                      <h2>Statystyki</h2>
-                      <div class="stats">
-                        <p>Szczeście:</p>
-                        <div class="stars">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                        </div>
-                        <p>Madrość:</p>
-                        <div class="stars">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                        </div>
-                        <p>Hp:</p>
-                        <div class="hearts">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                        </div>
-                      </div> 
-                        <p class="cytat">Zajec nie bylo... znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś sie zaliczy.</p>
+                  </div>
+                  <div class="container">
+                    <div class="card">
+                      <div class="front">
+                        <h2>Leniuch</h2>
+                        <img src="img/leniuch.png" alt="leniuch">
+                        <p>"Nie chce mi sie."</p>
+                      </div>
+                      <div class="back">
+                        <h2>Statystyki</h2>
+                        <div class="stats">
+                          <p>Szczeście:</p>
+                          <div class="stars">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                          </div>
+                          <p>Madrość:</p>
+                          <div class="stars">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                          </div>
+                          <p>Hp:</p>
+                          <div class="hearts">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart_empty.png" alt="heart_empty">
+                            <img src="img/heart_empty.png" alt="heart_empty">
+                          </div>
+                        </div> 
+                        <p class="cytat">Człowiek, który dowiaduje sie o wszystkim jako ostatni. Deadliny traktuje jako sugestie.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="container">
+                    <div class="card">
+                      <div class="front">
+                        <h2>Madrala</h2>
+                        <img src="img/madrala.png" alt="madrala">
+                        <p>"To było na slajdzie."</p>
+                      </div>
+                      <div class="back">
+                        <h2>Statystyki</h2>
+                        <div class="stats">
+                          <p>Szczeście:</p>
+                          <div class="stars">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                            <img src="img/star_empty.png" alt="star_empty">
+                          </div>
+                          <p>Madrość:</p>
+                          <div class="stars">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                            <img src="img/star.png" alt="star">
+                          </div>
+                          <p>Hp:</p>
+                          <div class="hearts">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart.png" alt="heart">
+                            <img src="img/heart_empty.png" alt="heart_empty">
+                            <img src="img/heart_empty.png" alt="heart_empty">
+                          </div>
+                        </div> 
+                        <p class="cytat">Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzacy kwia głowa, grupa nie wiem dlaczego dostaje punkty.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="container">
-                  <div class="card">
-                    <div class="front">
-                      <h2>Leniuch</h2>
-                      <img src="img/leniuch.png" alt="leniuch">
-                      <p>"Nie chce mi sie."</p>
-                    </div>
-                    <div class="back">
-                      <h2>Statystyki</h2>
-                      <div class="stats">
-                        <p>Szczeście:</p>
-                        <div class="stars">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                        </div>
-                        <p>Madrość:</p>
-                        <div class="stars">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                        </div>
-                        <p>Hp:</p>
-                        <div class="hearts">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart_empty.png" alt="heart_empty">
-                          <img src="img/heart_empty.png" alt="heart_empty">
-                        </div>
-                      </div> 
-                      <p class="cytat">Człowiek, który dowiaduje sie o wszystkim jako ostatni. Deadliny traktuje jako sugestie.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="container">
-                  <div class="card">
-                    <div class="front">
-                      <h2>Madrala</h2>
-                      <img src="img/madrala.png" alt="madrala">
-                      <p>"To było na slajdzie."</p>
-                    </div>
-                    <div class="back">
-                      <h2>Statystyki</h2>
-                      <div class="stats">
-                        <p>Szczeście:</p>
-                        <div class="stars">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                          <img src="img/star_empty.png" alt="star_empty">
-                        </div>
-                        <p>Madrość:</p>
-                        <div class="stars">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                          <img src="img/star.png" alt="star">
-                        </div>
-                        <p>Hp:</p>
-                        <div class="hearts">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart.png" alt="heart">
-                          <img src="img/heart_empty.png" alt="heart_empty">
-                          <img src="img/heart_empty.png" alt="heart_empty">
-                        </div>
-                      </div> 
-                      <p class="cytat">Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzacy kwia głowa, grupa nie wiem dlaczego dostaje punkty.</p>
-                    </div>
-                  </div>
-                </div>
+
+              <div class="buttons">
+                <button class="class-btn" id="btn-sportowiec">Wybierz Sportowca</button>
+                <button class="class-btn" id="btn-leniuch">Wybierz leniucha</button>
+                <button class="class-btn" id="btn-madrala">Wybierz mądrale</button>
               </div>
 
-            <div class="buttons">
-              <button class="class-btn" id="btn-sportowiec">Wybierz Sportowca</button>
-              <button class="class-btn" id="btn-leniuch">Wybierz leniucha</button>
-              <button class="class-btn" id="btn-madrala">Wybierz mądrale</button>
             </div>
-
           </div>
         </div>
+
+      <div class="confirmation-overlay" id="confirmationBox">
+          <div class="confirm-popup">
+            <p>Jesteś pewien swojego wyboru?</p>
+            <div class="confirm-buttons">
+              <button id="confirmYes">Tak</button>
+              <button id="confirmNo">Nie</button>
+            </div>
+          </div>
       </div>
-
-     <div class="confirmation-overlay" id="confirmationBox">
-        <div class="confirm-popup">
-          <p>Jesteś pewien swojego wyboru?</p>
-          <div class="confirm-buttons">
-            <button id="confirmYes">Tak</button>
-            <button id="confirmNo">Nie</button>
-          </div>
-        </div>
-     </div>
-
+-->
 </body>
 </html>
