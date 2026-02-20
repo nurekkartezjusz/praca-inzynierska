@@ -16,8 +16,8 @@ body {
 }
 .board {
     display: grid;
-    grid-template-columns: repeat(15, 60px);
-    grid-template-rows: repeat(12, 60px);
+    grid-template-columns: repeat(15, 50px);
+    grid-template-rows: repeat(12, 50px);
     gap: 1px;
     background: linear-gradient(145deg, #2c3e50, #34495e);
     padding: 20px;
@@ -215,319 +215,331 @@ body {
 .c99 { transform: scale(1.25) translate(-35px, 17px) !important; z-index: 20; }
 .c100 { transform: scale(1.25) translate(-35px, 5.67px) !important; }
 .c101 { transform: scale(1.25) translate(-35px, -5.67px) !important; }
-
+.start{
+    background: #F2D7D9;
+    border: 2px solid #C79CA0;
+}
+.sala{
+    background: #C9D8F0;
+    border: 2px solid #8FA4C0;
+}
+.lazienka{
+    background: #A7D8DE;
+    border: 2px solid #6BA8AE;
+}
+.aula{
+    background: #FFF2CC;
+    border: 2px solid #D6C48F;
+}
+.dziekanat{
+    background: #F9D5A7;
+    border: 2px solid #C79F6E;
+}
+.praktyki{
+    background: #D5E8D4;
+    border: 2px solid #9EB79C;
+}
+.szansa{
+    background: #EAD1DC;
+    border: 2px solid #B79EAC;
+}
+.biblioteka{
+    background: #E2D5C7;
+    border: 2px solid #B3A48F;
+}
+.strefarelaksu{
+    background: #D0E8D0;
+    border: 2px solid #9AB99A;
+}
 /* Menu górne */
 .top-menu {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-  z-index: 1000;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
 }
-
 .menu-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  text-decoration: none;
-  display: inline-block;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-
 .menu-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
-
 .menu-btn.friends {
-  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
 }
-
 .menu-btn.games {
-  background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-  position: relative;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    position: relative;
 }
-
 .menu-btn.fullscreen {
-  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
 }
-
 .fullscreen-btn-corner {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  z-index: 1000;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .fullscreen-btn-corner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
 }
-
 /* Dropdown menu gier */
 .games-dropdown {
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  min-width: 200px;
-  display: none;
-  overflow: hidden;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    min-width: 200px;
+    display: none;
+    overflow: hidden;
 }
-
 .games-dropdown.show {
-  display: block;
+    display: block;
 }
-
 .games-dropdown-item {
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: background 0.2s;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-
 .games-dropdown-item:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
-
 .games-dropdown-item:hover {
-  background: #f8f9fa;
+    background: #f8f9fa;
 }
-
 /* Modal dla mini gier */
 .game-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
 }
-
 .game-modal.show {
-  display: flex;
+    display: flex;
 }
-
 .game-modal-content {
-  background: white;
-  border-radius: 15px;
-  width: 85%;
-  height: 85%;
-  max-width: 1000px;
-  max-height: 700px;
-  position: relative;
-  box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
+    background: white;
+    border-radius: 15px;
+    width: 85%;
+    height: 85%;
+    max-width: 1000px;
+    max-height: 700px;
+    position: relative;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
 }
-
 .game-modal-header {
-  padding: 15px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 15px 15px 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-
 .game-modal-header h3 {
-  margin: 0;
-  font-size: 1.2em;
+    margin: 0;
+    font-size: 1.2em;
 }
-
 .game-modal-close {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
 }
-
 .game-modal-close:hover {
-  background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.3);
 }
-
 .game-modal-iframe {
-  flex: 1;
-  border: none;
-  width: 100%;
-  border-radius: 0 0 15px 15px;
-  overflow: auto;
+    flex: 1;
+    border: none;
+    width: 100%;
+    border-radius: 0 0 15px 15px;
+    overflow: auto;
 }
-
 .game-modal-iframe.scale {
-  zoom: 0.75;
+    zoom: 0.75;
 }
-
 /* Style do wyboru klasy */
 .overlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .class-popup{
-  height: 440px;
-  width: 863px;
-  background-color: #667eea;
-  cursor: pointer;
+    height: 440px;
+    width: 863px;
+    background-color: #667eea;
+    cursor: pointer;
 }
 .inside{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
 }
 .inside h1{
-  color: #D91D4F;
-  font-size: 20px;
-  text-align: center;
-  font-family: var(--class-font);
-  text-shadow: 0 4px 4px rgba(0,0,0,0.25);
+    color: #D91D4F;
+    font-size: 20px;
+    text-align: center;
+    font-family: var(--class-font);
+    text-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
 .cards-wrapper{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 .container{
-  height: 300px;
-  width: 240px;
+    height: 300px;
+    width: 240px;
 }
 .card{
-  height: 100%;
-  width: 100%;;
-  position: relative;
-  transition: transform 1500ms;
-  transform-style: preserve-3d;
+    height: 100%;
+    width: 100%;;
+    position: relative;
+    transition: transform 1500ms;
+    transform-style: preserve-3d;
 }
 .container:hover > .card{
     cursor: pointer;
     transform: rotateY(180deg);
 }
 .front, .back{
-  background-color: #5267c7;
-  padding: 17px 0;
-  box-sizing: border-box;
-  gap: 8px;
-  position: absolute;
-  backface-visibility: hidden;
+    background-color: #5267c7;
+    padding: 17px 0;
+    box-sizing: border-box;
+    gap: 8px;
+    position: absolute;
+    backface-visibility: hidden;
 }
 .front h2, .back h2{
-  color: white;
-  font-size: 12px;
-  text-align: center;
-  font-family: var(--class-font);
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    font-family: var(--class-font);
 }
 .front{
-  text-align: center;
+    text-align: center;
 }
 .front h2{
-  padding: 0 14px;
+    padding: 0 14px;
 }
 .front p{
-  color: white;
-  font-size: 12px;
-  line-height: 14px;
-  text-align: center;
-  font-family: var(--class-font);
-  padding: 0 14px;
+    color: white;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+    font-family: var(--class-font);
+    padding: 0 14px;
 }
 .front img{
-  width: auto;
-  height: 180px;
-  object-fit: contain;
+    width: auto;
+    height: 180px;
+    object-fit: contain;
 }
 .back{
-  height: 300px;
-  width: 240px;
-  transform: rotateY(180deg);
-  padding: 0 10px;
+    height: 300px;
+    width: 240px;
+    transform: rotateY(180deg);
+    padding: 0 10px;
 }
 .back p{
-  color: white;
-  font-size: 12px;
-  line-height: 14px;
-  font-family: var(--class-font);
+    color: white;
+    font-size: 12px;
+    line-height: 14px;
+    font-family: var(--class-font);
 }
 .back .stats p{
     margin: 3px 0;
 }
 .stars, .hearts{
-  display: flex;
-  height: 25px;
-  gap: 5px;
+    display: flex;
+    height: 25px;
+    gap: 5px;
 }
 .back .cytat{
-  text-align: center;
+    text-align: center;
 }
 .back h2{
-  padding-top: 18px;
+    padding-top: 18px;
 }
-
 .buttons{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 96px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 96px;
 }
 .class-btn{
-  width: 160px;
-  text-transform: uppercase;
-  color: white;
-  font-family: var(--class-font);
-  padding: 8px 20px;
-  margin-top: 15px;
-  border: 2px solid black;
-  box-shadow: 0 10px 4px rgba(0,0,0,0.25);
-  font-size: 12px;
-  background: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
-  transition: transform 0.15s ease, box-shadow 0.15 ease;
+    width: 160px;
+    text-transform: uppercase;
+    color: white;
+    font-family: var(--class-font);
+    padding: 8px 20px;
+    margin-top: 15px;
+    border: 2px solid black;
+    box-shadow: 0 10px 4px rgba(0,0,0,0.25);
+    font-size: 12px;
+    background: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
+    transition: transform 0.15s ease, box-shadow 0.15 ease;
 }
 .class-btn:active{
-  transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0,0,0,0.25);
+    transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0,0,0,0.25);
 }
 .class-btn:hover{
-  transform: scale(0.97) translateY(2px); box-shadow: 0 8px 3px rgba(0,0,0,0.25);
+    transform: scale(0.97) translateY(2px); box-shadow: 0 8px 3px rgba(0,0,0,0.25);
 }
