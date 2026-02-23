@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Comforter+Brush&family=Noto+Serif+Ahom&family=Parisienne&family=Press+Start+2P&family=Shantell+Sans:ital,wght@0,300..800;1,300..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="top-menu">
+    <div class="top-menu">
         <button class="menu-btn" onclick="toggleMenu()">Menu</button>
         <div class="menu-dropdown" id="main-menu">
             <div class="menu-dropdown-item" id="mini-games-btn" onclick="toggleGamesMenu()">Mini gry <span class="arrow">▶</span></div>
@@ -23,25 +23,26 @@
         </div>
     </div>
 
-  <!-- Przycisk pełnego ekranu w prawym dolnym rogu -->
-  <button class="fullscreen-btn-corner" onclick="toggleBoardFullscreen()" id="fullscreen-btn">
-    ⛶ Pełny ekran
-  </button>
+    <!-- Przycisk pełnego ekranu w prawym dolnym rogu -->
+    <button class="fullscreen-btn-corner" onclick="toggleBoardFullscreen()" id="fullscreen-btn">
+        ⛶ Pełny ekran
+    </button>
 
     <!-- Modal dla mini gier -->
     <div class="game-modal" id="game-modal">
-      <div class="game-modal-content">
+        <div class="game-modal-content">
         <div class="game-modal-header">
-          <h3 id="game-title">Mini Gra</h3>
-          <button class="game-modal-close" onclick="closeGame()">×</button>
+            <h3 id="game-title">Mini Gra</h3>
+            <button class="game-modal-close" onclick="closeGame()">×</button>
         </div>
-      <iframe id="game-iframe" class="game-modal-iframe"></iframe>
+        <iframe id="game-iframe" class="game-modal-iframe"></iframe>
+        </div>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 
-  <div class="board">
+    <div class="board">
+
         <!--Piętro I-->
         <div class="cell c0 start">Start I</div>
         <div class="cell c1 sala">Sala</div>
@@ -228,151 +229,150 @@
         <div class="cell k77 korytarz"></div>
 
 
-
     <!--
-      <div class="overlay">
-          <div class="class-popup">
+        <div class="overlay">
+            <div class="class-popup">
             <div class="inside">
-              <h1>Wybierz klase</h1>
+                <h1>Wybierz klase</h1>
                 <div class="cards-wrapper">
-                  <div class="container">
+                    <div class="container">
                     <div class="card">
-                      <div class="front">
+                        <div class="front">
                         <h2>Sportowiec</h2>
                         <img src="img/sportowiec.png" alt="sportowiec">
                         <p>"Byłem na treningu."</p>
-                      </div>
-                      <div class="back">
+                        </div>
+                        <div class="back">
                         <h2>Statystyki</h2>
                         <div class="stats">
-                          <p>Szczeście:</p>
-                          <div class="stars">
+                            <p>Szczeście:</p>
+                            <div class="stars">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
-                          </div>
-                          <p>Madrość:</p>
-                          <div class="stars">
+                            </div>
+                            <p>Madrość:</p>
+                            <div class="stars">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
-                          </div>
-                          <p>Hp:</p>
-                          <div class="hearts">
+                            </div>
+                            <p>Hp:</p>
+                            <div class="hearts">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
-                          </div>
+                            </div>
                         </div> 
-                          <p class="cytat">Zajec nie bylo... znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś sie zaliczy.</p>
-                      </div>
+                            <p class="cytat">Zajec nie bylo... znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś sie zaliczy.</p>
+                        </div>
                     </div>
-                  </div>
-                  <div class="container">
+                    </div>
+                    <div class="container">
                     <div class="card">
-                      <div class="front">
+                        <div class="front">
                         <h2>Leniuch</h2>
                         <img src="img/leniuch.png" alt="leniuch">
                         <p>"Nie chce mi sie."</p>
-                      </div>
-                      <div class="back">
+                        </div>
+                        <div class="back">
                         <h2>Statystyki</h2>
                         <div class="stats">
-                          <p>Szczeście:</p>
-                          <div class="stars">
+                            <p>Szczeście:</p>
+                            <div class="stars">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
-                          </div>
-                          <p>Madrość:</p>
-                          <div class="stars">
+                            </div>
+                            <p>Madrość:</p>
+                            <div class="stars">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
-                          </div>
-                          <p>Hp:</p>
-                          <div class="hearts">
+                            </div>
+                            <p>Hp:</p>
+                            <div class="hearts">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart_empty.png" alt="heart_empty">
                             <img src="img/heart_empty.png" alt="heart_empty">
-                          </div>
+                            </div>
                         </div> 
                         <p class="cytat">Człowiek, który dowiaduje sie o wszystkim jako ostatni. Deadliny traktuje jako sugestie.</p>
-                      </div>
+                        </div>
                     </div>
-                  </div>
-                  <div class="container">
+                    </div>
+                    <div class="container">
                     <div class="card">
-                      <div class="front">
+                        <div class="front">
                         <h2>Madrala</h2>
                         <img src="img/madrala.png" alt="madrala">
                         <p>"To było na slajdzie."</p>
-                      </div>
-                      <div class="back">
+                        </div>
+                        <div class="back">
                         <h2>Statystyki</h2>
                         <div class="stats">
-                          <p>Szczeście:</p>
-                          <div class="stars">
+                            <p>Szczeście:</p>
+                            <div class="stars">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
                             <img src="img/star_empty.png" alt="star_empty">
-                          </div>
-                          <p>Madrość:</p>
-                          <div class="stars">
+                            </div>
+                            <p>Madrość:</p>
+                            <div class="stars">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
                             <img src="img/star.png" alt="star">
-                          </div>
-                          <p>Hp:</p>
-                          <div class="hearts">
+                            </div>
+                            <p>Hp:</p>
+                            <div class="hearts">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart.png" alt="heart">
                             <img src="img/heart_empty.png" alt="heart_empty">
                             <img src="img/heart_empty.png" alt="heart_empty">
-                          </div>
+                            </div>
                         </div> 
                         <p class="cytat">Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzacy kwia głowa, grupa nie wiem dlaczego dostaje punkty.</p>
-                      </div>
+                        </div>
                     </div>
-                  </div>
+                    </div>
                 </div>
 
-              <div class="buttons">
+                <div class="buttons">
                 <button class="class-btn" id="btn-sportowiec">Wybierz Sportowca</button>
                 <button class="class-btn" id="btn-leniuch">Wybierz leniucha</button>
                 <button class="class-btn" id="btn-madrala">Wybierz mądrale</button>
-              </div>
+                </div>
 
             </div>
-          </div>
+            </div>
         </div>
 
-      <div class="confirmation-overlay" id="confirmationBox">
-          <div class="confirm-popup">
+        <div class="confirmation-overlay" id="confirmationBox">
+            <div class="confirm-popup">
             <p>Jesteś pewien swojego wyboru?</p>
             <div class="confirm-buttons">
-              <button id="confirmYes">Tak</button>
-              <button id="confirmNo">Nie</button>
+                <button id="confirmYes">Tak</button>
+                <button id="confirmNo">Nie</button>
             </div>
-          </div>
-      </div>
+            </div>
+        </div>
 -->
 </body>
 </html>

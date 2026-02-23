@@ -29,7 +29,7 @@ body {
 }
 .cell {
     box-sizing: border-box;
-    border-radius: 4px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -263,9 +263,9 @@ body {
     backdrop-filter: blur(15px) saturate(180%);
     -webkit-backdrop-filter: blur(15px) saturate(180%);
     padding: 10px 20px;
-    border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 0;
+    border: 2px solid #000;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -273,7 +273,7 @@ body {
 }
 .menu-btn:hover{
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .menu-dropdown{
     position: absolute;
@@ -282,9 +282,9 @@ body {
     background: rgba(255,255,255,0.45);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 2px solid #000;
+    border-radius: 0;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     min-width: 220px;
     display: none;
     overflow: hidden;
@@ -325,7 +325,8 @@ body {
 .menu-dropdown-item:hover{
     background: rgba(169,202,255,0.7);
     padding-left: 25px;
-    box-shadow: inset 4px 0 0 #3b82f6;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    position: relative;
 }
 .menu-dropdown-item .arrow {
     margin-left: auto;
@@ -336,14 +337,23 @@ body {
 }
 .menu-dropdown-submenu{
     display: none;
-    padding-left: 20px;
     background: transparent;
     backdrop-filter: none;
+    position: relative;
 }
 .menu-dropdown-submenu.show{
     display: block;
 }
-.fullscreen-btn-corner {
+.menu-dropdown-submenu .menu-dropdown-item::before {
+    content: '\00a0\00a0'; 
+    display: inline-block;
+    width: 0; 
+}
+.menu-btn, .menu-dropdown-item, .fullscreen-btn-corner{
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 10px;
+}
+.fullscreen-btn-corner{
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -351,9 +361,9 @@ body {
     backdrop-filter: blur(15px) saturate(180%);
     -webkit-backdrop-filter: blur(15px) saturate(180%);
     padding: 10px 20px;
-    border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 0;
+    border: 2px solid #000;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -362,7 +372,7 @@ body {
 }
 .fullscreen-btn-corner:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 /* Modal dla mini gier */
 .game-modal {
