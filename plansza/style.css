@@ -375,24 +375,26 @@ body {
     box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 /* Modal dla mini gier */
-.game-modal {
+.game-modal{
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     display: none;
     align-items: center;
     justify-content: center;
     z-index: 2000;
 }
-.game-modal.show {
+.game-modal.show{
     display: flex;
 }
-.game-modal-content {
-    background: white;
-    border-radius: 15px;
+.game-modal-content{
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border-radius: 20px;
     width: 85%;
     height: 85%;
     max-width: 1000px;
@@ -402,23 +404,25 @@ body {
     display: flex;
     flex-direction: column;
 }
-.game-modal-header {
+.game-modal-header{
     padding: 15px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px 15px 0 0;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    color: #26292c;
+    border-radius: 20px 20px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-.game-modal-header h3 {
+.game-modal-header h3{
     margin: 0;
     font-size: 1.2em;
 }
-.game-modal-close {
+.game-modal-close{
     background: rgba(255,255,255,0.2);
     border: none;
-    color: white;
+    color: #26292c;
     font-size: 24px;
     cursor: pointer;
     width: 35px;
@@ -429,17 +433,17 @@ body {
     justify-content: center;
     transition: background 0.2s;
 }
-.game-modal-close:hover {
+.game-modal-close:hover{
     background: rgba(255,255,255,0.3);
 }
-.game-modal-iframe {
+.game-modal-iframe{
     flex: 1;
     border: none;
     width: 100%;
-    border-radius: 0 0 15px 15px;
+    border-radius: 0 0 20px 20px;
     overflow: auto;
 }
-.game-modal-iframe.scale {
+.game-modal-iframe.scale{
     zoom: 0.75;
 }
 /* Style do wyboru klasy */
