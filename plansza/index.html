@@ -10,22 +10,18 @@
 </head>
 <body>
   <div class="top-menu">
-    <div style="position: relative;">
-      <button class="menu-btn games" onclick="toggleGamesMenu()">Mini gry</button>
-      <div class="games-dropdown" id="games-menu">
-        <div class="games-dropdown-item" onclick="openGame('kolko', 'Kółko i krzyżyk')">
-          <span>Kółko i krzyżyk</span>
+        <button class="menu-btn" onclick="toggleMenu()">Menu</button>
+        <div class="menu-dropdown" id="main-menu">
+            <div class="menu-dropdown-item" id="mini-games-btn" onclick="toggleGamesMenu()">Mini gry <span class="arrow">▶</span></div>
+            <div class="menu-dropdown-submenu" id="games-menu">
+                <div class="menu-dropdown-item" onclick="openGame('kolko','Kółko i krzyżyk')">Kółko i krzyżyk</div>
+                <div class="menu-dropdown-item" onclick="openGame('sudoku','Sudoku')">Sudoku</div>
+            </div>
+            <a href="../znajomi/" class="menu-dropdown-item">Znajomi</a>
+            <a href="../statystyki/" class="menu-dropdown-item">Profil</a>
+            <a href="../zasady/zasady.html" class="menu-dropdown-item">Zasady gry</a>
         </div>
-        <div class="games-dropdown-item" onclick="openGame('sudoku', 'Sudoku')">
-          <span>Sudoku</span>
-        </div>
-      </div>
     </div>
-    <a href="../znajomi/" class="menu-btn friends"> Znajomi</a>
-    <a href="../statystyki/" class="menu-btn"> Profil</a>
-    <a href="../" class="menu-btn"> Menu</a>
-    <a href="../zasady/zasady.html" class="menu-btn zasady">Zasady gry</a>
-  </div>
 
   <!-- Przycisk pełnego ekranu w prawym dolnym rogu -->
   <button class="fullscreen-btn-corner" onclick="toggleBoardFullscreen()" id="fullscreen-btn">

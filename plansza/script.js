@@ -116,3 +116,26 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+
+// MENU
+function toggleMenu(){
+    document.getElementById('main-menu').classList.toggle('show');
+}
+function toggleGamesMenu(){
+    document.getElementById('games-menu').classList.toggle('show');
+}
+function openGame(id, name){
+    console.log('Otwieram grę:', name);
+}
+
+//MENU STRZAŁKA
+function toggleGamesMenu(){
+    const submenu = document.getElementById('games-menu');
+    const arrow = document.querySelector('#mini-games-btn .arrow');
+    submenu.classList.toggle('show');
+    if (submenu.classList.contains('show')){
+        arrow.style.transform = 'rotate(90deg)';
+    } else {
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}

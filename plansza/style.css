@@ -7,7 +7,7 @@
 }
 body {
     margin: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg,#d0d9eb 0%,#a9caff 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,7 +19,7 @@ body {
     grid-template-columns: repeat(15, 50px);
     grid-template-rows: repeat(12, 50px);
     gap: 1px;
-    background: linear-gradient(145deg, #2c3e50, #34495e);
+    background: radial-gradient(circle at center,#2a3a7a 0%,#141e50 100%);
     padding: 20px;
     border-radius: 20px;
     border: 4px solid #ffffff;
@@ -252,93 +252,117 @@ body {
     border: 2px solid #9AB99A;
 }
 /* Menu górne */
-.top-menu {
+.top-menu{
     position: fixed;
     top: 20px;
     right: 20px;
-    display: flex;
-    gap: 10px;
     z-index: 1000;
 }
-.menu-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+.menu-btn{
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
     padding: 10px 20px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 14px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     font-weight: bold;
-    text-decoration: none;
-    display: inline-block;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #26292c;
 }
-.menu-btn:hover {
+.menu-btn:hover{
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
-.menu-btn.friends {
-    background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+.menu-dropdown{
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    min-width: 220px;
+    display: none;
+    overflow: hidden;
+    animation: fadeIn 0.2s ease-out;
 }
-.menu-btn.games {
-    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-    position: relative;
+.menu-dropdown.show{
+    display: block;
 }
-.menu-btn.fullscreen {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+@keyframes fadeIn{
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+.menu-dropdown-item{
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #26292c;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: inherit;
+    font-weight: 600;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.menu-dropdown-item:last-child{
+    border-bottom: none;
+}
+.menu-dropdown-item:hover{
+    background: rgba(169,202,255,0.7);
+    padding-left: 25px;
+    box-shadow: inset 4px 0 0 #3b82f6;
+}
+.menu-dropdown-item .arrow {
+    margin-left: auto;
+    display: inline-block;
+    transition: transform 0.3s ease; 
+    font-size: 10px;
+    line-height: 1;
+}
+.menu-dropdown-submenu{
+    display: none;
+    padding-left: 20px;
+    background: transparent;
+    backdrop-filter: none;
+}
+.menu-dropdown-submenu.show{
+    display: block;
 }
 .fullscreen-btn-corner {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 14px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #26292c;
     z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
 }
 .fullscreen-btn-corner:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-}
-/* Dropdown menu gier */
-.games-dropdown {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    min-width: 200px;
-    display: none;
-    overflow: hidden;
-}
-.games-dropdown.show {
-    display: block;
-}
-.games-dropdown-item {
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background 0.2s;
-    border-bottom: 1px solid #f0f0f0;
-    color: #333;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.games-dropdown-item:last-child {
-    border-bottom: none;
-}
-.games-dropdown-item:hover {
-    background: #f8f9fa;
 }
 /* Modal dla mini gier */
 .game-modal {
