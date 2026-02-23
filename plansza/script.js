@@ -1,10 +1,5 @@
 let currentGame = null;
 
-function toggleGamesMenu() {
-  const menu = document.getElementById('games-menu');
-  menu.classList.toggle('show');
-}
-
 function openGame(gameType, gameTitle) {
   const modal = document.getElementById('game-modal');
   const iframe = document.getElementById('game-iframe');
@@ -120,12 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // MENU
 function toggleMenu(){
     document.getElementById('main-menu').classList.toggle('show');
-}
-function toggleGamesMenu(){
-    document.getElementById('games-menu').classList.toggle('show');
-}
-function openGame(id, name){
-    console.log('Otwieram grę:', name);
 }
 
 //MENU STRZAŁKA
