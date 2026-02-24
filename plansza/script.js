@@ -97,20 +97,7 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// Czy jesteś pewien swojego wyboru
-document.addEventListener("DOMContentLoaded", () => {
 
-  document.getElementById('btn-sportowiec').addEventListener("click", () => {
-    alert("Wybrales sportowca");
-  });
-  document.getElementById('btn-leniuch').addEventListener("click", () => {
-    alert("Wybrales leniucha");
-  });
-  document.getElementById('btn-madrala').addEventListener("click", () => {
-    alert("Wybrales madrale");
-  });
-
-});
 
 // MENU
 function toggleMenu(){
@@ -128,3 +115,30 @@ function toggleGamesMenu(){
         arrow.style.transform = 'rotate(0deg)';
     }
 }
+
+// ANIMACJA ONLICK NA KARTACH
+document.addEventListener("DOMContentLoaded", () => {
+  const containers = document.querySelectorAll('.container');
+
+  containers.forEach(container => {
+    container.addEventListener('click', () => {
+      container.classList.toggle('flipped');
+});
+
+});
+
+});
+// Czy jesteś pewien swojego wyboru
+document.addEventListener("DOMContentLoaded", () => {
+
+  document.getElementById('btn-sportowiec').addEventListener("click", () => {
+    alert("Wybrales sportowca");
+  });
+  document.getElementById('btn-leniuch').addEventListener("click", () => {
+    alert("Wybrales leniucha");
+  });
+  document.getElementById('btn-madrala').addEventListener("click", () => {
+    alert("Wybrales madrale");
+  });
+
+});

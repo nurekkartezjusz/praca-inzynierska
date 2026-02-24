@@ -453,6 +453,7 @@ body {
 .overlay{
     position: fixed;
     inset: 0;
+    z-index: 999;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(6px);
     display: flex;
@@ -488,6 +489,7 @@ body {
 .container{
     height: 300px;
     width: 240px;
+    perspective: 1000px;
 }
 .card{
     height: 100%;
@@ -496,10 +498,14 @@ body {
     transition: transform 1500ms;
     transform-style: preserve-3d;
 }
-.container:hover > .card{
+.container > .card{
     cursor: pointer;
+    transform-style: preserve-3d;
+}
+.container.flipped > .card {
     transform: rotateY(180deg);
 }
+
 .front, .back{
     background-color: #5267c7;
     padding: 17px 0;
