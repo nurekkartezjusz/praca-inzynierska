@@ -11,13 +11,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>
+        <h1><span class="emoji">👥</span>
             <span class="znajomi"><span class="first-letter">Z</span>najomi</span>
         </h1>
         
         <!-- Wyszukiwanie użytkowników -->
         <div class="search-section">
-            <h2>Szukaj użytkowników</h2>
+            <h2>🔍 Szukaj użytkowników</h2>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Wpisz nazwę użytkownika...">
                 <button onclick="searchUsers()">Szukaj</button>
@@ -27,19 +27,19 @@
 
         <!-- Zaproszenia -->
         <div class="requests-section">
-            <h2>Zaproszenia do znajomych (<span id="requestCount">0</span>)</h2>
+            <h2>📨 Zaproszenia do znajomych (<span id="requestCount">0</span>)</h2>
             <div id="friendRequests" class="user-list"></div>
         </div>
 
         <!-- Zaproszenia do gier -->
         <div class="game-invitations-section">
-            <h2>Zaproszenia do gier (<span id="gameInvitationCount">0</span>)</h2>
+            <h2>🎮 Zaproszenia do gier (<span id="gameInvitationCount">0</span>)</h2>
             <div id="gameInvitations" class="user-list"></div>
         </div>
 
         <!-- Lista znajomych -->
         <div class="friends-section">
-            <h2>Moi znajomi (<span id="friendCount">0</span>)</h2>
+            <h2>✅ Moi znajomi (<span id="friendCount">0</span>)</h2>
             <div id="friendsList" class="user-list"></div>
         </div>
 
@@ -53,22 +53,22 @@
     <div id="gameModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Wybierz grę</h2>
+                <h2>🎮 Wybierz grę</h2>
                 <span class="close" onclick="closeGameModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <p>Do jakiej gry chcesz zaprosić <strong id="invitedUsername"></strong>?</p>
                 <div class="game-options">
                     <div class="game-card" onclick="selectGame('wielka-studencka-batalla')">
-                        <div class="game-icon"></div>
+                        <div class="game-icon">🎲</div>
                         <div class="game-name">Wielka Studencka Batalla</div>
                     </div>
                     <div class="game-card" onclick="selectGame('kolko-i-krzyzyk')">
-                        <div class="game-icon"></div>
+                        <div class="game-icon">❌⭕</div>
                         <div class="game-name">Kółko i krzyżyk</div>
                     </div>
                     <div class="game-card" onclick="selectGame('sudoku')">
-                        <div class="game-icon"></div>
+                        <div class="game-icon">🔢</div>
                         <div class="game-name">Sudoku</div>
                     </div>
                 </div>
