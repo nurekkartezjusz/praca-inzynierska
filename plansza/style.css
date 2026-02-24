@@ -453,7 +453,7 @@ body {
 .overlay{
     position: fixed;
     inset: 0;
-    z-index: 999;
+    z-index: 100;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(6px);
     display: flex;
@@ -463,8 +463,10 @@ body {
 .class-popup{
     height: 440px;
     width: 863px;
+    display: none;
     background-color: #667eea;
     cursor: pointer;
+    z-index: 101;
 }
 .inside{
     display: flex;
@@ -600,4 +602,47 @@ body {
     opacity: 0;
     transition: opacity 0.15s;
     z-index: 9999;
+}
+/* Style do potwierdzenia wyboru klasy */
+.confirm-popup{
+    width: 450px;
+    height: 250px;
+    background: #667EEA;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+.confirm-popup h1{
+    font-size: 20px;
+    font-family: var(--class-font);
+    text-align: center;
+    color: white;
+}
+.confirm-popup h3{
+    color: white;
+    font-family: var(--class-font);
+    font-size: 14px;
+}
+.confirm-buttons{
+    display: flex;
+    gap: 50px;
+}
+.confirm-button{
+    width: 165px;
+    text-transform: uppercase;
+    color: white;
+    font-family: var(--class-font);
+    padding: 8px 20px;
+    margin-top: 15px;
+    border: 2px solid black;
+    box-shadow: 0 10px 4px rgba(0,0,0,0.25);
+    font-size: 12px;
+    background: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
+    transition: transform 0.15s ease, box-shadow 0.15 ease;
+}
+.confirm-popup p{
+    text-align: center;
+    font-family: var(--class-font);
+    color: #6E6E6E;
+    font-size: 10px;
 }
