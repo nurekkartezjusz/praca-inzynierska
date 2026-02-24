@@ -116,19 +116,51 @@ function toggleGamesMenu(){
     }
 }
 
-// ANIMACJA ONLICK NA KARTACH
+
+// KARTY WYBORU KLASY
+
+// Obrót kart
 document.addEventListener("DOMContentLoaded", () => {
   const containers = document.querySelectorAll('.container');
 
   containers.forEach(container => {
     container.addEventListener('click', () => {
       container.classList.toggle('flipped');
+      });
+    });
+});
+// Tooltip
+document.addEventListener("DOMContentLoaded", () => {
+  const tooltip = document.getElementById('tooltip');
+  const containers = document.querySelectorAll('.container');
+
+  containers.forEach(container => {
+
+    container.addEventListener('mouseenter', () => {
+      tooltip.textContent = "Kliknij, aby obrócić";
+      tooltip.style.opacity = 1;
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      tooltip.style.left = e.clientX + 15 + "px";
+      tooltip.style.top = e.clientY + 15 + "px";
+    });
+  
+    container.addEventListener('mouseleave', () => {
+      if (!container.classList.add('clicked')) {
+        tooltip.style.opacity = 0;
+      } 
+    });
+
+    container.addEventListener('click', () => {
+      container.classList.add('clicked');
+      tooltip.style.opacity = 0;
+    });
+
+  });
 });
 
-});
-
-});
-// Czy jesteś pewien swojego wyboru
+// Potwierdzenie wyboru klasy
 document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById('btn-sportowiec').addEventListener("click", () => {

@@ -505,7 +505,6 @@ body {
 .container.flipped > .card {
     transform: rotateY(180deg);
 }
-
 .front, .back{
     background-color: #5267c7;
     padding: 17px 0;
@@ -589,4 +588,16 @@ body {
 }
 .class-btn:hover{
     transform: scale(0.97) translateY(2px); box-shadow: 0 8px 3px rgba(0,0,0,0.25);
+}
+#tooltip{
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 6px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
 }
