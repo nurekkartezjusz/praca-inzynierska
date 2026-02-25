@@ -162,7 +162,7 @@ function createUserCard(user, type) {
     } else if (type === 'friend') {
         status = '<span class="status friends">Znajomy</span>';
         actions = `
-            <button class="btn-invite-game" onclick="inviteToGame('${user.username}')">🎮 Zaproś do gry</button>
+            <button class="btn-invite-game" onclick="inviteToGame('${user.username}')">Zaproś do gry</button>
             <button class="btn-danger-small" onclick="removeFriend(${user.friendship_id}, '${user.username}')">Usuń</button>
         `;
     }
@@ -310,7 +310,7 @@ async function selectGame(game) {
             throw new Error(data.detail || 'Błąd wysyłania zaproszenia');
         }
 
-        showToast(`🎮 Zaproszenie do gry "${gameNames[game]}" zostało wysłane do ${currentInvitedUser}!`, 'success');
+        showToast(`Zaproszenie do gry "${gameNames[game]}" zostało wysłane do ${currentInvitedUser}!`, 'success');
         closeGameModal();
         loadGameInvitations(); // Odśwież listę zaproszeń
     } catch (error) {
@@ -438,7 +438,7 @@ async function acceptGameInvitation(invitationId, gameType) {
             throw new Error(data.detail || 'Błąd akceptowania zaproszenia');
         }
 
-        showToast(`✅ Zaproszenie zaakceptowane! Przechodzę do gry...`, 'success');
+        showToast(`Zaproszenie zaakceptowane! Przechodzę do gry...`, 'success');
         
         // Przekieruj do odpowiedniej gry
         const gameUrls = {
