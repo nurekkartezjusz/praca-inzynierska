@@ -163,14 +163,31 @@ document.addEventListener("DOMContentLoaded", () => {
 // Potwierdzenie wyboru klasy
 document.addEventListener("DOMContentLoaded", () => {
 
+  const confirmationBox = document.getElementById("confirmationBox");
+  const wyborKlasy = document.getElementById("wyborKlasy");
+  const overlay = document.querySelector('.overlay');
+
   document.getElementById('btn-sportowiec').addEventListener("click", () => {
-    alert("Wybrales sportowca");
+    showConfirmation("Sportowiec");
   });
   document.getElementById('btn-leniuch').addEventListener("click", () => {
-    alert("Wybrales leniucha");
+    showConfirmation("Leniuch");
   });
   document.getElementById('btn-madrala').addEventListener("click", () => {
-    alert("Wybrales madrale");
+    showConfirmation("Madrala");
   });
 
+  function showConfirmation(nazwaKlasy) {
+    wyborKlasy.textContent = nazwaKlasy;
+    confirmationBox.style.display = "flex";
+  }
+
+  document.getElementById("confirmNo").addEventListener("click", () => {
+    confirmationBox.style.display = "none";
+  });
+
+  document.getElementById("confirmYes").addEventListener("click", () => {
+    confirmationBox.style.display = "none";
+    overlay.style.display = "none";
+  });
 });
