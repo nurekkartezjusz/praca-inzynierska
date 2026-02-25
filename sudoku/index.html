@@ -5,16 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Sudoku</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Comforter+Brush&family=Noto+Serif+Ahom&family=Parisienne&family=Press+Start+2P&family=Shantell+Sans:ital,wght@0,300..800;1,300..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
   <header class="site-header">
     <div class="toprow">
       <h1 class="site-title">Sudoku</h1>
-      <a class="back-link" href="../index.html">← Powrót do strony głównej</a>
     </div>
   </header>
   <main>
-    
     <div class="controls">
       <div class="row">
         <label>Poziom: <select id="difficulty"><option value="easy">Łatwy</option><option value="medium">Średni</option><option value="hard">Trudny</option></select></label>
@@ -43,7 +42,7 @@
         <button id="clearLeaderboard">Wyczyść ranking</button>
       </div>
     </div>
-
+    <p class="hint">Wprowadź cyfry 1–9. Puste pole zostaw puste.</p>
     <div class="board-area">
       <div id="board" class="sudoku-board" aria-label="Plansza sudoku"></div>
       <div id="keypad" class="keypad" aria-label="Klawiatura numeryczna">
@@ -62,18 +61,16 @@
           <button data-value="clear" class="clear">Wyczyść</button>
         </div>
       </div>
-      <div id="pauseOverlay" class="pause-overlay hidden" role="status" aria-live="polite">
-        <div class="pause-content">
-          <div class="pause-title">PAUZA — czas zatrzymany</div>
-          <div class="pause-desc">Podczas pauzy plansza jest ukryta, aby zapobiec patrzeniu na rozwiązanie.</div>
-          <button id="resumeBtn" class="card-btn">Wznów</button>
-        </div>
+    </div>
+    <div id="pauseOverlay" class="pause-overlay hidden" role="status" aria-live="polite">
+      <div class="pause-content">
+        <div class="pause-title">PAUZA — czas zatrzymany</div>
+        <div class="pause-desc">Podczas pauzy plansza jest ukryta, aby zapobiec patrzeniu na rozwiązanie.</div>
+        <button id="resumeBtn" class="card-btn">Wznów</button>
       </div>
     </div>
-
     <div id="candidates" class="candidates" aria-hidden="true"></div>
     <div id="message" class="message" aria-live="polite"></div>
-
     <div id="leaderboard" class="leaderboard hidden" aria-live="polite">
       <h2>Ranking najlepszych</h2>
       <label>Filtr: <select id="leaderboardFilter"><option value="all">Wszystkie</option><option value="easy">Łatwy</option><option value="medium">Średni</option><option value="hard">Trudny</option></select></label>
@@ -84,9 +81,10 @@
         <tbody></tbody>
       </table>
     </div>
-
-    <p class="hint">Wprowadź cyfry 1–9. Puste pole zostaw puste.</p>
   </main>
+  <div class="powrot">
+    <a class="back-link" href="../index.html">← Powrót do strony głównej</a>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
