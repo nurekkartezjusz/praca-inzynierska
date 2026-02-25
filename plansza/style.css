@@ -219,65 +219,92 @@ body {
 .start{
     background: #F2D7D9;
     border: 2px solid #C79CA0;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .sala{
     background: #C9D8F0;
     border: 2px solid #8FA4C0;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .lazienka{
     background: #A7D8DE;
     border: 2px solid #6BA8AE;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .aula{
     background: #FFF2CC;
     border: 2px solid #D6C48F;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .dziekanat{
     background: #F9D5A7;
     border: 2px solid #C79F6E;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .praktyki{
     background: #D5E8D4;
     border: 2px solid #9EB79C;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .szansa{
     background: #EAD1DC;
     border: 2px solid #B79EAC;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .biblioteka{
     background: #E2D5C7;
     border: 2px solid #B3A48F;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .strefarelaksu{
     background: #D0E8D0;
     border: 2px solid #9AB99A;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .start:hover{
     background: #C79CA0;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .sala:hover{
     background: #8FA4C0;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .lazienka:hover{
     background: #6BA8AE;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .aula:hover{
     background: #D6C48F;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .dziekanat:hover{
     background: #C79F6E;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .praktyki:hover{
     background: #9EB79C;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .szansa:hover{
     background: #B79EAC;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .biblioteka:hover{
     background: #B3A48F;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 .strefarelaksu:hover{
     background: #9AB99A;
+    box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
+    color: #282c32;
 }
 /* Menu górne */
 .top-menu{
