@@ -33,15 +33,16 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: #495057;
-    font-size: 10px;
-    transition: all 0.3s ease;
+    color: #343a42;
+    transition: all 0.2s ease;
     aspect-ratio: 1/1;
     z-index: 1;
+    font-family: 'Pixelify Sans', monospace;
+    font-size: 9px;
+    text-align: center;
+    font-weight: 700; 
 }
 .cell:hover {
-    transform: scale(1.05);
     z-index: 10;
     cursor: pointer;
 }
@@ -250,6 +251,33 @@ body {
 .strefarelaksu{
     background: #D0E8D0;
     border: 2px solid #9AB99A;
+}
+.start:hover{
+    background: #C79CA0;
+}
+.sala:hover{
+    background: #8FA4C0;
+}
+.lazienka:hover{
+    background: #6BA8AE;
+}
+.aula:hover{
+    background: #D6C48F;
+}
+.dziekanat:hover{
+    background: #C79F6E;
+}
+.praktyki:hover{
+    background: #9EB79C;
+}
+.szansa:hover{
+    background: #B79EAC;
+}
+.biblioteka:hover{
+    background: #B3A48F;
+}
+.strefarelaksu:hover{
+    background: #9AB99A;
 }
 /* Menu górne */
 .top-menu{
