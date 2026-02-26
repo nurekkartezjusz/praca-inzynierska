@@ -1,5 +1,10 @@
 :root{
     --class-font: "Press Start 2P", system-ui;
+    --class-button-color: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
+    --class-font-color: white;
+    --class-heading-color: #D91D4F;
+    --class-bg-color: #667EEA;
+    --class-card-color: #5267c7; 
 }
 .press-start-2p-regular {
     font-family: "Press Start 2P", system-ui;
@@ -518,7 +523,7 @@ body {
 .class-popup{
     height: 440px;
     width: 863px;
-    background-color: #667eea;
+    background-color: var(--class-bg-color);
     cursor: pointer;
     z-index: 101;
     position: relative;
@@ -531,7 +536,7 @@ body {
     padding: 10px;
 }
 .inside h1{
-    color: #D91D4F;
+    color: var(--class-heading-color);
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
@@ -563,7 +568,7 @@ body {
     transform: rotateY(180deg);
 }
 .front, .back{
-    background-color: #5267c7;
+    background-color: var(--class-card-color);
     padding: 17px 0;
     box-sizing: border-box;
     gap: 8px;
@@ -571,7 +576,7 @@ body {
     backface-visibility: hidden;
 }
 .front h2, .back h2{
-    color: white;
+    color: var(--class-font-color);
     font-size: 12px;
     text-align: center;
     font-family: var(--class-font);
@@ -583,7 +588,7 @@ body {
     padding: 0 14px;
 }
 .front p{
-    color: white;
+    color: var(--class-font-color);
     font-size: 12px;
     line-height: 14px;
     text-align: center;
@@ -602,7 +607,7 @@ body {
     padding: 0 10px;
 }
 .back p{
-    color: white;
+    color: var(--class-font-color);
     font-size: 12px;
     line-height: 14px;
     font-family: var(--class-font);
@@ -630,14 +635,14 @@ body {
 .class-btn{
     width: 160px;
     text-transform: uppercase;
-    color: white;
+    color: var(--class-font-color);
     font-family: var(--class-font);
     padding: 8px 20px;
     margin-top: 15px;
     border: 2px solid black;
     box-shadow: 0 10px 4px rgba(0,0,0,0.25);
     font-size: 12px;
-    background: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
+    background: var(--class-button-color);
     transition: transform 0.15s ease, box-shadow 0.15 ease;
 }
 .class-btn:active{
@@ -650,7 +655,7 @@ body {
     position: fixed;
     padding: 6px 10px;
     background: rgba(0, 0, 0, 0.5);
-    color: white;
+    color: var(--class-font-color);
     border-radius: 6px;
     font-size: 12px;
     pointer-events: none;
@@ -669,7 +674,7 @@ body {
 .confirm-popup{
     width: 450px;
     height: 250px;
-    background: #667EEA;
+    background: var(--class-bg-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -680,17 +685,17 @@ body {
     font-size: 20px;
     font-family: var(--class-font);
     text-align: center;
-    color: white;
+    color: var(--class-font-color);
 }
 #wyborKlasy{
-    color: #D91D4F;
+    color: var(--class-heading-color);
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
     text-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
 .confirm-popup h3{
-    color: white;
+    color: var(--class-font-color);
     text-align: center;
     font-family: var(--class-font);
     font-size: 14px;
@@ -702,14 +707,14 @@ body {
 .confirm-button{
     width: 165px;
     text-transform: uppercase;
-    color: white;
+    color: var(--class-font-color);
     font-family: var(--class-font);
     padding: 8px 20px;
     margin-top: 15px;
     border: 2px solid black;
     box-shadow: 0 10px 4px rgba(0,0,0,0.25);
     font-size: 12px;
-    background: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
+    background: var(--class-button-color);
     transition: transform 0.15s ease, box-shadow 0.15 ease;
 }
 .confirm-button:active{
