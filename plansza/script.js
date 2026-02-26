@@ -168,13 +168,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.querySelector('.overlay');
 
   document.getElementById('btn-sportowiec').addEventListener("click", () => {
-    showConfirmation("Sportowiec");
+    showConfirmation("Sportowca");
   });
   document.getElementById('btn-leniuch').addEventListener("click", () => {
-    showConfirmation("Leniuch");
+    showConfirmation("Leniucha");
   });
   document.getElementById('btn-madrala').addEventListener("click", () => {
-    showConfirmation("Madrala");
+    showConfirmation("Madrale");
   });
 
   function showConfirmation(nazwaKlasy) {

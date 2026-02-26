@@ -670,6 +670,7 @@ body {
     width: 450px;
     height: 250px;
     background: #667EEA;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -680,6 +681,13 @@ body {
     font-family: var(--class-font);
     text-align: center;
     color: white;
+}
+#wyborKlasy{
+    color: #D91D4F;
+    font-size: 20px;
+    text-align: center;
+    font-family: var(--class-font);
+    text-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
 .confirm-popup h3{
     color: white;
