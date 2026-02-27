@@ -1,26 +1,151 @@
 :root{
-    --font-primary: "Inter", "Verdana", "Tahoma", "Segoe UI";
-    --color-primary: #eb285a;
-    --color-primary-contrast: #d91d4f;
-    --color-secondary: #006efa;
-    --color-secondary-contrast: #005da2;
-    --color-royal-blue: #0069ff;
-    --color-text: #141e50;
-    --color-border-gray: #727896;
-    --color-basic-blue: #cedeff;
+    --color-body-bg: linear-gradient(135deg,#d0d9eb 0%,#a9caff 100%);
+    --color-paper: #f0f4ff;
+    --color-cover-bg: radial-gradient(circle at center, #2a3a7a 0%, #141e50 100%);
+    --class-font: "Press Start 2P", system-ui;
+    --pixel-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
-*{ 
-    box-sizing: border-box;
-    background-color: var(--color-basic-blue);
-}
-.container{
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-}
-.left-column, .right-column{
+body{
+    margin: 0;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-body-bg);
+    perspective: 2000px;
+    overflow: hidden;
 }
-.card-flex{
+.book{
+    position: relative;
+    width: 75vw;
+    max-width: 900px;
+    height: auto;
+    aspect-ratio: 900 / 550;
+    transform-origin: center center;
+    transition: transform 0.3s ease-out;
+    transform: scale(1);
+}
+.paper{
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    left: 50%; 
+    top: -6px;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform 1s cubic-bezier(.645, .045, .355, 1);
+    z-index: 1;
+}
+.front, .back{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 10px;
+    left: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: var(--color-paper);
+    box-shadow: inset 10px 0px 25px rgba(0,0,0,0.1);
+}
+.back{
+    transform: rotateY(180deg);
+}
+.paper.flipped{
+    transform: rotateY(-180deg);
+}
+.paper.cover{
+    width: calc(50% + 10px); 
+    height: calc(100% + 20px);
+    top: -10px;
+    z-index: 5;
+}
+.cover-front, .cover-back{
+    background: var(--color-cover-bg) !important;
+    color: white;
+    border: 4px solid #ffffff;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+.cover-front{
+    border-left: none;
+    border-radius: 0 20px 20px 0; 
+    box-shadow: var(--pixel-shadow), 10px 10px 30px rgba(0,0,0,0.2) !important;
+}
+.cover-back{
+    border-right: none;
+    border-radius: 20px 0 0 20px;
+    transform: rotateY(180deg);
+    box-shadow: var(--pixel-shadow), -10px 10px 30px rgba(0,0,0,0.2) !important;
+}
+#p1 .back, #p5 .front{
+    background: #141e50 !important;
+    border: 4px solid #ffffff;
+    top: 0; 
+}
+#p1 .back{ 
+    border-radius: 20px 0 0 20px; 
+    border-right: none; 
+}
+#p5 .front{ 
+    border-radius: 0 20px 20px 0; 
+    border-left: none; 
+}
+#p1 .back .page, #p5 .front .page{
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    background: var(--color-paper);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+#p1 .back .page{ 
+    left: 10px; 
+    right: 0; 
+    border-radius: 10px 0 0 10px; 
+}
+#p5 .front .page{ 
+    left: 0; 
+    right: 10px; 
+    border-radius: 0 10px 10px 0; 
+}
+.page{
+    padding: 3vw;
+    font-family: var(--class-font);
+    font-size: calc(8px + 0.8vw);
+    line-height: 1.4;
+}
+.book::after{
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -10px;
+    width: 1px;
+    height: calc(100% + 20px);
+    background: rgba(255,255,255,0.2);
+    z-index: 100;
+    pointer-events: none;
+    transform: translateX(-50%);
+}
+.buttons{
+    margin-top: 50px;
     display: flex;
+    gap: 15px;
+}
+button{
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border: 2px solid #000;
+    box-shadow: var(--pixel-shadow);
+    font-family: var(--class-font);
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+button:hover{
+    transform: translateY(-2px);
+    background: rgba(169,202,255,0.7);
 }

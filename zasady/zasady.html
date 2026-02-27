@@ -1,81 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zasady gry</title>
-    <link rel="stylesheet" a href="style.css">
+    <title>Książka</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Comforter+Brush&family=Noto+Serif+Ahom&family=Parisienne&family=Press+Start+2P&family=Shantell+Sans:ital,wght@0,300..800;1,300..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Zasady gry</h1>
-    <button type="button">Back</button>
-    <div class="container">       
-        <!-- Lewa kolumna-->
-        <div class="left-column">
-            <div class="box">
-                <h2>O grze</h2>
-                <p>Gra polega na ukończeniu studiów na Uniwersytecie WSB Merito. Podczas    rozgrywki gracz musi kolejno przejść z 2. piętra, przez 1. piętro, aż na parter. Student będzie miał możliwość przechodzenia na niższe piętra po uzbieraniu określonej liczby kryształków (najprawdopodobniej kolejno: 5, 10, oraz 15 kryształków).</p>
-                <p>Ich zebranie będzie równoznaczne z ukończeniem studiów i opuszczeniem budynku WSB Merito, czyli znalezieniem się w centralnej części planszy.</p>
-                <p>Po ukończeniu gry gracz otrzymuje tytuł inżyniera lub licencjata</p>
-            </div>
-            <div class="box">
-                <h2>Zasoby</h2>
-                <h3>Moneta</h3>
-                <div class="flex">
-                    <img src="moneta.png" alt="moneta">
-                    <p>w grze nie tylko wiedza ma kluczowe znaczenie, ale również umiejętne zarządzanie zasobami finansowymi. Podczas rywalizacji uczestnicy mogą zarówno zdobywać monety, jak i je tracić.</p>
-                </div>
-                <h3>Kryształki</h3>
-                <div class="flex">
-                    <img src="krysztalki.png" alt="kryształki">
-                    <p>pełnią kluczową rolę w przejściu rozgrywki. Bez nich uczestnik nie będzie mógł przechodzić na kolejne piętra. Za poprawne odpowiedzi na pytania gracz otrzymuje kryształki.</p>
-                </div>
+<div class="book">
+    <div class="paper cover" id="p1">
+        <div class="front cover-front">
+            <div class="page left">
+                <h2>Wielka Studencka Batalia</h2>
+                <p>Zasady gry</p>
             </div>
         </div>
-
-        <!-- Prawa kolumna-->
-         <div class="right-column">
-            <div class="rules">
-                <h2>Reguły rozgrywki</h2>
-                <ul>
-                    <li><p>poprawna odpowiedź na daną ilość pytań umożliwia przejście na kolejne piętro</p></li>
-                    <li><p>dwóch graczy nie może zajmować tego samego pola</p></li>
-                    <li><p>w celu przejścia gry, trzeba przejście przez wszystkie piętra</p></li>
-                    <li><p>zbieranie monet, by zapłacić za czesne</p></li>
-                    <li><p>start: czesne zapłacenie - przy zaplacie mozliwosc wyboru (hp/szczescie/moneta)</p></li>
-                </ul>
+        <div class="back">
+            <div class="page right">
             </div>
-
-            <div class="character-classes">
-                <h2>Klasy</h2>
-                <div class="card-flex">
-                <div class="card">
-                    <h3>Leniuch</h3>
-                    <img src="img/agahe.png" alt="Leniuch">
-                    <p>"A to trzeba było zrobić?"</p>
-                    <p>Człowiek, który dowiaduje się o wszystkim jako ostatni. Deadliny traktuje jak sugestię, a obecność jak opcję premium.</p>
-                    <p>Statystyki</p>
-                </div>
-            <div class="card-flex">
-                <div class="card">
-                    <h3>Mądrala</h3>
-                    <img src="img/basia.png" alt="madrala">
-                    <p>"To było na slajdzie."</p>
-                    <p>Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzący kiwa głową, grupa nie wie dlaczego.</p>
-                    <p>Statystyki</p>
-                </div>
-            </div>
-            <div class="card-flex">
-                <div class="card">
-                    <h3>Sportowiec</h3>
-                    <img src="img/aga.png" alt="sportowiec">
-                    <p>"Byłem na treningu"</p>
-                    <p>Zajęć nie było… znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś się zaliczy.</p>
-                    <p>Statystyki</p>
-                </div>
-                </div>
-            </div>
-         </div>
+        </div>
     </div>
+    <div class="paper" id="p2">
+        <div class="front">
+            <div class="page left">
+                <h2>Strona 1</h2>
+                <p>Opis gry...</p>
+            </div>
+        </div>
+        <div class="back">
+            <div class="page right">
+                <h2>Strona 2</h2>
+                <p>Cel gry...</p>
+            </div>
+        </div>
+    </div>
+    <div class="paper" id="p3">
+        <div class="front">
+            <div class="page left">
+                <h2>Strona 3</h2>
+                <p>Monety...</p>
+            </div>
+        </div>
+        <div class="back">
+            <div class="page right">
+                <h2>Strona 4</h2>
+                <p>Kryształki...</p>
+            </div>
+        </div>
+    </div>
+    <div class="paper" id="p4">
+        <div class="front">
+            <div class="page left">
+                <h2>Strona 5</h2>
+                <p>Reguły...</p>
+            </div>
+        </div>
+        <div class="back">
+            <div class="page right">
+                <h2>Strona 6</h2>
+                <p>Klasy...</p>
+            </div>
+        </div>
+    </div>
+    <div class="paper cover" id="p5">
+        <div class="front">
+            <div class="page left">
+                <h2></h2>
+                <p></p>
+            </div>
+        </div>
+        <div class="back cover-back">
+            <div class="page right">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="buttons">
+    <button onclick="prevPage()">⬅</button>
+    <button onclick="nextPage()">➡</button>
+</div>
+    <script src="script.js"></script>
 </body>
 </html>
