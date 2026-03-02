@@ -2,7 +2,7 @@
     --color-body-bg: linear-gradient(135deg,#d0d9eb 0%,#a9caff 100%);
     --color-paper: #f0f4ff;
     --color-cover-bg: radial-gradient(circle at center, #2a3a7a 0%, #141e50 100%);
-    --class-font: "Press Start 2P", system-ui;
+    --class-font: "DotGothic16", system-ui;
     --pixel-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 body{
@@ -18,9 +18,8 @@ body{
 }
 .book{
     position: relative;
-    width: 75vw;
-    max-width: 900px;
-    height: auto;
+    width: 900px;
+    height: 550px;
     aspect-ratio: 900 / 550;
     transform-origin: center center;
     transition: transform 0.3s ease-out;
@@ -46,7 +45,12 @@ body{
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     background: var(--color-paper);
-    box-shadow: inset 10px 0px 25px rgba(0,0,0,0.1);
+}
+.front{
+    box-shadow: inset 10px 0px 25px rgba(0,0,0,0.15);
+}
+.back{
+    box-shadow: inset 0px 10px 25px rgba(0,0,0,0.15);
 }
 .back{
     transform: rotateY(180deg);
@@ -80,7 +84,7 @@ body{
     transform: rotateY(180deg);
     box-shadow: var(--pixel-shadow), -10px 10px 30px rgba(0,0,0,0.2) !important;
 }
-#p1 .back, #p5 .front{
+#p1 .back, #p9 .front{
     background: #141e50 !important;
     border: 4px solid #ffffff;
     top: 0; 
@@ -89,11 +93,11 @@ body{
     border-radius: 20px 0 0 20px; 
     border-right: none; 
 }
-#p5 .front{ 
+#p9 .front{ 
     border-radius: 0 20px 20px 0; 
     border-left: none; 
 }
-#p1 .back .page, #p5 .front .page{
+#p1 .back .page, #p9 .front .page{
     position: absolute;
     top: 10px;
     bottom: 10px;
@@ -105,16 +109,33 @@ body{
     right: 0; 
     border-radius: 10px 0 0 10px; 
 }
-#p5 .front .page{ 
+#p9 .front .page{ 
     left: 0; 
     right: 10px; 
     border-radius: 0 10px 10px 0; 
 }
+#p8 .back .page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  text-align: center;
+  box-sizing: border-box;
+}
 .page{
-    padding: 3vw;
+    padding: 30px;
     font-family: var(--class-font);
-    font-size: calc(8px + 0.8vw);
-    line-height: 1.4;
+    font-size: 25px;
+    line-height: 1.2;
+    width: calc(100%-20px);
+    height: calc(100%-20px);
+    box-sizing: border-box;
+    overflow: hidden;                
+    word-break: break-word;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .book::after{
     content: '';
@@ -148,4 +169,99 @@ button{
 button:hover{
     transform: translateY(-2px);
     background: rgba(169,202,255,0.7);
+}
+@media (max-width: 1400px){
+    .book{ 
+        transform: scale(0.95); 
+    }
+}
+@media (max-width: 1300px){
+    .book{ 
+        transform: scale(0.92); 
+    }
+}
+@media (max-width: 1200px){
+    .book{ 
+        transform: scale(0.90); 
+    }
+}
+@media (max-width: 1100px){
+    .book{ 
+        transform: scale(0.88); 
+    }
+}
+@media (max-width: 1000px){
+    .book{ 
+        transform: scale(0.85); 
+    }
+}
+@media (max-width: 950px){
+    .book{ 
+        transform: scale(0.82); 
+    }
+}
+@media (max-width: 900px){
+    .book{ 
+        transform: scale(0.80); 
+    }
+}
+@media (max-width: 850px){
+    .book{ 
+        transform: scale(0.78); 
+    }
+}
+@media (max-width: 800px){
+    .book{ 
+        transform: scale(0.75); 
+    }
+}
+@media (max-width: 750px){
+    .book{ 
+        transform: scale(0.73); 
+    }
+}
+@media (max-width: 700px){
+    .book{ 
+        transform: scale(0.70); 
+    }
+}
+@media (max-width: 650px){
+    .book{ 
+        transform: scale(0.65); 
+    }
+}
+@media (max-width: 600px){
+    .book{ 
+        transform: scale(0.60); 
+    }
+}
+@media (max-width: 550px){
+    .book{ 
+        transform: scale(0.55); 
+    }
+}
+@media (max-width: 500px){
+    .book{ 
+        transform: scale(0.50); 
+    }
+}
+@media (max-width: 450px){
+    .book{ 
+        transform: scale(0.45); 
+    }
+}
+@media (max-width: 400px){
+    .book{ 
+        transform: scale(0.40); 
+    }
+}
+@media (max-width: 350px){
+    .book{ 
+        transform: scale(0.30); 
+    }
+}
+@media (max-width: 300px){
+    .book{ 
+        transform: scale(0.25); 
+    }
 }
