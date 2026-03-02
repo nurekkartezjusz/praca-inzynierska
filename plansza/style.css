@@ -42,7 +42,7 @@ body {
     transition: all 0.2s ease;
     aspect-ratio: 1/1;
     z-index: 1;
-    font-family: 'Pixelify Sans', monospace;
+    font-family: 'Tiny5', monospace;
     font-size: 9px;
     text-align: center;
     font-weight: 700; 
