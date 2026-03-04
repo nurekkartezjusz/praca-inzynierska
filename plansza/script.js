@@ -129,6 +129,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 });
+// Karuzela kart
+document.addEventListener("DOMContentLoaded", () => {
+    
+})
+
+
 // Tooltip
 document.addEventListener("DOMContentLoaded", () => {
   const tooltip = document.getElementById('tooltip');

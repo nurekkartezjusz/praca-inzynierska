@@ -663,7 +663,14 @@ body {
     transition: opacity 0.15s;
     z-index: 9999;
 }
+.control{
+    display: none;
+}
+
 @media (max-width: 768px){
+    .control{
+        display: flex;
+    }
     .class-popup{
         width: 560px;
     }
@@ -675,6 +682,9 @@ body {
     }
 }
 @media (max-width: 600px){
+    .control{
+        display: flex;
+    }
     .class-popup{
        width: 300px;
     }
