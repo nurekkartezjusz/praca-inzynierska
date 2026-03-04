@@ -663,6 +663,29 @@ body {
     transition: opacity 0.15s;
     z-index: 9999;
 }
+@media (max-width: 768px){
+    .class-popup{
+        width: 560px;
+    }
+    #thirdCard{
+        display: none;
+    }
+    .thirdCardBtn{
+        display: none;
+    }
+}
+@media (max-width: 600px){
+    .class-popup{
+       width: 300px;
+    }
+    #thirdCard, #secondCard{
+        display: none;
+    }
+    .thirdCardBtn, .secondCardBtn{
+        display: none;
+    }
+}
+
 /* Style do potwierdzenia wyboru klasy */
 .confirmation-overlay{
     position: absolute;
