@@ -120,6 +120,7 @@ function toggleGamesMenu(){
 // KARTY WYBORU KLASY
 
 // Awatar na kartach
+document.addEventListener("DOMContentLoaded", () => { 
 const API_URL = '/api';
 
 async function loadAvatarForCard() {
@@ -145,7 +146,8 @@ async function loadAvatarForCard() {
     }
 
 }
-
+loadAvatarForCard();
+});
 
 // Obrót kart
 document.addEventListener("DOMContentLoaded", () => {
