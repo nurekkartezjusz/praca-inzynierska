@@ -119,6 +119,34 @@ function toggleGamesMenu(){
 
 // KARTY WYBORU KLASY
 
+// Awatar na kartach
+const API_URL = '/api';
+
+async function loadAvatarForCard() {
+    const token = localStorage.getItem('access_token')
+    if(!token) return;
+
+    try {
+      const response = await fetch(`${API_URL}/me?token=${token}`);
+      if(!response.ok) return;
+
+      const userData = await response.json();
+      if(!userData.avatar) return;
+
+      const avatarState = JSON.parse(userData.avatar);
+
+      const container = document.querySelector('.avatar-container');
+      if(!container) return;
+
+      renderAvatar(avatarState, container);
+
+    } catch (err){
+      console.error("Błąd ładowania awatara:", err);
+    }
+
+}
+
+
 // Obrót kart
 document.addEventListener("DOMContentLoaded", () => {
   const containers = document.querySelectorAll('.container');
