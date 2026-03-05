@@ -118,36 +118,63 @@ function toggleGamesMenu(){
 
 
 // KARTY WYBORU KLASY
+const colors = {
+    wlosy: ["czarne", "blond", "braz"],
+    koszulka: ["czarna", "czerwona", "niebieska", "zielona", "biala", "rozowa"],
+    spodnie: ["czarne", "biale", "szare", "niebieskie"]
+};
+
+function renderAvatar(avatarState, container) {
+    const parts = ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"];
+        
+    parts.forEach(part => {
+        const img = container.querySelector("." + part);
+        let path = "";
+            
+        if (colors[part]) {
+            const styleNum = avatarState[part];
+            const colorIndex = avatarState[part + "ColorIndex"];
+            const color = colors[part][colorIndex];
+            path = `../wybor%20awatara/img/${part}/${part}${styleNum}_${color}.png`;
+        } else {
+            path = `../wybor%20awatara/img/${part}/${part}${avatarState[part]}.png`;
+        }
+            
+        img.src = path;
+    });
+}
 
 // Awatar na kartach
 document.addEventListener("DOMContentLoaded", () => { 
-const API_URL = '/api';
+    const API_URL = '/api';
 
-async function loadAvatarForCard() {
-    const token = localStorage.getItem('access_token')
-    if(!token) return;
+    async function loadAvatarForCard() {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
 
-    try {
-      const response = await fetch(`${API_URL}/me?token=${token}`);
-      if(!response.ok) return;
+        try {
+            const response = await fetch(`${API_URL}/me?token=${token}`);
+            if (!response.ok) return;
 
-      const userData = await response.json();
-      if(!userData.avatar) return;
+            const userData = await response.json();
+            if (!userData.avatar) return;
 
-      const avatarState = JSON.parse(userData.avatar);
+            const avatarState = JSON.parse(userData.avatar);
 
-      const container = document.querySelector('.avatar-container');
-      if(!container) return;
+            const container = document.querySelector('.avatar-container');
+            if (!container) return;
 
-      renderAvatar(avatarState, container);
+            // POPRAWIONE WYWOŁANIE
+            renderAvatar(avatarState, container);
 
-    } catch (err){
-      console.error("Błąd ładowania awatara:", err);
+        } catch (err) {
+            console.error("Błąd ładowania awatara:", err);
+        }
     }
 
-}
-loadAvatarForCard();
+    loadAvatarForCard();
 });
+
 
 // Obrót kart
 document.addEventListener("DOMContentLoaded", () => {
