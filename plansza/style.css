@@ -510,12 +510,13 @@ body {
     zoom: 0.75;
 }
 
-
+/* Style do awatarów */
 .avatar-container{
 	position:relative;
-	width: 50px;
-    height: 50px;
+	width: 210px; 
+    height: 210px; /* wysokość i szerokość musi być taka sama by dobrze sie skalowało */
 	flex-shrink: 0;
+    margin-left: 15px;
 }
 .avatar-container .layer{
 	position:absolute;
@@ -573,13 +574,13 @@ body {
     height: 300px;
     width: 240px;
     perspective: 1000px;
-    transform-style: preserve-3d;
 }
 .card{
     height: 100%;
     width: 100%;;
     transition: transform 1500ms;
     transform-style: preserve-3d;
+    position: relative;
 }
 .container > .card{
     cursor: pointer;
@@ -592,6 +593,7 @@ body {
     background-color: var(--class-card-color);
     padding: 17px 0;
     box-sizing: border-box;
+    position: absolute;
     gap: 8px;
     width: 100%;
     height: 100%;
@@ -606,7 +608,7 @@ body {
 }
 .front{
     text-align: center;
-    position: relative;
+    
 }
 .front h2{
     padding: 0 14px;
