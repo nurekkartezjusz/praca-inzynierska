@@ -636,7 +636,7 @@ body {
 .back .stats p{
     margin: 3px 0;
 }
-.stars, .hearts{
+.stars, .hearts, .brains{
     display: flex;
     height: 25px;
     gap: 5px;
