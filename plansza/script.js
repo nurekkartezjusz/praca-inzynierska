@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const avatarState = JSON.parse(userData.avatar);
 
-            const container = document.querySelector('.avatar-container');
+            const container = document.querySelectorAll('.avatar-container');
             if (!container) return;
 
             // POPRAWIONE WYWOŁANIE
