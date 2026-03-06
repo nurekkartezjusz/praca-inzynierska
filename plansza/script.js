@@ -161,11 +161,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const avatarState = JSON.parse(userData.avatar);
 
-            const container = document.querySelectorAll('.avatar-container');
-            if (!container) return;
+            const containers = document.querySelectorAll('.avatar-container');
+            if (!containers.length) return;
 
-            // POPRAWIONE WYWOŁANIE
-            renderAvatar(avatarState, container);
+            containers.forEach(container => {
+                renderAvatar(avatarState, container); // ✔️ poprawne wywołanie
+            });
 
         } catch (err) {
             console.error("Błąd ładowania awatara:", err);
@@ -174,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadAvatarForCard();
 });
+
 
 
 // Obrót kart
