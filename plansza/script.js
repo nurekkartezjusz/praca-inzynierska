@@ -152,11 +152,15 @@ function renderAvatar(avatarState, container) {
     }
     if (container.closest("#secondCard")) {
         const zzz = container.querySelector(".zzz");
+        const babelek = container.querySelector(".babelek");
         const skoraNum = avatarState.skora;
-        zzz.src = `img/zzz_skora${skoraNum}.png`;
-
+        if (zzz) {
+          zzz.src = `img/zzz_skora${skoraNum}.png`;
+        }
+        if (babelek) {
+          babelek.src = "img/babelek.png"
+        }
     }
-    
     if (container.closest("#thirdCard")) {
         const okulary = container.querySelector(".okulary");
         if (okulary) {
