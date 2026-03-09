@@ -491,7 +491,7 @@ body {
     font-size: 18px;
     width: 30px;
     height: 30px;
-    border-radius: 0; /* pixelowy */
+    border-radius: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -509,12 +509,10 @@ body {
 .game-modal-iframe.scale{
     zoom: 0.75;
 }
-
-/* Style do awatarów */
 .avatar-container{
 	position:relative;
 	width: 210px; 
-    height: 210px; /* wysokość i szerokość musi być taka sama by dobrze sie skalowało */
+    height: 210px;
 	flex-shrink: 0;
     margin-left: 15px;
 }
@@ -527,11 +525,6 @@ body {
 	image-rendering:pixelated;
     pointer-events: none;
 }
-
-
-
-
-/* Style do wyboru klasy */
 .overlay{
     position: fixed;
     inset: 0;

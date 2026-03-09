@@ -125,23 +125,44 @@ const colors = {
 };
 
 function renderAvatar(avatarState, container) {
+
     const parts = ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"];
-        
+
     parts.forEach(part => {
         const img = container.querySelector("." + part);
+        if (!img) return;
         let path = "";
-            
         if (colors[part]) {
             const styleNum = avatarState[part];
             const colorIndex = avatarState[part + "ColorIndex"];
             const color = colors[part][colorIndex];
+
             path = `../wybor%20awatara/img/${part}/${part}${styleNum}_${color}.png`;
         } else {
             path = `../wybor%20awatara/img/${part}/${part}${avatarState[part]}.png`;
         }
-            
+
         img.src = path;
     });
+    if (container.closest("#firstCard")) {
+        const hantel = container.querySelector(".hantel");
+        if (hantel) {
+            hantel.src = "img/hantel.png";
+        }
+    }
+    if (container.closest("#secondCard")) {
+        const zzz = container.querySelector(".zzz");
+        const skoraNum = avatarState.skora;
+        zzz.src = `img/zzz_skora${skoraNum}.png`;
+
+    }
+    
+    if (container.closest("#thirdCard")) {
+        const okulary = container.querySelector(".okulary");
+        if (okulary) {
+            okulary.src = "img/okulary.png";
+        }
+    }
 }
 
 // Awatar na kartach
