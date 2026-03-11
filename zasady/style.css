@@ -181,7 +181,6 @@ button:hover{
     height: 300px;
     position: relative;
     left: 17%;
-    margin-top: 10px;
 }
 @media (max-width: 1400px){
     .book{ 

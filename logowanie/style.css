@@ -94,18 +94,18 @@
 .logowanie:active{
     transform: translateY(2px);
 }
-.field {
+.field{
     position: relative;
     margin-bottom: 10px;
 }
-.field input {
+.field input{
     width: 97%;
     padding: 20px 10px 7px;
     font-size: 16px;
     border: 1px solid var(--color-border-gray);
     outline: none;
 }
-.field label {
+.field label{
     position: absolute;
     left: 10px;
     top: 50%;
@@ -116,7 +116,9 @@
     transition: 0.25s ease;
 }
 .field input:focus + label,
-.field input:not(:placeholder-shown) + label {
+.field input:not(:placeholder-shown) + label,
+.field input:-webkit-autofill + label,
+.field input:autofill + label{
     top: 7px;
     font-size: 12px;
     color: var(--color-text);
@@ -131,7 +133,7 @@
     width: 24px;
     cursor: pointer;
 }
-.field input:focus ~ .eye-icon {
+.field input:focus ~ .eye-icon{
     transform: translateY(0);
 }
 .login a{
@@ -179,16 +181,6 @@
 }
 .rejestracja:active{
     transform: translateY(2px);
-}
-.input-box{
-    position: relative;
-}
-.eye-icon{
-    position: absolute;
-    right: 0.75rem;
-    top: 25%;
-    width: 24px;
-    cursor: pointer;
 }
 .site-footer {
     text-align: center;
