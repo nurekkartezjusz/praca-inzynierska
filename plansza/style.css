@@ -1,5 +1,5 @@
 :root{
-    --class-font: "Press Start 2P", system-ui;
+    --class-font: "JetBrains Mono", system-ui;
     --class-button-color: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
     --class-font-color: white;
     --class-heading-color: #D91D4F;
@@ -555,7 +555,11 @@ body {
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
-    text-shadow: 0 4px 4px rgba(0,0,0,0.25);
+    text-shadow:
+     -1px -1px 0 #000,  
+      1px -1px 0 #000,
+     -1px  1px 0 #000,
+      1px  1px 0 #000;
 }
 .cards-wrapper{
     display: flex;
@@ -592,10 +596,9 @@ body {
     height: 100%;
     backface-visibility: hidden;
 }
-
 .front h2, .back h2{
     color: var(--class-font-color);
-    font-size: 12px;
+    font-size: 13px;
     text-align: center;
     font-family: var(--class-font);
 }
@@ -655,9 +658,10 @@ body {
     margin-top: 15px;
     border: 2px solid black;
     box-shadow: 0 10px 4px rgba(0,0,0,0.25);
-    font-size: 12px;
+    font-size: 11px;
     background: var(--class-button-color);
     transition: transform 0.15s ease, box-shadow 0.15 ease;
+    font-weight: 700;
 }
 .class-btn:active{
     transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0,0,0,0.25);
@@ -739,7 +743,11 @@ body {
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
-    text-shadow: 0 4px 4px rgba(0,0,0,0.25);
+    text-shadow:
+     -1px -1px 0 #000,  
+      1px -1px 0 #000,
+     -1px  1px 0 #000,
+      1px  1px 0 #000;
 }
 .confirm-popup h3{
     color: var(--class-font-color);
@@ -773,6 +781,6 @@ body {
 .confirm-popup p{
     text-align: center;
     font-family: var(--class-font);
-    color: #6E6E6E;
+    color: var(--class-heading-color);
     font-size: 10px;
 }

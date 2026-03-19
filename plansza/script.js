@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showConfirmation("Leniucha");
   });
   document.getElementById('btn-madrala').addEventListener("click", () => {
-    showConfirmation("Madrale");
+    showConfirmation("Mądralę");
   });
 
   function showConfirmation(nazwaKlasy) {
