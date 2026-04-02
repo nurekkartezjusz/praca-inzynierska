@@ -91,7 +91,19 @@
                     body: JSON.stringify({ email: email })
                 });
 
-                const data = await response.json();
+                // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const text = await response.text();
+                    if (text) {
+                        data = JSON.parse(text);
+                    } else {
+                        data = {};
+                    }
+                } else {
+                    data = {};
+                }
 
                 if (response.ok) {
                     // Pokaż krok 2
@@ -155,7 +167,19 @@
                     })
                 });
 
-                const data = await response.json();
+                // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const text = await response.text();
+                    if (text) {
+                        data = JSON.parse(text);
+                    } else {
+                        data = {};
+                    }
+                } else {
+                    data = {};
+                }
 
                 if (response.ok) {
                     showSuccess('Hasło zostało zresetowane pomyślnie! Możesz się teraz zalogować.');

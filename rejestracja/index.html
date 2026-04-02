@@ -280,7 +280,19 @@
                     })
                 });
 
-                const data = await response.json();
+                // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const text = await response.text();
+                    if (text) {
+                        data = JSON.parse(text);
+                    } else {
+                        data = {};
+                    }
+                } else {
+                 data = {};
+                }
 
                 if (response.ok) {
                     // Rejestracja pomyślna - automatycznie zaloguj użytkownika
@@ -296,9 +308,21 @@
                             })
                         });
 
-                        const loginData = await loginResponse.json();
+                        // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                        let loginData;
+                        const loginContentType = loginResponse.headers.get("content-type");
+                        if (loginContentType && loginContentType.includes("application/json")) {
+                            const loginText = await loginResponse.text();
+                            if (loginText) {
+                                loginData = JSON.parse(loginText);
+                            } else {
+                                loginData = {};
+                            }
+                        } else {
+                            loginData = {};
+                        }
 
-                        if (loginResponse.ok) {
+                        if (loginResponse.ok && loginData.access_token) {
                             // Zapisz token
                             localStorage.setItem('access_token', loginData.access_token);
                             localStorage.setItem('user_email', email);

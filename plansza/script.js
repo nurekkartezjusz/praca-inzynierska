@@ -173,6 +173,18 @@ function renderAvatar(avatarState, container) {
 document.addEventListener("DOMContentLoaded", () => { 
     const API_URL = '/api';
 
+    // Bezpieczne parsowanie JSON z odpowiedzi
+    async function safeJsonParse(response) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            const text = await response.text();
+            if (text) {
+                return JSON.parse(text);
+            }
+        }
+        return {};
+    }
+
     async function loadAvatarForCard() {
         const token = localStorage.getItem('access_token');
         if (!token) return;
@@ -181,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`${API_URL}/me?token=${token}`);
             if (!response.ok) return;
 
-            const userData = await response.json();
+            const userData = await safeJsonParse(response);
             if (!userData.avatar) return;
 
             const avatarState = JSON.parse(userData.avatar);

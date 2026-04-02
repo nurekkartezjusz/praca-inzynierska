@@ -92,7 +92,19 @@
                 const response = await fetch(`${API_URL}/me?token=${token}`);
                 
                 if (response.ok) {
-                    const userData = await response.json();
+                    // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                    let userData;
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const text = await response.text();
+                        if (text) {
+                            userData = JSON.parse(text);
+                        } else {
+                            userData = {};
+                        }
+                    } else {
+                        userData = {};
+                    }
                     
                     // Sprawdź czy użytkownik ma awatar - jeśli nie, przekieruj do kreatora
                     if (!userData.avatar) {

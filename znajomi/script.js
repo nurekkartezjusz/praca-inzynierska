@@ -1,5 +1,17 @@
 const API_URL = '/api';
 
+// Bezpieczne parsowanie JSON z odpowiedzi
+async function safeJsonParse(response) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+        if (text) {
+            return JSON.parse(text);
+        }
+    }
+    return {};
+}
+
 // Sprawdź czy użytkownik jest zalogowany
 function checkAuth() {
     const token = localStorage.getItem('access_token');
@@ -52,7 +64,7 @@ async function searchUsers() {
             throw new Error('Błąd wyszukiwania');
         }
 
-        const users = await response.json();
+        const users = await safeJsonParse(response);
         
         if (users.length === 0) {
             resultsDiv.innerHTML = '<div class="empty-state">Nie znaleziono użytkowników</div>';
@@ -76,7 +88,7 @@ async function loadFriendRequests() {
             throw new Error('Błąd pobierania zaproszeń');
         }
 
-        const requests = await response.json();
+        const requests = await safeJsonParse(response);
         const requestsDiv = document.getElementById('friendRequests');
         const countSpan = document.getElementById('requestCount');
         
@@ -111,7 +123,7 @@ async function loadFriends() {
             throw new Error('Błąd pobierania znajomych');
         }
 
-        const friends = await response.json();
+        const friends = await safeJsonParse(response);
         const friendsDiv = document.getElementById('friendsList');
         const countSpan = document.getElementById('friendCount');
         
@@ -198,7 +210,7 @@ async function sendFriendRequest(username) {
             })
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd wysyłania zaproszenia');
@@ -220,7 +232,7 @@ async function acceptFriendRequest(friendshipId) {
             method: 'POST'
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd akceptowania zaproszenia');
@@ -244,7 +256,7 @@ async function rejectFriendRequest(friendshipId) {
             method: 'POST'
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd odrzucania zaproszenia');
@@ -304,7 +316,7 @@ async function selectGame(game) {
             })
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd wysyłania zaproszenia');
@@ -332,7 +344,7 @@ async function removeFriend(friendshipId, username) {
             method: 'DELETE'
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd usuwania znajomego');
@@ -361,7 +373,7 @@ async function loadGameInvitations() {
             throw new Error('Błąd pobierania zaproszeń do gier');
         }
 
-        const invitations = await response.json();
+        const invitations = await safeJsonParse(response);
         const invitationsDiv = document.getElementById('gameInvitations');
         const countSpan = document.getElementById('gameInvitationCount');
         
@@ -432,7 +444,7 @@ async function acceptGameInvitation(invitationId, gameType) {
             method: 'POST'
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd akceptowania zaproszenia');
@@ -464,7 +476,7 @@ async function declineGameInvitation(invitationId) {
             method: 'POST'
         });
 
-        const data = await response.json();
+        const data = await safeJsonParse(response);
 
         if (!response.ok) {
             throw new Error(data.detail || 'Błąd odrzucania zaproszenia');
