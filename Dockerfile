@@ -16,27 +16,8 @@ COPY requirements.txt .
 # Zainstaluj zależności Pythona (w tym psycopg2-binary dla PostgreSQL/Supabase)
 RUN pip install -r requirements.txt
 
-# Kopiuj kod aplikacji
-COPY main.py database.py models.py schemas.py auth.py ./
-
-# Kopiuj wszystkie pliki frontendu
-COPY index.html ./
-COPY img/ ./img/
-COPY img_glowna/ ./img_glowna/
-COPY css/ ./css/
-COPY js/ ./js/
-COPY haslo/ ./haslo/
-COPY karty/ ./karty/
-COPY kolko-i-krzyzyk/ ./kolko-i-krzyzyk/
-COPY logowanie/ ./logowanie/
-COPY plansza/ ./plansza/
-COPY regulamin/ ./regulamin/
-COPY rejestracja/ ./rejestracja/
-COPY statystyki/ ./statystyki/
-COPY sudoku/ ./sudoku/
-COPY ["wybor awatara/", "./wybor awatara/"]
-COPY zasady/ ./zasady/
-COPY znajomi/ ./znajomi/
+# Kopiuj cały projekt (z wyłączeniami z .dockerignore)
+COPY . .
 
 # Expose port
 EXPOSE 8000
