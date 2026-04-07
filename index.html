@@ -4,30 +4,13 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <title>Strona Główna</title>
-        <meta name="description" content="Katalog prostych gier: Kółko i krzyżyk oraz Sudoku" />
+        <meta name="description" content="Wielka Studencka Batalia" />
         <link rel="stylesheet" href="css/style-glowne.css" />
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap&subset=latin-ext" rel="stylesheet">
 </head>
 <body>
-    <!-- Profil użytkownika (dla zalogowanych) -->
-    <div class="user-profile" id="user-profile">
-        <div class="profile-icon" id="profile-icon">U</div>
-        <span class="profile-email" id="profile-email">user@email.com</span>
-        <div class="profile-dropdown">
-            <button onclick="toggleMenu()" style="background: none; border: none; cursor: pointer; font-size: 20px;">⚙️</button>
-            <div class="profile-menu" id="profile-menu">
-                <div class="profile-menu-item" onclick="window.location.href='statystyki/index.html'">
-                    Profil i Statystyki
-                </div>                <div class="profile-menu-item" onclick="window.location.href='znajomi/index.html'">
-                    Znajomi
-                </div>                <div class="profile-menu-item" onclick="logout()" style="color: #dc3545;">
-                    Wyloguj się
-                </div>
-            </div>
-        </div>
-    </div>
-
     <header class="site-header">
-        <div class="container">
+        <div class="header-grid">
             <div class="logo">
                 <h1>
                     <span>Wielka</span>
@@ -35,42 +18,73 @@
                     <span>Batalia</span>
                 </h1>
             </div>
-            <p class="site-sub">Graj w planszówkę z przyjaciółmi i rozwiązuj zadania!</p>
+            <div class="header-controls">
+                <button class="menu-btn" onclick="toggleHeaderMenu()">Menu</button>
+                <div class="theme-menu">
+                    <span class="theme-title">Tryb</span>
+                    <div class="theme-options">
+                        <div class="theme-option" data-theme="light" title="Tryb jasny">
+                            <img src="img/slonce.png">
+                        </div>
+                        <div class="theme-option" data-theme="dark" title="Tryb ciemny">
+                            <img src="img/ksiezyc.png">
+                        </div>
+                    </div>
+                </div>
+                <div class="language-menu">
+                    <span class="language-title">Język</span>
+                    <div class="language-options">
+                        <div class="language-option" data-lang="pl">
+                            <img src="img/pl.png">
+                            Polski
+                        </div>
+                        <div class="language-option" data-lang="en">
+                            <img src="img/en.png">
+                            English
+                        </div>
+                    </div>
+                </div>
+                <!-- Profil użytkownika (dla zalogowanych) -->
+                <div class="user-profile" id="user-profile">
+                    <div class="profile-icon" id="profile-icon">U</div>
+                    <span class="profile-email" id="profile-email">user@email.com</span>
+                    <div class="profile-dropdown">
+                        <img src="img/settings.png" alt="Ustawienia" class="settings-btn" onclick="toggleMenu()">
+                        <div class="profile-menu" id="profile-menu">
+                            <div class="profile-menu-item" onclick="window.location.href='statystyki/index.html'">
+                                Profil i Statystyki
+                            </div>                <div class="profile-menu-item" onclick="window.location.href='znajomi/index.html'">
+                                Znajomi
+                            </div>                <div class="profile-menu-item" onclick="logout()" style="color: #dc3545;">
+                                Wyloguj się
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
     <main class="container main-grid">
         <section class="cards">
-            <!-- Główna gra - duży kafelek -->
             <article class="card main-game">
-                <div class="card-media main-game-icon">🎲</div>
-                <h2 style="font-size: 2em; margin: 20px 0;">Zagraj w Wielką Studencką Batalię</h2>
+                <img src="img/kostka.png" alt="kostka" class="card-media main-game-icon">
+                <h2>Zagraj w Wielką Studencką Batalię</h2>
                 <p class="card-desc">Rozpocznij przygodę na planszy pełnej wyzwań! Graj z znajomymi, rzucaj kostką i rywalizuj w mini grach.</p><br>
                 <a class="card-btn main-game-btn" href="plansza/index.html">Rozpocznij grę</a>
             </article>
         </section>
-
         <aside class="info">
-            <h3>Mini Gry</h3>
-            <p>Podczas rozgrywki możesz trafić na różne wyzwania:</p>
+            <h3>Aktywni znajomi</h3>
+            <p>Lista znajomych:</p>
             <div class="mini-games-list">
-                <div class="mini-game-link" onclick="window.location.href='kolko-i-krzyzyk/index.html'">
-                    <span class="game-icon"></span>
-                    <span class="game-name">Kółko i krzyżyk</span>
-                </div>
-                <div class="mini-game-link" onclick="window.location.href='sudoku/index.html'">
-                    <span class="game-icon"></span>
-                    <span class="game-name">Sudoku</span>
-                </div>
-            </div>
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
-            <h3>O projekcie</h3>
-            <p>Wielka Studencka Batalia to interaktywna gra planszowa z wyzwaniami i mini grami. Zaproś znajomych i rywalizujcie ze sobą!</p>
-            <p class="small">Repozytorium: <code>inzynierka-basic</code></p>
         </aside>
     </main>
-
     <footer class="site-footer">
-        <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
+        <h3>O projekcie</h3>
+            <p>Wielka Studencka Batalia to interaktywna gra planszowa z wyzwaniami i mini grami. Zaproś znajomych i rywalizujcie ze sobą!</p>
+            <p class="small">Repozytorium: <code>inzynierka-basic</code></p>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+        <h3>©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</h3>
     </footer>
 
     <script>
@@ -158,6 +172,12 @@
 
         // Sprawdź autoryzację przy załadowaniu strony
         checkAuth();
+
+        //MENU
+        function toggleHeaderMenu() {
+            const headerControls = document.querySelector('.header-controls');
+            headerControls.classList.toggle('responsive-active');
+        }  
     </script>
 </body>
 </html>
