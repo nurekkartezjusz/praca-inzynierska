@@ -21,6 +21,8 @@ COPY main.py database.py models.py schemas.py auth.py ./
 
 # Kopiuj wszystkie pliki frontendu
 COPY index.html ./
+COPY img/ ./img/
+COPY img_glowna/ ./img_glowna/
 COPY css/ ./css/
 COPY js/ ./js/
 COPY haslo/ ./haslo/
