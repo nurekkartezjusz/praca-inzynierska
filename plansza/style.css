@@ -12,7 +12,7 @@
 }
 body {
     margin: 0;
-    background: linear-gradient(135deg,#d0d9eb 0%,#a9caff 100%);
+    background: #c0d0f1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -312,6 +312,12 @@ body {
     color: #282c32;
 }
 /* Menu górne */
+.actions{
+    position:fixed;
+    top:20px;
+    left:20px;
+    z-index:1000;
+}
 .top-menu{
     position: fixed;
     top: 20px;

@@ -7,7 +7,7 @@
 	--color-text:#141e50;
 	--color-border-gray:#727896;
 	--color-basic-blue:#cedeff;
-	--color-background:linear-gradient(135deg,#d0d9eb 0%,#a9caff 100%);
+	--color-background:#c0d0f1;
 	--color-royal-blue:#2a3a7a;
 	--glass-bg:rgba(255,255,255,0.85);
 	--glass-border:rgba(0,0,0,0.1);
@@ -56,7 +56,7 @@ body{
 }
 .site-header{
 	padding:20px 0;
-	background:linear-gradient(135deg,#d0daef 0%,#a4c7ff 100%);
+	background:#bcd0f7;
 	border-bottom: 1px solid var(--glass-border);
 }
 .header-grid{
@@ -267,8 +267,15 @@ body{
 	transform:translateY(-2px);
     box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
-.card h2,.info h3{
+.card h2{
 	font-size:2rem;
+	font-weight:800;
+	margin:0 0 15px;
+	color:var(--color-text);
+	text-shadow:var(--strong-text-shadow);
+}
+.info h3{
+	font-size:1.5rem;
 	font-weight:800;
 	margin:0 0 15px;
 	color:var(--color-text);
