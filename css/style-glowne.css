@@ -49,8 +49,7 @@ body{
 }
 .nav-right{
     display: flex;
-    gap: clamp(10px, 1.5vw, 20px);
-    gap: 20px;
+    gap: clamp(10px, 1.5vw, 20px);align-items: center;
 }
 .lang-btn{
     width: clamp(22px, 2vw, 28px);
@@ -66,6 +65,64 @@ body{
 }
 .lang-btn.active{
     border: 2px solid #000;
+}
+.profile{
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+#profile-icon{
+    width: 32px;
+    height: 32px;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-family: var(--font-main);
+    box-shadow: var(--shadow-pixel);
+    transition: 0.15s;
+}
+#profile-icon:hover{
+    transform: translate(2px, 2px);
+    box-shadow: var(--shadow-pixel-hover);
+}
+.menu{
+    display: none;
+    position: absolute;
+    top: 42px;
+    right: 0;
+    background: var(--color-button-bg);
+    color: var(--color-button-text);
+    border: 2px solid #000;
+    box-shadow: var(--shadow-pixel);
+    padding: 8px;
+    min-width: 140px;
+    font-family: var(--font-main);
+    font-size: 10px;
+}
+.menu.show{
+    display: block;
+}
+.menu-email{
+    margin-bottom: 8px;
+    font-size: 9px;
+}
+.menu button{
+    width: 100%;
+    background: var(--color-button-bg);
+    border: 2px solid #000;
+    box-shadow: var(--shadow-pixel);
+    font-family: var(--font-main);
+    font-size: 10px;
+    padding: 6px;
+    cursor: pointer;
+}
+.menu button:hover{
+    transform: translate(2px,2px);
+    box-shadow: var(--shadow-pixel-hover);
 }
 .hero{
     height: calc(100vh - 100px);

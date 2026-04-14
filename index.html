@@ -21,6 +21,13 @@
             <div class="nav-right">
                 <img src="img_glowna/pl.png" alt="PL" class="lang-btn" data-lang="pl">
                 <img src="img_glowna/en.png" alt="EN" class="lang-btn" data-lang="en">
+                <div id="user-profile" class="profile" onclick="toggleMenu()">
+                    <div id="profile-icon"></div>
+                    <div id="profile-menu" class="menu">
+                        <div class="menu-email" id="profile-email"></div>
+                        <button onclick="logout()">Wyloguj</button>
+                    </div>
+                </div>
             </div>
         </nav>
     </header>
@@ -87,7 +94,7 @@
                     
                     // Zalogowany - pokaż profil
                     document.getElementById('user-profile').classList.add('logged-in');
-                    document.getElementById('profile-email').textContent = userData.email;
+                    document.getElementById('.menu-email').textContent = userData.email;
                     
                     // Ustaw inicjał użytkownika
                     const initial = userData.username ? userData.username[0].toUpperCase() : userData.email[0].toUpperCase();
@@ -131,12 +138,6 @@
 
         // Sprawdź autoryzację przy załadowaniu strony
         checkAuth();
-
-        //MENU
-        function toggleHeaderMenu() {
-            const headerControls = document.querySelector('.header-controls');
-            headerControls.classList.toggle('responsive-active');
-        }  
     </script>
 </body>
 </html>
