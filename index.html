@@ -24,7 +24,7 @@
                 <div id="user-profile" class="profile" onclick="toggleMenu()">
                     <div id="profile-icon"></div>
                     <div id="profile-menu" class="menu">
-                        <div class="menu-email" id="profile-email"></div>
+                        <div id="profile-email" class="menu-email"></div>
                         <button onclick="logout()">Wyloguj</button>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                     
                     // Zalogowany - pokaż profil
                     document.getElementById('user-profile').classList.add('logged-in');
-                    document.getElementById('.menu-email').textContent = userData.email;
+                    document.getElementById('profile-email').textContent = userData.email;
                     
                     // Ustaw inicjał użytkownika
                     const initial = userData.username ? userData.username[0].toUpperCase() : userData.email[0].toUpperCase();
