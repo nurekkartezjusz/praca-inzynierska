@@ -1,89 +1,48 @@
 <!doctype html>
 <html lang="pl">
 <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Strona Główna</title>
-        <meta name="description" content="Wielka Studencka Batalia" />
-        <link rel="stylesheet" href="css/style-glowne.css" />
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap&subset=latin-ext" rel="stylesheet">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Strona Główna</title>
+    <meta name="description" content="Wielka Studencka Batalia" />
+    <link rel="stylesheet" href="css/style-glowne.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="site-header">
-        <div class="header-grid">
-            <div class="logo">
-                <h1>
-                    <span>Wielka</span>
-                    <span>Studencka</span>
-                    <span>Batalia</span>
-                </h1>
+    <header class="topbar">
+        <nav class="nav">
+            <div class="nav-left">
+                <a href="menu/index.html">MENU</a>
+                <a href="uczelnia/index.html">O UCZELNI</a>
+                <a href="statystyki/index.html">PROFIL</a>
+                <a href="znajomi/index.html">ZNAJOMI</a>
             </div>
-            <div class="header-controls">
-                <button class="menu-btn" onclick="toggleHeaderMenu()">Menu</button>
-                <div class="theme-menu">
-                    <span class="theme-title">Tryb</span>
-                    <div class="theme-options">
-                        <div class="theme-option" data-theme="light" title="Tryb jasny">
-                            <img src="img_glowna/slonce.png">
-                        </div>
-                        <div class="theme-option" data-theme="dark" title="Tryb ciemny">
-                            <img src="img_glowna/ksiezyc.png">
-                        </div>
-                    </div>
-                </div>
-                <div class="language-menu">
-                    <span class="language-title">Język</span>
-                    <div class="language-options">
-                        <div class="language-option" data-lang="pl">
-                            <img src="img_glowna/pl.png">
-                            Polski
-                        </div>
-                        <div class="language-option" data-lang="en">
-                            <img src="img_glowna/en.png">
-                            English
-                        </div>
-                    </div>
-                </div>
-                <!-- Profil użytkownika (dla zalogowanych) -->
-                <div class="user-profile" id="user-profile">
-                    <div class="profile-icon" id="profile-icon">U</div>
-                    <span class="profile-email" id="profile-email">user@email.com</span>
-                    <div class="profile-dropdown">
-                        <img src="img_glowna/settings.png" alt="Ustawienia" class="settings-btn" onclick="toggleMenu()">
-                        <div class="profile-menu" id="profile-menu">
-                            <div class="profile-menu-item" onclick="window.location.href='statystyki/index.html'">
-                                Profil i Statystyki
-                            </div>                <div class="profile-menu-item" onclick="window.location.href='znajomi/index.html'">
-                                Znajomi
-                            </div>                <div class="profile-menu-item" onclick="logout()" style="color: #dc3545;">
-                                Wyloguj się
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="nav-right">
+                <img src="img_glowna/pl.png" alt="PL" class="lang-btn" data-lang="pl">
+                <img src="img_glowna/en.png" alt="EN" class="lang-btn" data-lang="en">
             </div>
-        </div>
+        </nav>
     </header>
-    <main class="container main-grid">
-        <section class="cards">
-            <article class="card main-game">
-                <img src="img_glowna/kostka.png" alt="kostka" class="card-media main-game-icon">
-                <h2>Zagraj w Wielką Studencką Batalię</h2>
-                <p class="card-desc">Rozpocznij przygodę na planszy pełnej wyzwań! Graj z znajomymi, rzucaj kostką i rywalizuj w mini grach.</p><br>
-                <a class="card-btn main-game-btn" href="plansza/index.html">Rozpocznij grę</a>
-            </article>
-        </section>
-        <aside class="info">
-            <h3>Aktywni znajomi</h3>
-            <p>Lista znajomych:</p>
-            <div class="mini-games-list">
-        </aside>
-    </main>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                WIELKA <br>
+                STUDENCKA <br>
+                BATALIA
+            </h1>
+            <p>
+                Rozpocznij przygodę na planszy pełnej wyzwań!<br>
+                Graj z znajomymi, rzucaj kostką i rywalizuj w mini grach
+            </p>
+            <a href="plansza/index.html" class="btn">ZAGRAJ</a>
+        </div>
+    </section>
     <footer class="site-footer">
         <h3>O projekcie</h3>
             <p>Wielka Studencka Batalia to interaktywna gra planszowa z wyzwaniami i mini grami. Zaproś znajomych i rywalizujcie ze sobą!</p>
             <p class="small">Repozytorium: <code>inzynierka-basic</code></p>
-            <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+            <hr>
         <h3>©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</h3>
     </footer>
 

@@ -7,462 +7,465 @@
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/toast.css">
     <title>Statystyki gracza</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="app">
-    <a href="../index.html" class="home-btn">Strona główna</a>
-    <div class="calosc">
-        <div class="statystyki">
-            <h2>Statystyki</h2>
-            <div class="stat">
-                <span>Rozegrane gry:</span>
-                <span>12</span>
+    <div class="app">
+        <a href="../index.html" class="home-btn">Strona główna</a>
+        <div class="calosc">
+            <div class="statystyki">
+                <h2>Statystyki</h2>
+                <div class="stat">
+                    <span>Rozegrane gry:</span>
+                    <span>12</span>
+                </div>
+                <div class="stat">
+                    <span>Wygrane gry:</span>
+                    <span>10</span>
+                </div>
+                <div class="stat">
+                    <span>Przegrane gry:</span>
+                    <span>2</span>
+                </div>
+                <div class="stat">
+                    <span>Doświadczenie:</span>
+                    <span>3450 XP</span>
+                </div>
             </div>
-            <div class="stat">
-                <span>Wygrane gry:</span>
-                <span>10</span>
-            </div>
-            <div class="stat">
-                <span>Przegrane gry:</span>
-                <span>2</span>
-            </div>
-            <div class="stat">
-                <span>Doświadczenie:</span>
-                <span>3450 XP</span>
+            <div class="prawo">
+                <div class="nickname">
+                    <h1 id="username">&nbsp;</h1>
+                </div>
+                <div class="avatar">
+                    <img id="skora" class="layer">
+                    <img id="usta" class="layer">
+                    <img id="oczy" class="layer">
+                    <img id="wlosy" class="layer">
+                    <img id="koszulka" class="layer">
+                    <img id="spodnie" class="layer">
+                </div>
+                <button class="zmien-wyglad-btn" onclick="window.location.href='../wybor awatara/index.html'">Zmień wygląd</button>
             </div>
         </div>
-        <div class="lewo">
-            <div class="nickname">
-                <h1 id="username">&nbsp;</h1>
+        
+        <!-- Edycja profilu -->
+        <div class="edycja-profilu">
+            <h2>Edycja profilu</h2>
+            <div class="error-message" id="profile-error" style="display: none;"></div>
+            <div class="success-message" id="profile-success" style="display: none;"></div>
+            
+            <!-- Wybór opcji -->
+            <div class="edit-options" id="edit-options">
+                <button class="edit-option-btn" onclick="showEditSection('username')">
+                    Zmień nazwę użytkownika
+                </button>
+                <button class="edit-option-btn" onclick="showEditSection('email')">
+                    Zmień adres email
+                </button>
+                <button class="edit-option-btn" onclick="showEditSection('password')">
+                    Zmień hasło
+                </button>
             </div>
-            <div class="avatar">
-                <img id="skora" class="layer">
-                <img id="usta" class="layer">
-                <img id="oczy" class="layer">
-                <img id="wlosy" class="layer">
-                <img id="koszulka" class="layer">
-                <img id="spodnie" class="layer">
-            </div>
-            <button class="zmien-wyglad-btn" onclick="window.location.href='../wybor awatara/index.html'">Zmień wygląd</button>
+            
+            <!-- Formularz edycji -->
+            <form id="profile-form" onsubmit="updateProfile(event)" style="display: none;">
+                <div class="form-group" id="username-group" style="display: none;">
+                    <label for="edit-username">Nowa nazwa użytkownika</label>
+                    <input type="text" id="edit-username" placeholder="Wpisz nową nazwę użytkownika">
+                </div>
+                
+                <div class="form-group" id="email-group" style="display: none;">
+                    <label for="edit-email">Nowy adres email</label>
+                    <input type="email" id="edit-email" placeholder="Wpisz nowy adres email">
+                </div>
+                
+                <div class="form-group" id="password-group" style="display: none;">
+                    <label for="new-password">Nowe hasło</label>
+                    <input type="password" id="new-password" placeholder="Wpisz nowe hasło (min. 6 znaków)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="current-password">Potwierdź obecne hasło</label>
+                    <input type="password" id="current-password" placeholder="Wpisz obecne hasło" required>
+                    <a href="../haslo/index.html" class="forgot-password-link">Nie pamiętam hasła</a>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="button" class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
+                    <button type="submit" class="save-profile-btn">Zapisz zmiany</button>
+                </div>
+                <div class="loader" id="profile-loader" style="display: none;"></div>
+            </form>
+        </div>
+        
+        <!-- Przycisk usuń konto -->
+        <div class="delete-account-section">
+            <button class="delete-account-btn" onclick="showDeleteModal()">🗑️ Usuń konto</button>
         </div>
     </div>
-    
-    <!-- Edycja profilu -->
-    <div class="edycja-profilu">
-        <h2>Edycja profilu</h2>
-        <div class="error-message" id="profile-error" style="display: none;"></div>
-        <div class="success-message" id="profile-success" style="display: none;"></div>
-        
-        <!-- Wybór opcji -->
-        <div class="edit-options" id="edit-options">
-            <button class="edit-option-btn" onclick="showEditSection('username')">
-                Zmień nazwę użytkownika
-            </button>
-            <button class="edit-option-btn" onclick="showEditSection('email')">
-                Zmień adres email
-            </button>
-            <button class="edit-option-btn" onclick="showEditSection('password')">
-                Zmień hasło
-            </button>
-        </div>
-        
-        <!-- Formularz edycji -->
-        <form id="profile-form" onsubmit="updateProfile(event)" style="display: none;">
-            <div class="form-group" id="username-group" style="display: none;">
-                <label for="edit-username">Nowa nazwa użytkownika</label>
-                <input type="text" id="edit-username" placeholder="Wpisz nową nazwę użytkownika">
-            </div>
-            
-            <div class="form-group" id="email-group" style="display: none;">
-                <label for="edit-email">Nowy adres email</label>
-                <input type="email" id="edit-email" placeholder="Wpisz nowy adres email">
-            </div>
-            
-            <div class="form-group" id="password-group" style="display: none;">
-                <label for="new-password">Nowe hasło</label>
-                <input type="password" id="new-password" placeholder="Wpisz nowe hasło (min. 6 znaków)">
-            </div>
-            
+
+    <!-- Modal potwierdzenia usunięcia konta -->
+    <div id="delete-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Usuń konto</h3>
+            <p>Ta operacja jest <strong>nieodwracalna</strong>. Wszystkie Twoje dane zostaną trwale usunięte.</p>
             <div class="form-group">
-                <label for="current-password">Potwierdź obecne hasło</label>
-                <input type="password" id="current-password" placeholder="Wpisz obecne hasło" required>
-                <a href="../haslo/index.html" class="forgot-password-link">Nie pamiętam hasła</a>
+                <label for="delete-password">Potwierdź hasło aby usunąć konto</label>
+                <input type="password" id="delete-password" placeholder="Wpisz swoje hasło">
             </div>
-            
-            <div class="form-buttons">
-                <button type="button" class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
-                <button type="submit" class="save-profile-btn">Zapisz zmiany</button>
+            <div id="delete-error" class="error-message" style="display: none;"></div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="hideDeleteModal()">Anuluj</button>
+                <button class="delete-confirm-btn" onclick="deleteAccount()">Usuń na zawsze</button>
             </div>
-            <div class="loader" id="profile-loader" style="display: none;"></div>
-        </form>
-    </div>
-    
-    <!-- Przycisk usuń konto -->
-    <div class="delete-account-section">
-        <button class="delete-account-btn" onclick="showDeleteModal()">🗑️ Usuń konto</button>
-    </div>
-</div>
-
-<!-- Modal potwierdzenia usunięcia konta -->
-<div id="delete-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h3>Usuń konto</h3>
-        <p>Ta operacja jest <strong>nieodwracalna</strong>. Wszystkie Twoje dane zostaną trwale usunięte.</p>
-        <div class="form-group">
-            <label for="delete-password">Potwierdź hasło aby usunąć konto</label>
-            <input type="password" id="delete-password" placeholder="Wpisz swoje hasło">
+            <div class="loader" id="delete-loader" style="display: none;"></div>
         </div>
-        <div id="delete-error" class="error-message" style="display: none;"></div>
-        <div class="modal-buttons">
-            <button class="cancel-btn" onclick="hideDeleteModal()">Anuluj</button>
-            <button class="delete-confirm-btn" onclick="deleteAccount()">Usuń na zawsze</button>
-        </div>
-        <div class="loader" id="delete-loader" style="display: none;"></div>
     </div>
-</div>
 
-<script src="../js/toast.js"></script>
-<script>
-    const API_URL = '/api';
+    <script src="../js/toast.js"></script>
+    <script>
+        const API_URL = '/api';
 
-    // Konfiguracja kolorów awatara
-    const colors = {
-        wlosy: ["czarne", "blond", "braz"],
-        koszulka: ["czarna", "czerwona", "niebieska", "zielona", "biala", "rozowa"],
-        spodnie: ["czarne", "biale", "szare", "niebieskie"]
-    };
+        // Konfiguracja kolorów awatara
+        const colors = {
+            wlosy: ["czarne", "blond", "braz"],
+            koszulka: ["czarna", "czerwona", "niebieska", "zielona", "biala", "rozowa"],
+            spodnie: ["czarne", "biale", "szare", "niebieskie"]
+        };
 
-    // Renderuj awatar na podstawie state
-    function renderAvatar(avatarState) {
-        const parts = ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"];
-        
-        parts.forEach(part => {
-            const img = document.getElementById(part);
-            let path = "";
+        // Renderuj awatar na podstawie state
+        function renderAvatar(avatarState) {
+            const parts = ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"];
             
-            if (colors[part]) {
-                const styleNum = avatarState[part];
-                const colorIndex = avatarState[part + "ColorIndex"];
-                const color = colors[part][colorIndex];
-                path = `../wybor%20awatara/img/${part}/${part}${styleNum}_${color}.png`;
-            } else {
-                path = `../wybor%20awatara/img/${part}/${part}${avatarState[part]}.png`;
-            }
-            
-            img.src = path;
-        });
-    }
-
-    // Pobierz dane użytkownika
-    async function loadUserData() {
-        const token = localStorage.getItem('access_token');
-        
-        if (!token) {
-            // Brak tokenu - przekieruj do logowania
-            window.location.href = '../logowanie/index.html';
-            return;
+            parts.forEach(part => {
+                const img = document.getElementById(part);
+                let path = "";
+                
+                if (colors[part]) {
+                    const styleNum = avatarState[part];
+                    const colorIndex = avatarState[part + "ColorIndex"];
+                    const color = colors[part][colorIndex];
+                    path = `../wybor%20awatara/img/${part}/${part}${styleNum}_${color}.png`;
+                } else {
+                    path = `../wybor%20awatara/img/${part}/${part}${avatarState[part]}.png`;
+                }
+                
+                img.src = path;
+            });
         }
 
-        try {
-            const response = await fetch(`${API_URL}/me?token=${token}`);
+        // Pobierz dane użytkownika
+        async function loadUserData() {
+            const token = localStorage.getItem('access_token');
             
-            if (response.ok) {
+            if (!token) {
+                // Brak tokenu - przekieruj do logowania
+                window.location.href = '../logowanie/index.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/me?token=${token}`);
+                
+                if (response.ok) {
+                    // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                    let userData;
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const text = await response.text();
+                        if (text) {
+                            userData = JSON.parse(text);
+                        } else {
+                            userData = {};
+                        }
+                    } else {
+                        userData = {};
+                    }
+                    
+                    // Sprawdź czy użytkownik ma awatar - jeśli nie, przekieruj do kreatora
+                    if (!userData.avatar) {
+                        window.location.href = '../wybor awatara/index.html?new=true';
+                        return;
+                    }
+                    
+                    // Wyświetl nickname
+                    document.getElementById('username').textContent = userData.username;
+                    
+                    // Renderuj awatar
+                    if (userData.avatar) {
+                        const avatarState = JSON.parse(userData.avatar);
+                        renderAvatar(avatarState);
+                    } else {
+                        // Domyślny awatar jeśli użytkownik go nie stworzył
+                        const defaultAvatar = {
+                            skora: 1,
+                            usta: 1,
+                            oczy: 1,
+                            wlosy: 1,
+                            wlosyColorIndex: 0,
+                            koszulka: 1,
+                            koszulkaColorIndex: 0,
+                            spodnie: 1,
+                            spodnieColorIndex: 0
+                        };
+                        renderAvatar(defaultAvatar);
+                    }
+                } else {
+                    // Token nieważny - przekieruj do logowania
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user_email');
+                    window.location.href = '../logowanie/index.html';
+                }
+            } catch (error) {
+                console.error('Błąd pobierania danych użytkownika:', error);
+                document.getElementById('username').textContent = 'Błąd';
+            }
+        }
+
+        // Załaduj dane przy starcie
+        loadUserData();
+        
+        let currentEditMode = null;
+        
+        // Pokaż sekcję edycji
+        function showEditSection(mode) {
+            currentEditMode = mode;
+            
+            // Ukryj opcje wyboru
+            document.getElementById('edit-options').style.display = 'none';
+            
+            // Pokaż formularz
+            document.getElementById('profile-form').style.display = 'block';
+            
+            // Ukryj wszystkie pola
+            document.getElementById('username-group').style.display = 'none';
+            document.getElementById('email-group').style.display = 'none';
+            document.getElementById('password-group').style.display = 'none';
+            
+            // Wyczyść pola
+            document.getElementById('edit-username').value = '';
+            document.getElementById('edit-email').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('current-password').value = '';
+            
+            // Pokaż odpowiednie pole
+            if (mode === 'username') {
+                document.getElementById('username-group').style.display = 'block';
+            } else if (mode === 'email') {
+                document.getElementById('email-group').style.display = 'block';
+            } else if (mode === 'password') {
+                document.getElementById('password-group').style.display = 'block';
+            }
+            
+            // Ukryj komunikaty
+            document.getElementById('profile-error').style.display = 'none';
+            document.getElementById('profile-success').style.display = 'none';
+        }
+        
+        // Anuluj edycję
+        function cancelEdit() {
+            currentEditMode = null;
+            
+            // Pokaż opcje wyboru
+            document.getElementById('edit-options').style.display = 'flex';
+            
+            // Ukryj formularz
+            document.getElementById('profile-form').style.display = 'none';
+            
+            // Wyczyść pola
+            document.getElementById('profile-form').reset();
+            
+            // Ukryj komunikaty
+            document.getElementById('profile-error').style.display = 'none';
+            document.getElementById('profile-success').style.display = 'none';
+        }
+        
+        // Aktualizuj profil
+        async function updateProfile(event) {
+            event.preventDefault();
+            
+            const token = localStorage.getItem('access_token');
+            const errorDiv = document.getElementById('profile-error');
+            const successDiv = document.getElementById('profile-success');
+            const loader = document.getElementById('profile-loader');
+            
+            // Ukryj poprzednie komunikaty
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Pokaż loader
+            loader.style.display = 'block';
+            
+            const username = document.getElementById('edit-username').value.trim();
+            const email = document.getElementById('edit-email').value.trim();
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            
+            // Walidacja - sprawdź czy wypełniono odpowiednie pole
+            if (currentEditMode === 'username' && !username) {
+                errorDiv.textContent = 'Wpisz nową nazwę użytkownika';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (currentEditMode === 'email' && !email) {
+                errorDiv.textContent = 'Wpisz nowy adres email';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (currentEditMode === 'password' && !newPassword) {
+                errorDiv.textContent = 'Wpisz nowe hasło';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Wymagane obecne hasło
+            if (!currentPassword) {
+                errorDiv.textContent = 'Podaj obecne hasło aby dokonać zmian';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const updateData = {
+                    current_password: currentPassword
+                };
+                
+                // Dodaj tylko zmieniane pole
+                if (currentEditMode === 'username' && username) {
+                    updateData.username = username;
+                } else if (currentEditMode === 'email' && email) {
+                    updateData.email = email;
+                } else if (currentEditMode === 'password' && newPassword) {
+                    updateData.new_password = newPassword;
+                }
+                
+                const response = await fetch(`${API_URL}/profile?token=${token}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
                 // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
-                let userData;
+                let data;
                 const contentType = response.headers.get("content-type");
                 if (contentType && contentType.includes("application/json")) {
                     const text = await response.text();
                     if (text) {
-                        userData = JSON.parse(text);
+                        data = JSON.parse(text);
                     } else {
-                        userData = {};
+                        data = {};
                     }
                 } else {
-                    userData = {};
+                    data = {};
                 }
                 
-                // Sprawdź czy użytkownik ma awatar - jeśli nie, przekieruj do kreatora
-                if (!userData.avatar) {
-                    window.location.href = '../wybor awatara/index.html?new=true';
-                    return;
-                }
-                
-                // Wyświetl nickname
-                document.getElementById('username').textContent = userData.username;
-                
-                // Renderuj awatar
-                if (userData.avatar) {
-                    const avatarState = JSON.parse(userData.avatar);
-                    renderAvatar(avatarState);
+                if (response.ok) {
+                    showSuccess('Profil zaktualizowany pomyślnie!');
+                    
+                    // Odśwież dane użytkownika
+                    loadUserData();
+                    
+                    // Wróć do opcji wyboru po 2 sekundach
+                    setTimeout(() => {
+                        cancelEdit();
+                    }, 2000);
                 } else {
-                    // Domyślny awatar jeśli użytkownik go nie stworzył
-                    const defaultAvatar = {
-                        skora: 1,
-                        usta: 1,
-                        oczy: 1,
-                        wlosy: 1,
-                        wlosyColorIndex: 0,
-                        koszulka: 1,
-                        koszulkaColorIndex: 0,
-                        spodnie: 1,
-                        spodnieColorIndex: 0
-                    };
-                    renderAvatar(defaultAvatar);
+                    errorDiv.textContent = data.detail || 'Błąd aktualizacji profilu';
+                    errorDiv.style.display = 'block';
                 }
-            } else {
-                // Token nieważny - przekieruj do logowania
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('user_email');
-                window.location.href = '../logowanie/index.html';
+            } catch (error) {
+                errorDiv.textContent = 'Błąd połączenia z serwerem';
+                errorDiv.style.display = 'block';
+            } finally {
+                // Ukryj loader
+                loader.style.display = 'none';
             }
-        } catch (error) {
-            console.error('Błąd pobierania danych użytkownika:', error);
-            document.getElementById('username').textContent = 'Błąd';
-        }
-    }
-
-    // Załaduj dane przy starcie
-    loadUserData();
-    
-    let currentEditMode = null;
-    
-    // Pokaż sekcję edycji
-    function showEditSection(mode) {
-        currentEditMode = mode;
-        
-        // Ukryj opcje wyboru
-        document.getElementById('edit-options').style.display = 'none';
-        
-        // Pokaż formularz
-        document.getElementById('profile-form').style.display = 'block';
-        
-        // Ukryj wszystkie pola
-        document.getElementById('username-group').style.display = 'none';
-        document.getElementById('email-group').style.display = 'none';
-        document.getElementById('password-group').style.display = 'none';
-        
-        // Wyczyść pola
-        document.getElementById('edit-username').value = '';
-        document.getElementById('edit-email').value = '';
-        document.getElementById('new-password').value = '';
-        document.getElementById('current-password').value = '';
-        
-        // Pokaż odpowiednie pole
-        if (mode === 'username') {
-            document.getElementById('username-group').style.display = 'block';
-        } else if (mode === 'email') {
-            document.getElementById('email-group').style.display = 'block';
-        } else if (mode === 'password') {
-            document.getElementById('password-group').style.display = 'block';
         }
         
-        // Ukryj komunikaty
-        document.getElementById('profile-error').style.display = 'none';
-        document.getElementById('profile-success').style.display = 'none';
-    }
-    
-    // Anuluj edycję
-    function cancelEdit() {
-        currentEditMode = null;
-        
-        // Pokaż opcje wyboru
-        document.getElementById('edit-options').style.display = 'flex';
-        
-        // Ukryj formularz
-        document.getElementById('profile-form').style.display = 'none';
-        
-        // Wyczyść pola
-        document.getElementById('profile-form').reset();
-        
-        // Ukryj komunikaty
-        document.getElementById('profile-error').style.display = 'none';
-        document.getElementById('profile-success').style.display = 'none';
-    }
-    
-    // Aktualizuj profil
-    async function updateProfile(event) {
-        event.preventDefault();
-        
-        const token = localStorage.getItem('access_token');
-        const errorDiv = document.getElementById('profile-error');
-        const successDiv = document.getElementById('profile-success');
-        const loader = document.getElementById('profile-loader');
-        
-        // Ukryj poprzednie komunikaty
-        errorDiv.style.display = 'none';
-        successDiv.style.display = 'none';
-        
-        // Pokaż loader
-        loader.style.display = 'block';
-        
-        const username = document.getElementById('edit-username').value.trim();
-        const email = document.getElementById('edit-email').value.trim();
-        const currentPassword = document.getElementById('current-password').value;
-        const newPassword = document.getElementById('new-password').value;
-        
-        // Walidacja - sprawdź czy wypełniono odpowiednie pole
-        if (currentEditMode === 'username' && !username) {
-            errorDiv.textContent = 'Wpisz nową nazwę użytkownika';
-            errorDiv.style.display = 'block';
-            return;
+        // Funkcje modala usuwania konta
+        function showDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'flex';
+            document.getElementById('delete-password').value = '';
+            document.getElementById('delete-error').style.display = 'none';
         }
         
-        if (currentEditMode === 'email' && !email) {
-            errorDiv.textContent = 'Wpisz nowy adres email';
-            errorDiv.style.display = 'block';
-            return;
+        function hideDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
         }
         
-        if (currentEditMode === 'password' && !newPassword) {
-            errorDiv.textContent = 'Wpisz nowe hasło';
-            errorDiv.style.display = 'block';
-            return;
-        }
+        // Zamknij modal po kliknięciu poza nim
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideDeleteModal();
+            }
+        });
         
-        // Wymagane obecne hasło
-        if (!currentPassword) {
-            errorDiv.textContent = 'Podaj obecne hasło aby dokonać zmian';
-            errorDiv.style.display = 'block';
-            return;
-        }
-        
-        try {
-            const updateData = {
-                current_password: currentPassword
-            };
+        async function deleteAccount() {
+            const password = document.getElementById('delete-password').value;
+            const errorDiv = document.getElementById('delete-error');
+            const loader = document.getElementById('delete-loader');
             
-            // Dodaj tylko zmieniane pole
-            if (currentEditMode === 'username' && username) {
-                updateData.username = username;
-            } else if (currentEditMode === 'email' && email) {
-                updateData.email = email;
-            } else if (currentEditMode === 'password' && newPassword) {
-                updateData.new_password = newPassword;
+            // Reset błędu
+            errorDiv.style.display = 'none';
+            errorDiv.textContent = '';
+            
+            if (!password) {
+                errorDiv.textContent = 'Podaj hasło aby potwierdzić';
+                errorDiv.style.display = 'block';
+                return;
             }
             
-            const response = await fetch(`${API_URL}/profile?token=${token}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updateData)
-            });
+            // Pokaż loader
+            loader.style.display = 'block';
             
-            // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
-            let data;
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const text = await response.text();
-                if (text) {
-                    data = JSON.parse(text);
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await fetch(`${API_URL}/account?token=${token}&password=${encodeURIComponent(password)}`, {
+                    method: 'DELETE'
+                });
+                
+                // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
+                let data;
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const text = await response.text();
+                    if (text) {
+                        data = JSON.parse(text);
+                    } else {
+                        data = {};
+                    }
                 } else {
                     data = {};
                 }
-            } else {
-                data = {};
-            }
-            
-            if (response.ok) {
-                showSuccess('Profil zaktualizowany pomyślnie!');
                 
-                // Odśwież dane użytkownika
-                loadUserData();
-                
-                // Wróć do opcji wyboru po 2 sekundach
-                setTimeout(() => {
-                    cancelEdit();
-                }, 2000);
-            } else {
-                errorDiv.textContent = data.detail || 'Błąd aktualizacji profilu';
-                errorDiv.style.display = 'block';
-            }
-        } catch (error) {
-            errorDiv.textContent = 'Błąd połączenia z serwerem';
-            errorDiv.style.display = 'block';
-        } finally {
-            // Ukryj loader
-            loader.style.display = 'none';
-        }
-    }
-    
-    // Funkcje modala usuwania konta
-    function showDeleteModal() {
-        document.getElementById('delete-modal').style.display = 'flex';
-        document.getElementById('delete-password').value = '';
-        document.getElementById('delete-error').style.display = 'none';
-    }
-    
-    function hideDeleteModal() {
-        document.getElementById('delete-modal').style.display = 'none';
-    }
-    
-    // Zamknij modal po kliknięciu poza nim
-    document.getElementById('delete-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            hideDeleteModal();
-        }
-    });
-    
-    async function deleteAccount() {
-        const password = document.getElementById('delete-password').value;
-        const errorDiv = document.getElementById('delete-error');
-        const loader = document.getElementById('delete-loader');
-        
-        // Reset błędu
-        errorDiv.style.display = 'none';
-        errorDiv.textContent = '';
-        
-        if (!password) {
-            errorDiv.textContent = 'Podaj hasło aby potwierdzić';
-            errorDiv.style.display = 'block';
-            return;
-        }
-        
-        // Pokaż loader
-        loader.style.display = 'block';
-        
-        try {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch(`${API_URL}/account?token=${token}&password=${encodeURIComponent(password)}`, {
-                method: 'DELETE'
-            });
-            
-            // Sprawdź czy odpowiedź ma treść przed parsowaniem JSON
-            let data;
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const text = await response.text();
-                if (text) {
-                    data = JSON.parse(text);
+                if (response.ok) {
+                    showSuccess('Konto zostało usunięte. Do zobaczenia!');
+                    
+                    // Wyczyść localStorage
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('user_email');
+                    
+                    // Przekieruj do strony głównej po 2 sekundach
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 2000);
                 } else {
-                    data = {};
+                    errorDiv.textContent = data.detail || 'Błąd usuwania konta';
+                    errorDiv.style.display = 'block';
                 }
-            } else {
-                data = {};
-            }
-            
-            if (response.ok) {
-                showSuccess('Konto zostało usunięte. Do zobaczenia!');
-                
-                // Wyczyść localStorage
-                localStorage.removeItem('access_token');
-                localStorage.removeItem('user_email');
-                
-                // Przekieruj do strony głównej po 2 sekundach
-                setTimeout(() => {
-                    window.location.href = '../index.html';
-                }, 2000);
-            } else {
-                errorDiv.textContent = data.detail || 'Błąd usuwania konta';
+            } catch (error) {
+                errorDiv.textContent = 'Błąd połączenia z serwerem';
                 errorDiv.style.display = 'block';
+            } finally {
+                loader.style.display = 'none';
             }
-        } catch (error) {
-            errorDiv.textContent = 'Błąd połączenia z serwerem';
-            errorDiv.style.display = 'block';
-        } finally {
-            loader.style.display = 'none';
         }
-    }
-</script>
+    </script>
 </body>
 </html>
