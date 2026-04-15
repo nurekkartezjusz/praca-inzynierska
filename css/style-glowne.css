@@ -161,7 +161,7 @@ body{
     transform: translate(3px, 3px);
     box-shadow: var(--shadow-pixel-hover);
 }
-.site-footer{
+/* .site-footer{
     width: 100%;
     padding: 40px 20px;
     margin-top: 80px;
@@ -194,4 +194,4 @@ body{
     margin: 20px 0;
     border: none;
 	border-top: 1px solid #e0e0e0;
-}
+} */
