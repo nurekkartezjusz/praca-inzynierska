@@ -8,8 +8,8 @@
 </head>
 <body>
 <div class="actions">
-    <button onclick="window.location.href='/'" class="btn-secondary">Powrót do strony głównej</button>
-    <button onclick="window.location.href='/plansza'" class="btn-secondary">Powrót do gry</button>
+    <!-- <button onclick="window.location.href='/'" class="btn-secondary">Powrót do strony głównej</button> -->
+    <button onclick="window.location.href='/plansza'" class="btn-secondary">Powrót</button>
 </div>
 <div class="book">
     <div class="paper cover" id="p1">
@@ -24,12 +24,41 @@
             </div>
         </div>
     </div>
+    <div class="paper" id="spis">
+        <div class="front">
+            <div class="page left">
+                <h2>Spis treści</h2>
+                <p class="spis-item" onclick="goToPage(2)" ">
+                    1. Wstęp
+                </p>
+                <p class="spis-item" onclick="goToPage(3)" ">
+                    2. O grze
+                </p>
+                <p class="spis-item" onclick="goToPage(4)" ">
+                    3. Zasoby
+                </p>
+                <p class="spis-item" onclick="goToPage(5)" ">
+                    4. Reguły rozgrywki
+                </p>
+                <p class="spis-item" onclick="goToPage(6)" ">
+                    5. Klasy
+                </p>
+            </div>
+        </div>
+        <div class="back">
+            <div class="page right">
+            </div>
+        </div>
+    </div>
     <div class="paper" id="p2">
         <div class="front">
             <div class="page left">
                 <h2>Witaj w Wielkiej Studenckiej Batalii!</h2>
                 <p>Ta książka zawiera zasady oraz wyjaśnienia gry. <br> Przeczytaj uważnie, aby zrozumieć mechanikę i cieszyć się rozgrywką od pierwszej rundy.</p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">
@@ -44,6 +73,9 @@
                 <p>Ich zebranie będzie równoznaczne z ukończeniem studiów i opuszczeniem budynku WSB Merito, czyli znalezieniem się w centralnej części planszy.</p>
                 <p>Po ukończeniu gry gracz otrzymuje tytuł inżyniera lub licencjata</p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">
@@ -62,6 +94,9 @@
                 <img src="img/krysztal.png" alt="kryształki" class="zasoby">
                 <p>pełnią kluczową rolę w przejściu rozgrywki. Bez nich uczestnik nie będzie mógł przechodzić na kolejne piętra. Za poprawne odpowiedzi na pytania gracz otrzymuje kryształki.</p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">
@@ -87,6 +122,9 @@
                     </ul>
                 </p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">
@@ -103,6 +141,9 @@
                 <p>Człowiek, który dowiaduje się o wszystkim jako ostatni. Deadliny traktuje jak sugestię, a obecność jak opcję premium.</p>
                 <p>Statystyki</p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">
@@ -119,6 +160,9 @@
                 <p>Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzący kiwa głową, grupa nie wie dlaczego.</p>
                 <p>Statystyki</p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">
@@ -135,6 +179,9 @@
                 <p>Zajęć nie było… znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś się zaliczy.</p>
                 <p>Statystyki</p>
             </div>
+            <p class="powrot" onclick="goToPage(1)">
+                ⬅ Powrót
+            </p>
         </div>
         <div class="back">
             <div class="page right">

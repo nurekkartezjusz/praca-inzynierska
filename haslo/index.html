@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../css/toast.css">
-    <title>Login</title>
+    <title>Resetowanie hasła</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -22,14 +25,14 @@
                     <input type="text" id="email" required placeholder=" ">
                     <label for="email">Adres e-mail powiązany z kontem</label>
                 </div>
-                <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
+                <div id="error-message" style="color: red; margin-bottom: 10px; display: none; font-family: 'Space Grotesk';"></div>
                 <button class="reset-password" id="request-token-btn">Wyślij kod resetowania</button>
             </div>
 
             <div class="password-recovery card" id="step2" style="display: none;">
                 <h2>Resetowanie hasła - Krok 2</h2>
                 <p>
-                    ✓ Kod został wysłany! Wpisz go poniżej wraz z nowym hasłem.
+                    Kod został wysłany! Wpisz go poniżej wraz z nowym hasłem.
                 </p>
                 <div class="field">
                     <input type="text" id="reset-token" required maxlength="6" placeholder=" ">
@@ -45,24 +48,21 @@
                     <label for="confirm-password">Potwierdź nowe hasło</label>
                     <img src="img/hide.png" alt="view" class="eye-icon"> 
                 </div>
-                <div id="error-message-2" style="color: red; margin-bottom: 10px; display: none;"></div>
-                <div id="success-message" style="color: #4CAF50; margin-bottom: 10px; display: none;"></div>
+                <div id="error-message-2" style="color: red; margin-bottom: 10px; display: none; font-family: 'Space Grotesk';"></div>
+                <div id="success-message" style="color: #4CAF50; margin-bottom: 10px; display: none; font-family: 'Space Grotesk';"></div>
                 <button class="reset-password" id="reset-password-btn">Zresetuj hasło</button>
-                <button class="reset-password" id="back-btn">Wróć i wpisz email ponownie</button>
+                <button class="reset-password" id="back-btn">Zmień email</button>
             </div>
 
             <div class="login card">
                 <h2>Masz konto? Zaloguj się</h2>
                 <button class="logowanie" onclick="window.location.href = '../logowanie/index.html'">Zaloguj się</button>
             </div>
-            <div class="going-back">
-                <a href="../index.html">← Powrót do strony głównej</a>
-            </div>
         </div>
     </div>
-    <footer class="site-footer">
+    <!-- <footer class="site-footer">
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
-    </footer>
+    </footer> -->
 
     <script src="../js/toast.js"></script>
     <script>

@@ -42,6 +42,8 @@ body{
     height: 100%;
     top: 10px;
     left: 0;
+    right: 0;
+    bottom: 10px;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     background: var(--color-paper);
@@ -150,6 +152,31 @@ body{
     pointer-events: none;
     transform: translateX(-50%);
 }
+#spis .page{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+}
+#spis h2{
+    margin-bottom: 20px;
+    text-align: center;
+}
+.spis-item:hover{
+    cursor: pointer;
+}
+.powrot{
+    position: absolute;
+    right: 40px;
+    bottom: 20px;
+    font-size: 18px;
+    z-index: 5;
+    font-family: var(--class-font);
+}
+.powrot:hover {
+    cursor: pointer;
+}
 .buttons{
     margin-top: 50px;
     display: flex;
@@ -166,6 +193,10 @@ button{
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
+}
+.btn-secondary{
+    margin-top: 10px;
+    margin-left: 10px;;
 }
 button:hover{
     transform: translateY(-2px);

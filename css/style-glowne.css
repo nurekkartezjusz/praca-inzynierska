@@ -137,13 +137,13 @@ body{
     font-size: clamp(35px, 5vw, 72px);
     line-height: 1.15;
     letter-spacing: 4px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 .hero p{
     font-family: var(--font-secondary);
     font-size: clamp(13px, 1.2vw, 16px);
     color: var(--color-text-dark);
-    margin-bottom: 40px;
+    margin-bottom: 25px;
     line-height: 1.6;
 }
 .btn{

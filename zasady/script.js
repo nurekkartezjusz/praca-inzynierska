@@ -55,4 +55,28 @@ function updateBookState() {
         }
     });
 }
+function goToPage(target) {
+    clearTimeout(timeoutId);
+    finishAnimations();
+    function step() {
+        if (current === target) {
+            timeoutId = setTimeout(updateBookState, 1000);
+            return;
+        }
+        const direction = current < target ? 1 : -1;
+        if (direction === 1) {
+            const paper = papers[current];
+            paper.classList.add("flipped");
+            paper.style.zIndex = 100 + current;
+            current++;
+        } else {
+            current--;
+            const paper = papers[current];
+            paper.classList.remove("flipped");
+            paper.style.zIndex = 100 + (total - current);
+        }
+        timeoutId = setTimeout(step, 300);
+    }
+    step();
+}
 updateBookState();

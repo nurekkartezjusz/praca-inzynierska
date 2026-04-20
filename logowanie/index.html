@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/toast.css">
-    <title>Login</title>
+    <title>Logowanie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -29,7 +32,7 @@
                         <img src="img/hide.png" alt="view" class="eye-icon"> 
                     </div>
                 </div>
-                <div id="error-message" style="color: red; margin-bottom: 10px; display: none;"></div>
+                <div id="error-message" style="color: red; margin-bottom: 10px; display: none; font-family: 'Space Grotesk';"></div>
                 <div class="loader" id="loader" style="display: none;"></div>
                 <button class="logowanie" id="login-btn">Zaloguj się</button>
                 <a href="../haslo/index.html">Zapomniałem hasła</a>
@@ -38,14 +41,11 @@
                 <h2>Nie masz konta? Zarejestruj się</h2>
                 <button class="rejestracja" onclick="window.location.href = '../rejestracja/index.html';">Zarejestruj się</button>
             </div>
-            <div class="going-back">
-                <a href="../index.html">← Powrót do strony głównej</a>
-            </div>
         </div>
     </div>
-    <footer class="site-footer">
+    <!-- <footer class="site-footer">
         <div class="container">©<script>document.write(new Date().getFullYear())</script> — Projekt edukacyjny</div>
-    </footer>
+    </footer> -->
 
     <script src="../js/toast.js"></script>
     <script>
