@@ -15,7 +15,7 @@
     box-sizing: border-box;
 }
 body{
-    background: var(--color-bg);
+    background: url(../Illustration2.png);
     font-family: var(--font-main);
     color: var(--color-text-main);
 }

@@ -18,7 +18,6 @@
 body{
 	margin:0;
 	font-family:var(--font-primary);
-	background:var(--color-background);
 	background-attachment:fixed;
 	color:var(--color-text);
 	line-height:1.6;
