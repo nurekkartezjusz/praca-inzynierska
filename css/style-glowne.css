@@ -15,7 +15,11 @@
     box-sizing: border-box;
 }
 body{
-    background: url(../Illustration2.png);
+    background: url(../img_glowna/Illustration2.png);
+    background-size: cover;
+background-repeat: no-repeat;
+background-position: center;
+height: 100%;
     font-family: var(--font-main);
     color: var(--color-text-main);
 }
