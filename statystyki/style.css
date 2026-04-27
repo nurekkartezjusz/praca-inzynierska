@@ -2,12 +2,11 @@
     --font-primary:"Press Start 2P", monospace;
     --font-secondary:"Space Grotesk", sans-serif;
     --font-third:"VT323", monospace;
-    --color-bg:#879bce;
-    --color-card:#dcdcdc;
+    --color-bg:#9EACFC;
+    --color-card:#EDE2FF;
+    --color-button:#e0d4f3;
     --color-text:#111;
     --color-text-main:#ffffff;
-    --color-button-bg:#dcdcdc;
-    --color-button-text:#000;
     --shadow-pixel: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     --shadow-pixel-hover: inset 3px 3px 0 #fff, 3px 3px 0 #000;
     --shadow-pixel-small: inset 1px 1px 0 #fff, 1px 1px 0 #000;
@@ -30,9 +29,9 @@ body{
 }
 .home-btn{
     display:inline-block;
-    margin-bottom:30px;
+    margin-bottom:10px;
     padding:12px 20px;
-    background:var(--color-card);
+    background:var(--color-button);
     color:#000;
     text-decoration:none;
     font-family:var(--font-third);
@@ -48,7 +47,7 @@ body{
     gap:40px;
     align-items:flex-start;
     justify-content:center;
-    margin-top:20px;
+    margin-top:10px;
 }
 .statystyki{
     width:320px;
@@ -104,7 +103,7 @@ body{
     font-family:var(--font-third);
     font-size:20px;
     padding:12px 20px;
-    background:var(--color-card);
+    background:var(--color-button);
     border:none;
     box-shadow:var(--shadow-pixel);
     cursor:pointer;
@@ -135,7 +134,7 @@ body{
     font-family:var(--font-third);
     font-size:20px;
     padding:16px;
-    background:#eee;
+    background:var(--color-button);
     border:none;
     box-shadow:var(--shadow-pixel);
     cursor:pointer;
@@ -179,19 +178,19 @@ body{
     transform:translate(1px,1px);
 }
 .save-profile-btn{
-    background:#7cff9b;
+    background:#A6B1E9;
 }
 .cancel-btn{
-    background:#ff7c7c;
+    background:#C8B1F4;
 }
 .delete-account-section{
-    margin-top:60px;
+    margin-top:30px;
     text-align:center;
 }
 .delete-account-btn{
     font-family:var(--font-third);
     font-size:22px;
-    background:#ff4d4d;
+    background:#9090F4;
     padding:14px 30px;
     border:none;
     box-shadow:var(--shadow-pixel);

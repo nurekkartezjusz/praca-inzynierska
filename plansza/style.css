@@ -5,6 +5,7 @@
     --class-heading-color: #D91D4F;
     --class-bg-color: #667EEA;
     --class-card-color: #5267c7; 
+    --color-bg:#9EACFC;
 }
 .press-start-2p-regular {
     font-family: "Press Start 2P", system-ui;
@@ -12,7 +13,7 @@
 }
 body {
     margin: 0;
-    background: #c0d0f1;
+    background: var(--color-bg);
     display: flex;
     justify-content: center;
     align-items: center;

@@ -14,14 +14,26 @@
     padding: 0;
     box-sizing: border-box;
 }
+html,body{
+    margin: 0;
+    height: 100%;
+    background: #000;
+}
 body{
-    background: url(../img_glowna/Illustration2.png);
-    background-size: cover;
-background-repeat: no-repeat;
-background-position: center;
-height: 100%;
     font-family: var(--font-main);
     color: var(--color-text-main);
+    position: relative;
+}
+body::before{
+    content: "";
+    position: fixed;
+    inset: -1px;
+    background: url(../img_glowna/Illustration2.png) center/cover no-repeat;
+    z-index: 0;
+}
+.topbar,.hero{
+    position: relative;
+    z-index: 1;
 }
 .topbar{
     width: 100%;

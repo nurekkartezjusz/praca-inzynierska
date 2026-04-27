@@ -2,12 +2,24 @@
     --font-main: 'Press Start 2P', monospace;
     --font-secondary: 'Space Grotesk';
     --font-third: 'VT323', monospace;
-    --color-bg: #879bce;
-    --color-card: #dcdcdc;
+    --color-tlo:#9EACFC;
+    --color-card:#EDE2FF;
+    --color-button:#e0d4f3;
     --color-text-main: #ffffff;
     --color-text-dark: #111111;
     --shadow-pixel: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     --shadow-pixel-hover: inset 3px 3px 0 #fff, 3px 3px 0 #000;
+}
+html{
+	background:var(--color-tlo) !important;
+}
+body{
+	background:var(--color-tlo) !important;
+    transform: scale(0.9);
+    transform-origin: top center;
+}
+body::before{
+    display: none !important;
 }
 .container{
 	max-width:900px;
@@ -28,7 +40,6 @@ h1 span.znajomi{
 }
 .search-section,.requests-section,.friends-section,.game-invitations-section{
 	font-family: var(--font-main);
-	border:3px solid #000;
 	padding:30px;
 	margin-bottom:30px;
 	background: var(--color-card);
@@ -60,7 +71,7 @@ button,.btn-secondary,.btn-danger,.btn-success,.btn-invite-game,.btn-danger-smal
 	padding:12px 20px;
 	border:none;
 	cursor:pointer;
-	background:#dcdcdc;
+	background:var(--color-button);
 	color:#000;
 	box-shadow: var(--shadow-pixel);
 	transition: transform 0.12s ease, box-shadow 0.12s ease;
@@ -70,19 +81,19 @@ button:hover,.btn-secondary:hover,.btn-danger:hover,.btn-success:hover,.btn-invi
 	box-shadow: var(--shadow-pixel-hover);
 }
 .btn-secondary{
-	background:#bfcde0;
+	background:#C8B1F4;
 }
 .btn-danger{
-	background:#ff6b6b;
+	background:#9292f8;
 }
 .btn-success{
-	background:#7cff9b;
+	background:#A6B1E9;
 }
 .btn-invite-game{
-	background:#8ecbff;
+	background:#9A87B4;
 }
 .btn-danger-small{
-	background:#ff4d4d;
+	background:#9090F4;
 	font-size:16px;
 	padding:8px 16px;
 }
@@ -100,7 +111,7 @@ button:hover,.btn-secondary:hover,.btn-danger:hover,.btn-success:hover,.btn-invi
 	align-items:center;
 	justify-content:space-between;
 	padding:20px;
-	border:3px solid #000;
+	border:2px solid #000;
 	background:#fff;
 	box-shadow: var(--shadow-pixel);
 }
@@ -143,10 +154,10 @@ button:hover,.btn-secondary:hover,.btn-danger:hover,.btn-success:hover,.btn-invi
 	color:#000;
 }
 .status.friends{
-	background:#7cff9b;
+	background:#B9A4D2;
 }
 .status.pending{
-	background:#ffeaa7;
+	background:#B0ABF7;
 }
 .modal{
 	display:none;

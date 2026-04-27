@@ -2,10 +2,11 @@
     --font-primary: 'Press Start 2P', monospace;
     --font-secondary: 'Space Grotesk';
     --font-third: 'VT323', monospace;
-    --color-bg: #879bce;
+    --color-bg:#9EACFC;
+    --color-card:#EDE2FF;
+    --color-button:#e0d4f3;
     --color-text: #ffffff;
     --color-text-dark: #111111;
-    --color-primary: #dcdcdc;
     --shadow-pixel: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     --shadow-pixel-hover: inset 3px 3px 0 #fff, 3px 3px 0 #000;
     --shadow-pixel-small: inset 1px 1px 0 #fff, 1px 1px 0 #000;
@@ -30,7 +31,7 @@ body{
 }
 .card{
     padding: 30px;
-    background: transparent;
+    background: var(--color-card);
     border: none;
     box-shadow: var(--shadow-pixel);
 }
@@ -60,7 +61,7 @@ body{
     display: flex;
     flex-direction: column;
     gap: 10px;
-    color: var(--color-text);
+    color: var(--color-text-dark);
     padding: 30px;
 }
 .password-recovery h2{
@@ -137,7 +138,7 @@ body{
     text-decoration: underline;
 }
 .logowanie,.rejestracja,.reset-password,.btn-primary{
-    background: var(--color-primary);
+    background: var(--color-button);
     color: var(--color-text-dark);
     border: none;
     cursor: pointer;
@@ -156,7 +157,7 @@ body{
 .login a{
     text-decoration: none;
     font-size: 10px;
-    color: var(--color-text);
+    color: var(--color-text-dark);
     font-family: var(--font-primary);
 }
 /* .site-footer {

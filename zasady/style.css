@@ -1,5 +1,6 @@
 :root{
-    --color-body-bg: linear-gradient(135deg,#d0d9eb 0%,#a9caff 100%);
+    --color-body-bg: #9EACFC;
+    --color-button:#e0d4f3;
     --color-paper: #f0f4ff;
     --color-cover-bg: radial-gradient(circle at center, #2a3a7a 0%, #141e50 100%);
     --class-font: "DotGothic16", system-ui;
@@ -183,7 +184,7 @@ body{
     gap: 15px;
 }
 button{
-    background: rgba(255,255,255,0.25);
+    background: var(--color-button);
     backdrop-filter: blur(10px);
     padding: 10px 10px;
     border: 2px solid #000;
