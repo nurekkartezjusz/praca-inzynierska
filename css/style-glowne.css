@@ -38,6 +38,7 @@ body::before{
 .topbar{
     width: 100%;
 	padding: 30px clamp(15px, 5vw, 60px);
+    z-index: 10;
 }
 .nav{
     display: flex;
@@ -91,7 +92,7 @@ body::before{
 #profile-icon{
     width: 32px;
     height: 32px;
-    background: var(--color-button-bg);
+    background: #e0d4f3;
     color: var(--color-button-text);
     display: flex;
     align-items: center;
@@ -100,6 +101,7 @@ body::before{
     font-family: var(--font-main);
     box-shadow: var(--shadow-pixel);
     transition: 0.15s;
+    border: 2px solid #000;
 }
 #profile-icon:hover{
     transform: translate(2px, 2px);
@@ -118,6 +120,7 @@ body::before{
     min-width: 140px;
     font-family: var(--font-main);
     font-size: 10px;
+    z-index: 999;
 }
 .menu.show{
     display: block;
@@ -135,6 +138,7 @@ body::before{
     font-size: 10px;
     padding: 6px;
     cursor: pointer;
+    z-index: 999;
 }
 .menu button:hover{
     transform: translate(2px,2px);
@@ -163,19 +167,94 @@ body::before{
     line-height: 1.6;
 }
 .btn{
+    position: relative;
     display: inline-block;
-    background: var(--color-button-bg);
-    color: var(--color-button-text);
-    padding: 18px 50px;
-    text-decoration: none;
+    background: #e0d4f3;
+    color: var(--color-text-dark);
+    font-family: var(--font-primary);
     font-size: 16px;
+    padding: 20px 55px;
+    text-decoration: none;
+    cursor: pointer;
     border: none;
-    box-shadow: var(--shadow-pixel);
-    transition: all 0.15s ease;
+    box-shadow:
+        inset 2px 2px 0 #fff;
+    transition: 0.15s ease;
+}
+.btn::before,.btn::after{
+    content: "";
+    position: absolute;
+    background: #000;
+}
+.btn::before{
+    top: -4px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+}
+.btn::after{
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+}
+.btn .side-left{
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #000;
+}
+.btn .side-right{
+    content: "";
+    position: absolute;
+    right: -4px;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: #000;
+}
+.btn .corner{
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: transparent;
+}
+.btn .corner-tl{
+    top: -4px;
+    left: -4px;
+    box-shadow:
+        8px 0 #000,
+        0 8px #000;
+}
+.btn .corner-tr{
+    top: -4px;
+    right: -4px;
+    box-shadow:
+        -8px 0 #000,
+        0 8px #000;
+}
+.btn .corner-bl{
+    bottom: -4px;
+    left: -4px;
+    box-shadow:
+        8px 0 #000,
+        0 -8px #000;
+}
+.btn .corner-br{
+    bottom: -4px;
+    right: -4px;
+    box-shadow:
+        -8px 0 #000,
+        0 -8px #000;
 }
 .btn:hover{
     transform: translate(3px, 3px);
-    box-shadow: var(--shadow-pixel-hover);
+    box-shadow:
+        inset 3px 3px 0 #fff,
+        3px 3px 0 #000;
 }
 /* .site-footer{
     width: 100%;

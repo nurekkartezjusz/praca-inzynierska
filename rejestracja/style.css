@@ -24,13 +24,13 @@ body{
 .container{
     display: flex;
     flex-direction: row;
-    gap: 50px;
+    gap: clamp(20px, 3vw, 60px);
     justify-content: center;
     flex-wrap: wrap;
-    margin: 50px;
+    margin: clamp(20px, 3vw, 50px);
 }
 .card{
-    padding: 30px;
+    padding: clamp(20px, 2vw, 40px);
     background: var(--color-card);
     border: none;
     box-shadow: var(--shadow-pixel);
@@ -62,7 +62,7 @@ body{
     flex-direction: column;
     gap: 10px;
     color: var(--color-text);
-    padding: 30px;
+    padding: clamp(20px, 2vw, 40px);
 }
 .login h2,.rejestr h2{
     font-size: 2.2rem;
@@ -72,11 +72,11 @@ body{
 }
 .field{
     position: relative;
-    margin-bottom: 10px;
+    margin-bottom: clamp(6px, 0.6vw, 12px);
 }
 .field input{
     width: 100%;
-    padding: 20px 10px 7px;
+    padding: clamp(14px, 1.2vw, 20px) clamp(8px, 1vw, 10px) clamp(5px, 0.5vw, 7px);
     font-size: 14px;
     border: 0.1px solid #000;
     background: #fff;
@@ -88,7 +88,7 @@ body{
 }
 .field label{
     position: absolute;
-    left: 10px;
+    left: clamp(8px, 0.8vw, 12px);
     top: 50%;
     transform: translateY(-50%);
     font-size: 12px;
@@ -158,8 +158,8 @@ body{
     font-size: 18px;
     font-family: var(--font-third);
     letter-spacing: 1px;
-    padding: 10px;
-    width: 200px;
+    padding: clamp(8px, 0.8vw, 12px);
+    width: clamp(160px, 12vw, 220px);
     box-shadow: var(--shadow-pixel);
     transition: all 0.15s ease;
 }
@@ -198,7 +198,7 @@ body{
         margin: 0 50px;
     }
     .logow{
-        padding-left: 31.5vw;
+        padding-left: 32vw;
     }
 }
 @media (max-width: 768px){
@@ -207,5 +207,24 @@ body{
     }
     .container{
         flex-direction: column;
+        margin: clamp(24px, 5vw, 60px);
+        gap: clamp(20px, 4vw, 40px);
+    }
+    .card{
+        padding: clamp(20px, 4vw, 40px);
+    }
+    .login,.rejestr{
+        padding: clamp(20px, 4vw, 40px);
+        gap: clamp(12px, 2.5vw, 20px);
+    }
+    .field{
+        margin-bottom: clamp(10px, 2vw, 18px);
+    }
+    .logowanie,.rejestracja{
+        width: clamp(180px, 70vw, 240px);
+        padding: clamp(10px, 2vw, 14px);
+    }
+    .logow{
+        padding-left: 0;
     }
 }
