@@ -1,13 +1,32 @@
+import logging
+import os
+
 from passlib.context import CryptContext
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from typing import Optional
 
-SECRET_KEY = "twoj-sekret-klucz-zmien-to-na-produkcje"
+logger = logging.getLogger(__name__)
+
+SECRET_KEY = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY:
+    logger.warning(
+        "SECRET_KEY nie jest ustawiony w zmiennych środowiskowych! "
+        "Zmień to przed wdrożeniem na produkcję."
+    )
+    SECRET_KEY = "dev-only-insecure-key-change-before-production"
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+_SUPPORTED_HASH_SCHEMES = ["argon2", "bcrypt", "pbkdf2_sha256"]
+_HASH_SCHEME = os.getenv("HASH_SCHEME", "argon2")
+if _HASH_SCHEME not in _SUPPORTED_HASH_SCHEMES:
+    raise ValueError(
+        f"Nieobsługiwany schemat hashowania: '{_HASH_SCHEME}'. "
+        f"Dostępne opcje: {', '.join(_SUPPORTED_HASH_SCHEMES)}"
+    )
+
+pwd_context = CryptContext(schemes=[_HASH_SCHEME], deprecated="auto")
 
 
 def verify_password(plain_password, hashed_password):
@@ -18,12 +37,12 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
