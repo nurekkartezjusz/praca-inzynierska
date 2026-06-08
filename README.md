@@ -197,20 +197,31 @@ docker-compose down
 
 - **Backend:** FastAPI, SQLAlchemy, PostgreSQL/Supabase
 - **Frontend:** HTML, CSS, JavaScript (Vanilla)
-- **Autentykacja:** JWT tokens, Argon2 hashing
+- **Autentykacja:** JWT tokens (Bearer), Argon2 hashing
+- **Migracje:** Alembic
 - **Deployment:** Docker na Render.com
 - **Baza danych:** Supabase PostgreSQL
 
 ## 📁 Struktura projektu
 
 ```
-├── main.py              # API endpoints + serwowanie frontendu
+├── main.py              # Tworzenie aplikacji, middleware, include_router
+├── dependencies.py      # Zależności FastAPI (get_current_user, get_db)
 ├── database.py          # Konfiguracja połączenia z Supabase
 ├── models.py            # Modele SQLAlchemy (User, Friendship, GameInvitation)
 ├── schemas.py           # Schematy Pydantic
-├── auth.py              # Autentykacja JWT
+├── auth.py              # JWT + hashowanie haseł
 ├── requirements.txt     # Zależności Python
 ├── Dockerfile           # Konfiguracja Docker
+├── alembic.ini          # Konfiguracja Alembic
+├── alembic/
+│   ├── env.py           # Konfiguracja środowiska migracji
+│   └── versions/        # Wygenerowane pliki migracji
+├── routers/
+│   ├── auth.py          # Endpointy: rejestracja, logowanie, reset hasła
+│   ├── profile.py       # Endpointy: /me, awatar, profil, usunięcie konta
+│   ├── friends.py       # Endpointy: znajomi i wyszukiwanie użytkowników
+│   └── game_invitations.py  # Endpointy: zaproszenia do gier
 ├── index.html           # Strona główna
 ├── rejestracja/         # Strona rejestracji
 ├── logowanie/           # Strona logowania
@@ -222,6 +233,60 @@ docker-compose down
 ├── kolko-i-krzyzyk/     # Gra kółko i krzyżyk
 └── sudoku/              # Gra Sudoku
 ```
+
+---
+
+## 🗄️ Migracje bazy danych (Alembic)
+
+Alembic śledzi zmiany w `models.py` i aktualizuje rzeczywistą bazę danych w Supabase tak, żeby była zgodna z kodem.
+
+### Kiedy używać?
+
+Zawsze gdy zmienisz coś w `models.py` — dodasz kolumnę, zmienisz typ danych, dodasz constraint itp.
+
+### Przepływ pracy
+
+**1. Wprowadź zmiany w `models.py`**
+
+**2. Wygeneruj plik migracji** (Alembic porównuje modele z bazą i tworzy SQL):
+```bash
+.venv\Scripts\python -m alembic revision --autogenerate -m "opis_zmiany"
+```
+Np.:
+```bash
+.venv\Scripts\python -m alembic revision --autogenerate -m "dodaj_kolumne_avatar"
+```
+
+**3. Przejrzyj wygenerowany plik** w `alembic/versions/` — sprawdź czy SQL wygląda poprawnie.
+
+**4. Zastosuj migrację na bazie:**
+```bash
+.venv\Scripts\python -m alembic upgrade head
+```
+
+### Cofanie migracji
+
+Cofnij ostatnią migrację (wykonuje funkcję `downgrade` z pliku migracji):
+```bash
+.venv\Scripts\python -m alembic downgrade -1
+```
+
+Cofnij do konkretnej wersji (ID z nazwy pliku w `alembic/versions/`):
+```bash
+.venv\Scripts\python -m alembic downgrade abc123def456
+```
+
+### Inne przydatne komendy
+
+```bash
+# Sprawdź aktualną wersję bazy
+.venv\Scripts\python -m alembic current
+
+# Zobacz historię migracji
+.venv\Scripts\python -m alembic history
+```
+
+> **Uwaga:** Migracje zmieniają rzeczywistą bazę w Supabase. Zawsze sprawdź wygenerowany plik przed `upgrade head`.
 
 ## 🎮 Funkcje
 
