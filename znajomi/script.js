@@ -58,7 +58,9 @@ async function searchUsers() {
 
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/users/search?query=${encodeURIComponent(query)}&token=${token}`);
+        const response = await fetch(`${API_URL}/users/search?query=${encodeURIComponent(query)}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         
         if (!response.ok) {
             throw new Error('Błąd wyszukiwania');
@@ -82,7 +84,9 @@ async function searchUsers() {
 async function loadFriendRequests() {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/friends/requests?token=${token}`);
+        const response = await fetch(`${API_URL}/friends/requests`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         
         if (!response.ok) {
             throw new Error('Błąd pobierania zaproszeń');
@@ -117,7 +121,9 @@ async function loadFriendRequests() {
 async function loadFriends() {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/friends?token=${token}`);
+        const response = await fetch(`${API_URL}/friends`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         
         if (!response.ok) {
             throw new Error('Błąd pobierania znajomych');
@@ -200,9 +206,10 @@ function createUserCard(user, type) {
 async function sendFriendRequest(username) {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/friends/request?token=${token}`, {
+        const response = await fetch(`${API_URL}/friends/request`, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -228,8 +235,9 @@ async function sendFriendRequest(username) {
 async function acceptFriendRequest(friendshipId) {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/friends/accept/${friendshipId}?token=${token}`, {
-            method: 'POST'
+        const response = await fetch(`${API_URL}/friends/accept/${friendshipId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         const data = await safeJsonParse(response);
@@ -252,8 +260,9 @@ async function acceptFriendRequest(friendshipId) {
 async function rejectFriendRequest(friendshipId) {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/friends/reject/${friendshipId}?token=${token}`, {
-            method: 'POST'
+        const response = await fetch(`${API_URL}/friends/reject/${friendshipId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         const data = await safeJsonParse(response);
@@ -305,9 +314,10 @@ async function selectGame(game) {
     
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/game-invitations/send?token=${token}`, {
+        const response = await fetch(`${API_URL}/game-invitations/send`, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -340,8 +350,9 @@ async function removeFriend(friendshipId, username) {
 
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/friends/${friendshipId}?token=${token}`, {
-            method: 'DELETE'
+        const response = await fetch(`${API_URL}/friends/${friendshipId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         const data = await safeJsonParse(response);
@@ -367,7 +378,9 @@ async function removeFriend(friendshipId, username) {
 async function loadGameInvitations() {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/game-invitations/received?token=${token}`);
+        const response = await fetch(`${API_URL}/game-invitations/received`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         
         if (!response.ok) {
             throw new Error('Błąd pobierania zaproszeń do gier');
@@ -440,8 +453,9 @@ function formatTime(timestamp) {
 async function acceptGameInvitation(invitationId, gameType) {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/game-invitations/accept/${invitationId}?token=${token}`, {
-            method: 'POST'
+        const response = await fetch(`${API_URL}/game-invitations/accept/${invitationId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         const data = await safeJsonParse(response);
@@ -472,8 +486,9 @@ async function acceptGameInvitation(invitationId, gameType) {
 async function declineGameInvitation(invitationId) {
     try {
         const token = getToken();
-        const response = await fetch(`${API_URL}/game-invitations/decline/${invitationId}?token=${token}`, {
-            method: 'POST'
+        const response = await fetch(`${API_URL}/game-invitations/decline/${invitationId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
         });
 
         const data = await safeJsonParse(response);

@@ -93,9 +93,10 @@ async function startGame() {
 
     try {
         // Zapisz awatar do bazy
-        const response = await fetch(`${API_URL}/avatar?token=${token}`, {
+        const response = await fetch(`${API_URL}/avatar`, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({

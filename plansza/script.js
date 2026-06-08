@@ -190,7 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!token) return;
 
         try {
-            const response = await fetch(`${API_URL}/me?token=${token}`);
+            const response = await fetch(`${API_URL}/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (!response.ok) return;
 
             const userData = await safeJsonParse(response);

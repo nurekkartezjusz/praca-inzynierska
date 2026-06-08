@@ -1,23 +1,17 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
     password: str = Field(..., min_length=6)
-    
-    @field_validator('username')
+
+    @field_validator("username")
     def username_alphanumeric(cls, v):
-        if not v.replace('_', '').replace('-', '').isalnum():
-            raise ValueError('Nazwa użytkownika może zawierać tylko litery, cyfry, _ i -')
-        return v
-    
-    @field_validator('email')
-    def email_valid(cls, v):
-        if not v or '@' not in v:
-            raise ValueError('Nieprawidłowy adres e-mail')
+        if not v.replace("_", "").replace("-", "").isalnum():
+            raise ValueError("Nazwa użytkownika może zawierać tylko litery, cyfry, _ i -")
         return v
 
 
@@ -27,13 +21,12 @@ class UserLogin(BaseModel):
 
 
 class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
     email: str
     avatar: str | None = None
-
-    class Config:
-        from_attributes = True
 
 
 class Token(BaseModel):
@@ -50,8 +43,12 @@ class PasswordReset(BaseModel):
     new_password: str = Field(..., min_length=6)
 
 
+class DeleteAccountRequest(BaseModel):
+    password: str
+
+
 class AvatarUpdate(BaseModel):
-    avatar: str  # JSON jako string
+    avatar: str
 
 
 class ProfileUpdate(BaseModel):
@@ -59,20 +56,21 @@ class ProfileUpdate(BaseModel):
     email: EmailStr | None = None
     current_password: str | None = None
     new_password: str | None = Field(None, min_length=6)
-    
-    @field_validator('username')
+
+    @field_validator("username")
     def username_alphanumeric(cls, v):
-        if v and not v.replace('_', '').replace('-', '').isalnum():
-            raise ValueError('Nazwa użytkownika może zawierać tylko litery, cyfry, _ i -')
+        if v and not v.replace("_", "").replace("-", "").isalnum():
+            raise ValueError("Nazwa użytkownika może zawierać tylko litery, cyfry, _ i -")
         return v
 
 
-# Schematy dla znajomych
 class FriendRequest(BaseModel):
-    addressee_username: str  # Nazwa użytkownika osoby, do której wysyłamy zaproszenie
+    addressee_username: str
 
 
 class FriendshipResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     requester: UserResponse
     addressee: UserResponse
@@ -80,11 +78,10 @@ class FriendshipResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class FriendResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     username: str
     email: str
@@ -92,23 +89,21 @@ class FriendResponse(BaseModel):
     friendship_status: str
     friendship_id: int
 
-    class Config:
-        from_attributes = True
+
+VALID_GAME_TYPES = Literal["wielka-studencka-batalla", "kolko-i-krzyzyk", "sudoku"]
 
 
-# Schematy dla zaproszeń do gier
 class GameInvitationCreate(BaseModel):
     invitee_username: str
-    game_type: str  # 'wielka-studencka-batalla', 'kolko-i-krzyzyk', 'sudoku'
+    game_type: VALID_GAME_TYPES
 
 
 class GameInvitationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     inviter: UserResponse
     invitee: UserResponse
     game_type: str
     status: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
