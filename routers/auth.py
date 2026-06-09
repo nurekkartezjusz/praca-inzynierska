@@ -3,7 +3,8 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
-import resend
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -27,9 +28,22 @@ from schemas import (
 
 logger = logging.getLogger(__name__)
 
-resend.api_key = os.getenv("RESEND_API_KEY", "")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
 
 router = APIRouter(tags=["auth"])
+
+
+def _send_email(to_address: str, subject: str, html_content: str) -> None:
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key["api-key"] = BREVO_API_KEY
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_address}],
+        sender={"name": "Wielka Studencka Batalia", "email": os.getenv("BREVO_SENDER_EMAIL", "")},
+        subject=subject,
+        html_content=html_content,
+    )
+    api_instance.send_transac_email(send_smtp_email)
 
 
 @router.get("/")
@@ -95,26 +109,20 @@ def request_password_reset(
     user.reset_token_expires = datetime.now(timezone.utc) + timedelta(minutes=15)
     db.commit()
 
-    if resend.api_key:
+    if BREVO_API_KEY:
         try:
-            params = {
-                "from": "Wielka Studencka Batalia <onboarding@resend.dev>",
-                "to": [user.email],
-                "subject": "Wielka Studencka Batalia - Kod resetowania hasła",
-                "html": _build_reset_email_html(reset_token),
-            }
-            email_response = resend.Emails.send(params)
-            logger.info(
-                "Email z kodem wysłany do %s, ID: %s",
-                user.email,
-                email_response.get("id"),
+            _send_email(
+                to_address=user.email,
+                subject="Wielka Studencka Batalia - Kod resetowania hasła",
+                html_content=_build_reset_email_html(reset_token),
             )
+            logger.info("Email z kodem wysłany do %s", user.email)
             return {
                 "message": "Kod resetowania został wysłany na podany adres email",
                 "email_sent": True,
             }
-        except Exception as e:
-            logger.error("Błąd wysyłania emaila: %s", e)
+        except ApiException as e:
+            logger.error("Błąd wysyłania emaila (Brevo): %s", e)
             return {"message": "Błąd wysyłania emaila", "email_sent": False}
     else:
         logger.debug(

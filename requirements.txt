@@ -9,5 +9,5 @@ python-dotenv==1.0.0
 email-validator==2.1.0
 psycopg2-binary==2.9.11
 python-multipart==0.0.6
-resend==0.8.0
+sib-api-v3-sdk
 httpx==0.26.0
