@@ -113,8 +113,12 @@ body{
     width: 24px;
     cursor: pointer;
 }
-.field input:not(:placeholder-shown) ~ .eye-icon {
-    transform: translateY(-121%);
+.field input:not(:placeholder-shown) ~ .eye-icon{
+    transform: translateY(-130%);
+}
+.validation-icon{
+    position: absolute;
+    top: 20% !important;
 }
 .password-requirements{
     font-family: var(--font-secondary);
@@ -226,5 +230,14 @@ body{
     }
     .logow{
         padding-left: 0;
+    }
+    .eye-icon{
+        top: 20%;
+    }
+    .field input:not(:placeholder-shown) ~ .eye-icon{
+        transform: translateY(-105%);
+    }
+    .validation-icon{
+        top: 15% !important;
     }
 }
