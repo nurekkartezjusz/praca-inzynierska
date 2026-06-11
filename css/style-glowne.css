@@ -28,7 +28,7 @@ body::before{
     content: "";
     position: fixed;
     inset: -1px;
-    background: url(../img_glowna/Illustration2.png) center/cover no-repeat;
+    background: url(../img_glowna/Illustration222.jpg) center/cover no-repeat;
     z-index: 0;
 }
 .topbar,.hero{
