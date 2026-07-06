@@ -55,8 +55,6 @@ SECRET_KEY=twoj-sekret-klucz-zmien-to-na-produkcje
 # Stwórz środowisko
 python -m venv .venv
 .venv\Scripts\activate  # Windows
-.venv\Scripts\activate
-
 # Uruchom backend
 uvicorn main:app --reload
 ```
