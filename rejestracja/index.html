@@ -23,17 +23,17 @@
             <div class="rejestr card">
                 <h2>Rejestracja</h2>
                 <div class="field">
-                    <input type="text" id="username" required placeholder=" ">
+                    <input type="text" id="username" autocomplete="off" required placeholder=" ">
                     <label for="username">Nazwa użytkownika (min. 3 znaki)</label>
                     <span class="validation-icon" id="username-icon"></span>
                 </div>
                 <div class="field">
-                    <input type="email" id="email" required placeholder=" ">
+                    <input type="email" id="email" autocomplete="off" required placeholder=" ">
                     <label for="email">Adres e-mail</label>
                     <span class="validation-icon" id="email-icon"></span>
                 </div>
                 <div class="field">
-                    <input type="password" id="password" class="password-input" required placeholder=" ">       
+                    <input type="password" id="password" class="password-input" autocomplete="new-password" required placeholder=" ">       
                     <label for="password">Hasło (min. 6 znaków)</label>
                     <img src="img/hide.png" alt="view" class="eye-icon">  
 
@@ -49,9 +49,10 @@
                         <li id="req-number">✗ Zawiera cyfrę</li>
                     </ul>
                 </div>
-                <div class="field">
-                    <input type="password" id="password-repeat" required placeholder=" ">
+                <div class="field pass-again">
+                    <input type="password" id="password-repeat" class="password-input" autocomplete="off" required placeholder=" ">
                     <label for="password-repeat">Powtórz hasło</label>
+                    <img src="img/hide.png" alt="view" class="eye-icon">
                     <span class="validation-icon" id="password-repeat-icon"></span>
                 </div>
                 <div class="checkbox-field">

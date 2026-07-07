@@ -17,7 +17,7 @@
 html,body{
     margin: 0;
     height: 100%;
-    background: #000;
+    background: url(../img_glowna/Illustrationmobile.png) center/cover no-repeat;
 }
 body{
     font-family: var(--font-main);
@@ -27,8 +27,10 @@ body{
 body::before{
     content: "";
     position: fixed;
-    inset: -1px;
+    inset: 0;
     background: url(../img_glowna/Illustration222.jpg) center/cover no-repeat;
+    opacity: 1;
+    transition: opacity 0.8s ease;
     z-index: 0;
 }
 .topbar,.hero{
@@ -110,16 +112,19 @@ body::before{
 .menu{
     display: none;
     position: absolute;
-    top: 42px;
+    top: 40px;
     right: 0;
-    background: var(--color-button-bg);
-    color: var(--color-button-text);
+    min-width: 140px;
+    padding: 10px;
+    background: #d5c9e7;
+    backdrop-filter: blur(8px);
     border: 2px solid #000;
     box-shadow: var(--shadow-pixel);
-    padding: 8px;
-    min-width: 140px;
+    color: var(--color-button-text);
     font-family: var(--font-main);
     font-size: 10px;
+    line-height: 1.7;
+    text-align: center;
     z-index: 999;
 }
 .menu.show{
@@ -152,6 +157,8 @@ body::before{
 }
 .hero-content{
     max-width: 650px;
+    user-select: none;
+    -webkit-user-select: none;
 }
 .hero h1{
     font-size: clamp(35px, 5vw, 72px);
@@ -255,6 +262,11 @@ body::before{
     box-shadow:
         inset 3px 3px 0 #fff,
         3px 3px 0 #000;
+}
+@media(max-width: 900px){
+    body::before{
+        opacity: 0;
+    }
 }
 /* .site-footer{
     width: 100%;

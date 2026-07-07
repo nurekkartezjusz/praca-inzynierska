@@ -116,9 +116,15 @@ body{
 .field input:not(:placeholder-shown) ~ .eye-icon{
     transform: translateY(-130%);
 }
+.pass-again input:not(:placeholder-shown) ~ .eye-icon{
+    transform: translateY(0);
+}
 .validation-icon{
     position: absolute;
     top: 20% !important;
+}
+.pass-again .validation-icon{
+    right: 50px !important;
 }
 .password-requirements{
     font-family: var(--font-secondary);
@@ -236,6 +242,9 @@ body{
     }
     .field input:not(:placeholder-shown) ~ .eye-icon{
         transform: translateY(-105%);
+    }
+    .pass-again input:not(:placeholder-shown) ~ .eye-icon{
+        transform: translateY(0);
     }
     .validation-icon{
         top: 15% !important;
