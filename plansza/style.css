@@ -532,6 +532,9 @@ body {
 	image-rendering:pixelated;
     pointer-events: none;
 }
+
+
+
 .overlay{
     position: fixed;
     inset: 0;
@@ -790,4 +793,30 @@ body {
     font-family: var(--class-font);
     color: var(--class-heading-color);
     font-size: 10px;
+}
+.choice-popup{
+    background: var(--class-bg-color);
+    display: flex;
+    width: 50%;
+    height: 65%;
+}
+.bot-column, .friends-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.choice-btn{
+    width: 160px;
+    text-transform: uppercase;
+    color: var(--class-font-color);
+    font-family: var(--class-font);
+    padding: 8px 20px;
+    margin-top: 15px;
+    border: 2px solid black;
+    box-shadow: 0 10px 4px rgba(0,0,0,0.25);
+    font-size: 11px;
+    background: var(--class-button-color);
+    transition: transform 0.15s ease, box-shadow 0.15 ease;
 }

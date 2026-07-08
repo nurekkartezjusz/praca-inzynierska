@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
 </head>
 <body>
+    
     <header class="topbar">
         <nav class="nav">
             <div class="nav-left">
@@ -21,8 +22,7 @@
             <div class="nav-right">
                 <img src="img_glowna/pl.png" alt="PL" class="lang-btn" data-lang="pl">
                 <img src="img_glowna/en.png" alt="EN" class="lang-btn" data-lang="en">
-                <div id="user-profile" class="profile" onclick="toggleMenu()">
-                    <div id="profile-icon"></div>
+                <img src="img_glowna/power-off.png" alt="logout" id="user-profile" class="profile" onclick="toggleMenu()">
                     <div id="profile-menu" class="menu">
                         <div id="profile-email" class="menu-email"></div>
                         <button onclick="logout()">Wyloguj</button>
@@ -53,6 +53,7 @@
             </a>
         </div>
     </section>
+    
     <!-- <footer class="site-footer">
         <h3>O projekcie</h3>
             <p>Wielka Studencka Batalia to interaktywna gra planszowa z wyzwaniami i mini grami. Zaproś znajomych i rywalizujcie ze sobą!</p>

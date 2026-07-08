@@ -33,6 +33,10 @@ body::before{
     transition: opacity 0.8s ease;
     z-index: 0;
 }
+#icon{
+    width:25px;
+    color:black;
+}
 .topbar,.hero{
     position: relative;
     z-index: 1;
@@ -51,6 +55,7 @@ body::before{
     display: flex;
     gap: clamp(12px, 2vw, 40px);
     flex-wrap: nowrap;
+    padding-left: 10px;
 }
 .nav-left a{
     font-size: clamp(11px, 2vw, 18px);
@@ -70,7 +75,7 @@ body::before{
     display: flex;
     gap: clamp(10px, 1.5vw, 20px);align-items: center;
 }
-.lang-btn{
+.lang-btn, .profile{
     width: clamp(22px, 2vw, 28px);
     height: clamp(16px, 1.4vw, 20px);
     object-fit: cover;
