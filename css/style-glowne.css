@@ -75,7 +75,11 @@ body::before{
     display: flex;
     gap: clamp(10px, 1.5vw, 20px);align-items: center;
 }
-.lang-btn, .profile{
+.profile{
+    display: flex;
+    height: 22px;
+}
+.lang-btn{
     width: clamp(22px, 2vw, 28px);
     height: clamp(16px, 1.4vw, 20px);
     object-fit: cover;
@@ -97,18 +101,7 @@ body::before{
     cursor: pointer;
 }
 #profile-icon{
-    width: 32px;
-    height: 32px;
-    background: #e0d4f3;
-    color: var(--color-button-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-family: var(--font-main);
-    box-shadow: var(--shadow-pixel);
-    transition: 0.15s;
-    border: 2px solid #000;
+    display: none;
 }
 #profile-icon:hover{
     transform: translate(2px, 2px);
