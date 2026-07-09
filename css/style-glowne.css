@@ -110,8 +110,8 @@ body::before{
 .menu{
     display: none;
     position: absolute;
-    top: 40px;
-    right: 0;
+    top: 60px;
+    right: 15px;
     min-width: 140px;
     padding: 10px;
     background: #d5c9e7;
@@ -144,7 +144,7 @@ body::before{
     z-index: 999;
 }
 .menu button:hover{
-    transform: translate(2px,2px);
+    transform: translate(1px,1px);
     box-shadow: var(--shadow-pixel-hover);
 }
 .hero{
