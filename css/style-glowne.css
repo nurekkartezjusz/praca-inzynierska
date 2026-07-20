@@ -176,7 +176,7 @@ body::before{
     display: inline-block;
     background: #e0d4f3;
     color: var(--color-text-dark);
-    font-family: var(--font-primary);
+    font-family: var(--font-main);
     font-size: 16px;
     padding: 20px 55px;
     text-decoration: none;
