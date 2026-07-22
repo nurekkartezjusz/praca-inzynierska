@@ -18,6 +18,7 @@ html,body{
     margin: 0;
     height: 100%;
     background: url(../img_glowna/Illustrationmobile.png) center/cover no-repeat;
+    overflow-x: hidden;
 }
 body{
     font-family: var(--font-main);
@@ -163,6 +164,7 @@ body::before{
     line-height: 1.15;
     letter-spacing: 4px;
     margin-bottom: 20px;
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
 }
 .hero p{
     font-family: var(--font-secondary);
@@ -261,11 +263,6 @@ body::before{
         inset 3px 3px 0 #fff,
         3px 3px 0 #000;
 }
-@media(max-width: 900px){
-    body::before{
-        opacity: 0;
-    }
-}
 /* .site-footer{
     width: 100%;
     padding: 40px 20px;
@@ -300,3 +297,57 @@ body::before{
     border: none;
 	border-top: 1px solid #e0e0e0;
 } */
+@media(max-width: 900px){
+    body::before{
+        opacity: 0;
+    }
+}
+@media (max-width: 768px){
+    .topbar{
+        padding: 15px 10px;
+    }
+    .nav{
+        flex-direction: row !important;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5px;
+    }
+    .nav-left{
+        gap: clamp(6px, 1.8vw, 15px);
+        padding-left: 0;
+        flex-wrap: nowrap;
+    }
+    .nav-left a{
+        font-size: clamp(8px, 2.2vw, 12px);
+    }
+    .nav-right{
+        gap: 8px;
+    }
+    .hero{
+        height: auto;
+        min-height: calc(100vh - 80px);
+        padding: 30px 30px;
+        justify-content: flex-start;
+    }
+    .hero-content{
+        text-align: left;
+        width: 100%;
+    }
+    .hero h1{
+        font-size: clamp(30px, 5.8vw, 80px);
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        word-break: break-word;
+    }
+    .hero p{
+        font-size: 15px;
+        margin-bottom: 25px;
+    }
+    .btn{
+        font-size: 12px;
+        padding: 12px 24px;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+}

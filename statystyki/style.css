@@ -21,6 +21,9 @@ body{
     font-family: var(--font-primary);
     color: var(--color-text-main);
 }
+html, body{
+    overflow-x: hidden;
+}
 .app{
     width:100%;
     max-width:1100px;
@@ -81,10 +84,11 @@ body{
 .nickname h1{
     font-size:14px;
     text-align:center;
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
 }
 .avatar{
-    width:260px;
-    height:260px;
+    width:300px;
+    height:300px;
     background:var(--color-card);
     box-shadow:var(--shadow-pixel-small);
     position:relative;
@@ -205,7 +209,7 @@ body{
     left:0;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.5);
+    background:rgba(0,0,0,0.7);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -257,4 +261,75 @@ strong{
 }
 .modal .cancel-btn{
     flex:1;
+}
+@media (max-width: 768px){
+    .app{
+        margin: 15px auto;
+        padding: 15px;
+    }
+    .calosc{
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 25px;
+        margin-top: 20px;
+    }
+    .statystyki{
+        width: 90%;
+        max-width: 100%;
+        margin-top: 0;
+        padding: 20px 15px;
+    }
+    .prawo{
+        width: 100%;
+    }
+    .avatar{
+        width: 250px;
+        height: 250px;
+    }
+    .edycja-profilu{
+        margin-top: 30px;
+        padding: 20px 15px;
+        width: 90%;
+        max-width: 100%;
+    }
+    .form-buttons,.modal-buttons{
+        flex-direction: column;
+        gap: 10px;
+    }
+    .save-profile-btn,.cancel-btn,.delete-confirm-btn{
+        width: 100%;
+    }
+    .delete-account-btn{
+        width: 90%;
+        font-size: 18px;
+        padding: 12px 15px;
+    }
+    .zmien-wyglad-btn{
+        width: 90%;
+    }
+    .modal{
+        padding: 15px;
+    }
+    .modal-content{
+        width: 100%;
+        max-width: 100%;
+        padding: 20px 15px;
+    }
+}
+@media (max-width: 400px){
+    .nickname h1{
+        font-size: 12px;
+    }
+    .avatar{
+        width: 200px;
+        height: 200px;
+    }
+    .edit-option-btn{
+        font-size: 18px;
+        padding: 12px;
+        width: 100%;
+    }
+    .zmien-wyglad-btn{
+        width: 90%;
+    }
 }
