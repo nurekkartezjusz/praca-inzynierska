@@ -165,3 +165,77 @@ def decline_game_invitation(
     db.commit()
     logger.info("Zaproszenie odrzucone przez: %s", current_user.username)
     return {"message": "Zaproszenie odrzucone"}
+
+
+@router.get("/game-invitations/status/{invitation_id}")
+def get_game_invitation_status(
+    invitation_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Sprawdź status zaproszenia (dostępne dla obu stron: zapraszającego i zaproszonego)."""
+    invitation = db.query(GameInvitation).filter(GameInvitation.id == invitation_id).first()
+    if not invitation:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zaproszenie nie znalezione")
+    if invitation.inviter_id != current_user.id and invitation.invitee_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Brak dostępu do tego zaproszenia")
+
+    invitee = db.query(User).filter(User.id == invitation.invitee_id).first()
+    inviter = db.query(User).filter(User.id == invitation.inviter_id).first()
+    return {
+        "id": invitation.id,
+        "status": invitation.status.value,
+        "game_type": invitation.game_type,
+        "inviter_username": inviter.username if inviter else None,
+        "invitee_username": invitee.username if invitee else None,
+    }
+
+
+@router.post("/game-invitations/cancel/{invitation_id}")
+def cancel_game_invitation(
+    invitation_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Anuluj wysłane zaproszenie (tylko zapraszający)."""
+    invitation = db.query(GameInvitation).filter(GameInvitation.id == invitation_id).first()
+    if not invitation:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zaproszenie nie znalezione")
+    if invitation.inviter_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Możesz anulować tylko własne zaproszenia")
+    if invitation.status != GameInvitationStatus.PENDING:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Zaproszenie nie jest już aktywne")
+
+    invitation.status = GameInvitationStatus.EXPIRED
+    invitation.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    logger.info("Zaproszenie anulowane przez: %s", current_user.username)
+    return {"message": "Zaproszenie anulowane"}
+
+
+@router.get("/game-invitations/my-pending")
+def get_my_pending_invitations(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Zwraca aktywne (PENDING) zaproszenia wysłane przez zalogowanego użytkownika."""
+    InviteeAlias = aliased(User)
+    rows = (
+        db.query(GameInvitation, InviteeAlias)
+        .join(InviteeAlias, GameInvitation.invitee_id == InviteeAlias.id)
+        .filter(
+            GameInvitation.inviter_id == current_user.id,
+            GameInvitation.status == GameInvitationStatus.PENDING,
+        )
+        .order_by(GameInvitation.created_at.desc())
+        .all()
+    )
+    return [
+        {
+            "id": inv.id,
+            "game_type": inv.game_type,
+            "invitee_username": u.username,
+            "created_at": inv.created_at,
+        }
+        for inv, u in rows
+    ]

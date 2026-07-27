@@ -268,8 +268,8 @@
             </div>
 
             </div>
-<!--
-            <div class="class-popup">
+
+            <div class="class-popup" style="display:none;">
             <div class="inside">
                 <h1>Wybierz klasę</h1>
                 <div class="cards-wrapper">
@@ -443,8 +443,70 @@
             <p>Pamiętaj: nie można zmienić wyboru klasy w czasie gry!</p>
             </div>
         </div>
-        -->
 </div>
+
+<!-- Picker znajomego -->
+<div class="fp-modal" id="fp-modal">
+    <div class="fp-content">
+        <div class="fp-header">
+            <h3>Wybierz znajomego do gry</h3>
+            <button class="fp-close-btn" onclick="closeFriendPicker()">&#215;</button>
+        </div>
+        <div class="fp-list" id="fp-list">Wczytuję...</div>
+    </div>
+</div>
+
+<!-- Oczekiwanie na znajomego -->
+<div class="wait-modal" id="wait-modal">
+    <div class="wait-content">
+        <div class="wait-spinner"></div>
+        <p>Oczekiwanie na<br><strong id="wait-name"></strong>...</p>
+        <p class="wait-hint">Znajomy musi zaakceptować zaproszenie</p>
+        <button class="wait-cancel-btn" onclick="cancelInvitation()">Anuluj zaproszenie</button>
+    </div>
+</div>
+
+<!-- Toast po anulowaniu -->
+<div class="cancel-toast" id="cancel-toast"></div>
+
+<!-- Przychodzące zaproszenie do gry -->
+<div class="inc-modal" id="inc-modal">
+    <div class="inc-content">
+        <div class="inc-icon">&#127918;</div>
+        <h3>Zaproszenie do gry!</h3>
+        <p><strong id="inc-from">?</strong> zaprasza cię do<br><em>Wielka Studencka Batalla</em>!</p>
+        <div class="inc-buttons">
+            <button class="inc-btn-decline" id="inc-decline">Odrzuć</button>
+            <button class="inc-btn-accept" id="inc-accept">Akceptuj!</button>
+        </div>
+    </div>
+</div>
+
+<!-- Statystyki gracza (lewy dół) -->
+<div class="p-panel p1-panel" id="gp-p1" style="display:none;">
+    <span class="pp-dot pp-dot-1"></span>
+    <div class="pp-info">
+        <div class="pp-name" id="gp-p1-name">Gracz</div>
+        <div class="pp-stat" id="gp-p1-stat"></div>
+    </div>
+</div>
+
+<!-- Statystyki przeciwnika (lewy górny) -->
+<div class="p-panel p2-panel" id="gp-p2" style="display:none;">
+    <span class="pp-dot pp-dot-2"></span>
+    <div class="pp-info">
+        <div class="pp-name" id="gp-p2-name">Bot</div>
+        <div class="pp-stat" id="gp-p2-stat"></div>
+    </div>
+</div>
+
+<!-- Kostka i wiadomości (prawa strona) -->
+<div class="dice-panel" id="dice-panel" style="display:none;">
+    <button class="dice-btn" id="dice-btn" onclick="rollDice()">&#127922;</button>
+    <div class="dice-num" id="dice-num">?</div>
+    <div class="gp-msg" id="gp-msg"></div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
