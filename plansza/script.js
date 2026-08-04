@@ -408,7 +408,7 @@ function openFriendPicker() {
             list.innerHTML = friends.map(function(f) {
                 var safe = escapeHtml(f.username);
                 return '<div class="fp-item"><span class="fp-username">' + safe +
-                    '</span><button class="fp-invite-btn" onclick="inviteFriend(\'' + safe + '\')">Zapróś</button></div>';
+                    '</span><button class="fp-invite-btn" onclick="inviteFriend(\'' + safe + '\')">Zaproś</button></div>';
             }).join('');
         }
     })

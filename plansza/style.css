@@ -1,15 +1,12 @@
 :root{
-    --class-font: "JetBrains Mono", system-ui;
+    --class-font: "Press Start 2P", monospace;
+	--font-secondary:"Space Grotesk", sans-serif;
+	--font-third:"VT323", monospace;
     --class-button-color: linear-gradient(rgba(217, 29, 79, 0.2), rgba(217, 29, 79, 0.2)), #D91D4F;
     --class-font-color: white;
     --class-heading-color: #D91D4F;
-    --class-bg-color: #667EEA;
-    --class-card-color: #5267c7; 
+    --class-card-color: #94a4fe; 
     --color-bg:#9EACFC;
-}
-.press-start-2p-regular {
-    font-family: "Press Start 2P", system-ui;
-    font-style: normal;
 }
 body {
     margin: 0;
@@ -18,7 +15,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-secondary);
 }
 .board {
     display: grid;
@@ -471,7 +468,7 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
 }
 .game-modal-header{
     padding: 10px 15px;
@@ -484,7 +481,7 @@ body {
     border-bottom: 2px solid rgba(255,255,255,0.3);
     color: #26292c;
     font-weight: bold;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
 }
 .game-modal-header h3{
@@ -521,7 +518,6 @@ body {
 	width: 210px; 
     height: 210px;
 	flex-shrink: 0;
-    margin-left: 15px;
 }
 .avatar-container .layer{
 	position:absolute;
@@ -532,7 +528,14 @@ body {
 	image-rendering:pixelated;
     pointer-events: none;
 }
-
+.avatar-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid  var(--color-bg);
+    pointer-events: none;
+    box-sizing: border-box;
+}
 
 
 .overlay{
@@ -546,12 +549,13 @@ body {
     align-items: center;
 }
 .class-popup{
-    height: 440px;
-    width: 863px;
-    background-color: var(--class-bg-color);
+    height: fit-content;
+    width: fit-content;
+    background-color: var(--color-bg);
     cursor: pointer;
     z-index: 101;
     position: relative;
+    padding: 0 15px 20px;
 }
 .inside{
     display: flex;
@@ -561,15 +565,12 @@ body {
     padding: 10px;
 }
 .inside h1{
-    color: var(--class-heading-color);
+    color: #fff;
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
-    text-shadow:
-     -1px -1px 0 #000,  
-      1px -1px 0 #000,
-     -1px  1px 0 #000,
-      1px  1px 0 #000;
+	color:#fff;
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
 }
 .cards-wrapper{
     display: flex;
@@ -598,7 +599,7 @@ body {
 }
 .front, .back{
     background-color: var(--class-card-color);
-    padding: 17px 0;
+    padding: 0 0;
     box-sizing: border-box;
     position: absolute;
     gap: 8px;
@@ -608,24 +609,27 @@ body {
 }
 .front h2, .back h2{
     color: var(--class-font-color);
-    font-size: 13px;
+    font-size: 25px;
     text-align: center;
-    font-family: var(--class-font);
+    font-family: var(--font-third);
+    letter-spacing: 1px;
+    font-weight: 400;
 }
 .front{
     text-align: center;
-    
 }
 .front h2{
     padding: 0 14px;
 }
 .front p{
     color: var(--class-font-color);
-    font-size: 12px;
+    font-size: 15px;
+    letter-spacing: 1px;
     line-height: 14px;
     text-align: center;
-    font-family: var(--class-font);
+    font-family: var(--font-third);
     padding: 0 14px;
+    transform: translateY(-10px);
 }
 .back{
     height: 300px;
@@ -635,9 +639,9 @@ body {
 }
 .back p{
     color: var(--class-font-color);
-    font-size: 12px;
-    line-height: 14px;
-    font-family: var(--class-font);
+    font-size: 17px;
+    line-height: 17px;
+    font-family: var(--font-third);
 }
 .back .stats p{
     margin: 3px 0;
@@ -650,9 +654,6 @@ body {
 .back .cytat{
     text-align: center;
 }
-.back h2{
-    padding-top: 18px;
-}
 .buttons{
     display: flex;
     justify-content: center;
@@ -663,15 +664,14 @@ body {
     width: 160px;
     text-transform: uppercase;
     color: var(--class-font-color);
-    font-family: var(--class-font);
+    font-family: var(--font-third);
     padding: 8px 20px;
     margin-top: 15px;
     border: 2px solid black;
     box-shadow: 0 10px 4px rgba(0,0,0,0.25);
-    font-size: 11px;
+    font-size: 17px;
     background: var(--class-button-color);
     transition: transform 0.15s ease, box-shadow 0.15 ease;
-    font-weight: 700;
 }
 .class-btn:active{
     transform: scale(0.92) translateY(6px); box-shadow: 0 2px 1px rgba(0,0,0,0.25);
@@ -740,7 +740,7 @@ body {
 .confirm-popup{
     width: 450px;
     height: 250px;
-    background: var(--class-bg-color);
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -800,28 +800,46 @@ body {
     font-size: 10px;
 }
 .choice-popup{
-    background: var(--class-bg-color);
+    background: var(--color-bg);
     display: flex;
-    width: 50%;
-    height: 65%;
+    padding: 25px;
+    width: fit-content;
+    height: fit-content;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; 
+    flex-direction: column;
+}
+.choice-popup h2,.choice-popup h4{
+    font-family: var(--class-font);
+	color:#fff;
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+}
+.choice-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    width: 100%;
 }
 .bot-column, .friends-column{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex: 1;
 }
 
 .choice-btn{
     width: 160px;
     text-transform: uppercase;
     color: var(--class-font-color);
-    font-family: var(--class-font);
+    font-family: var(--font-third);
     padding: 8px 20px;
     margin-top: 15px;
     border: 2px solid black;
     box-shadow: 0 10px 4px rgba(0,0,0,0.25);
-    font-size: 11px;
+    font-size: 17px;
     background: var(--class-button-color);
     transition: transform 0.15s ease, box-shadow 0.15 ease;
 }
@@ -858,7 +876,7 @@ body {
     box-shadow: inset 3px 3px 0 rgba(255,255,255,0.15), 3px 3px 0 #000;
     padding: 14px 18px;
     z-index: 500;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     align-items: center;
     gap: 14px;
     min-width: 260px;
@@ -949,7 +967,7 @@ body {
     box-shadow: inset 3px 3px 0 rgba(255,255,255,0.15), 3px 3px 0 #000;
     padding: 20px 18px;
     z-index: 500;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     flex-direction: column;
     align-items: center;
     gap: 14px;
@@ -969,7 +987,7 @@ body {
 .dice-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 .dice-num {
     font-size: 28px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     color: #fff;
     text-shadow: 2px 2px 0 #000;
     min-width: 36px;
@@ -1008,7 +1026,7 @@ body {
     max-height: 70vh;
     display: flex;
     flex-direction: column;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
 }
 .fp-header {
     display: flex;
@@ -1034,7 +1052,7 @@ body {
     color: rgba(255,255,255,0.6);
     font-size: 7px;
     padding: 20px 10px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     line-height: 1.8;
 }
 .fp-error { color: #e74c3c; }
@@ -1047,13 +1065,13 @@ body {
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 .fp-item:last-child { border-bottom: none; }
-.fp-username { color: #fff; font-size: 8px; text-shadow: 1px 1px 0 #000; font-family: 'Press Start 2P', monospace; }
+.fp-username { color: #fff; font-size: 8px; text-shadow: 1px 1px 0 #000; font-family: var(--class-font); }
 .fp-invite-btn {
     background: rgba(46,213,115,0.25);
     border: 2px solid #000;
     box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2), 1px 1px 0 #000;
     color: #fff; font-size: 7px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     padding: 5px 10px; cursor: pointer;
     transition: transform 0.1s;
 }
@@ -1075,7 +1093,7 @@ body {
     box-shadow: inset 2px 2px 0 rgba(255,255,255,0.2), 4px 4px 0 #000;
     padding: 32px 44px;
     text-align: center;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     display: flex; flex-direction: column; align-items: center; gap: 14px;
     max-width: 90vw;
 }
@@ -1094,7 +1112,7 @@ body {
     border: 2px solid #000;
     box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2), 1px 1px 0 #000;
     color: #fff; font-size: 7px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     padding: 8px 16px; cursor: pointer;
     transition: transform 0.1s; margin-top: 6px;
 }
@@ -1122,7 +1140,7 @@ body {
     border: 2px solid #000;
     box-shadow: inset 2px 2px 0 rgba(255,255,255,0.2), 4px 4px 0 #000;
     padding: 16px 20px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     max-width: 280px;
 }
 .inc-icon { font-size: 24px; text-align: center; margin-bottom: 8px; }
@@ -1133,7 +1151,7 @@ body {
     border: 2px solid #000;
     box-shadow: inset 1px 1px 0 rgba(255,255,255,0.2), 1px 1px 0 #000;
     color: #fff; font-size: 7px;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     padding: 7px 12px; cursor: pointer;
     transition: transform 0.1s;
 }
@@ -1171,7 +1189,7 @@ body {
     border: 2px solid #000;
     box-shadow: inset 2px 2px 0 rgba(255,255,255,0.2), 2px 2px 0 #000;
     color: #fff;
-    font-family: 'Press Start 2P', monospace;
+    font-family: var(--class-font);
     font-size: 8px;
     padding: 10px 20px;
     text-shadow: 1px 1px 0 #000;

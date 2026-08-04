@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Plansza</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta charset="UTF-8" />
+    <title>Plansza</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Comforter+Brush&family=Noto+Serif+Ahom&family=Parisienne&family=Press+Start+2P&family=Shantell+Sans:ital,wght@0,300..800;1,300..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap&subset=latin,latin-ext" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap&subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="actions">
@@ -235,194 +237,187 @@
 
 
         <div class="overlay">
-
             <div class="choice-popup">
-                <div class="bot-column">
-                    <h2>Komputer</h2>
-                    <div class="avatar-container">
-                        <img class="layer" src="img/komputer.png" alt="Komputer">
+                <h2>Z kim chcesz grać?</h2>
+                <div class="choice-options">
+                    <div class="bot-column">
+                        <h4>Komputer</h4>
+                        <div class="avatar-container">
+                            <img class="layer" src="img/komputer.png" alt="Komputer">
+                        </div>
+                        <button class="choice-btn" id="bot-choice-btn">Wybierz bota</button>
                     </div>
-                    <button class="choice-btn" id="bot-choice-btn">Wybierz bota</button>
+                    <div class="friends-column">
+                        <h4>Znajomi</h4>
+                        <div class="avatar-container">
+                            <img class="layer skora">
+                            <img class="layer usta">
+                            <img class="layer oczy">
+                            <img class="layer wlosy">
+                            <img class="layer koszulka">
+                            <img class="layer spodnie">
+                        </div>
+                    <button class="choice-btn" id="friend-choice-btn">Wybierz znajomego</button>
+                    </div>
                 </div>
-                
-            
-
-                <div class="friends-column">
-                    <h2>Znajomi</h2>
-                    <div class="avatar-container">
-                        <img class="layer skora">
-                        <img class="layer usta">
-                        <img class="layer oczy">
-                        <img class="layer wlosy">
-                        <img class="layer koszulka">
-                        <img class="layer spodnie">
-                        <img class="layer hantel">
-                    </div>
-                <button class="choice-btn" id="friend-choice-btn">Wybierz znajomego</button>
             </div>
-
-            </div>
-
             <div class="class-popup" style="display:none;">
-            <div class="inside">
-                <h1>Wybierz klasę</h1>
-                <div class="cards-wrapper">
-                    <div class="container" id="firstCard">
-                    <div class="card">
-                        <div class="front">
-                        <h2>Sportowiec</h2>
-                        <div class="avatar-container">
-                            <img class="layer skora">
-                            <img class="layer usta">
-                            <img class="layer oczy">
-                            <img class="layer wlosy">
-                            <img class="layer koszulka">
-                            <img class="layer spodnie">
-                            <img class="layer hantel">
+                <div class="inside">
+                    <h1>Wybierz specjalność</h1>
+                    <div class="cards-wrapper">
+                        <div class="container" id="firstCard">
+                            <div class="card">
+                                <div class="front">
+                                    <h2>Sportowiec</h2>
+                                    <div class="avatar-container">
+                                        <img class="layer skora">
+                                        <img class="layer usta">
+                                        <img class="layer oczy">
+                                        <img class="layer wlosy">
+                                        <img class="layer koszulka">
+                                        <img class="layer spodnie">
+                                        <img class="layer hantel">
+                                    </div>
+                                    <p>"Byłem na treningu."</p>
+                                </div>
+                                <div class="back">
+                                    <h2>Statystyki</h2>
+                                    <div class="stats">
+                                        <p>Szczęście:</p>
+                                        <div class="stars">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star_empty.png" alt="star_empty">
+                                        <img src="img/star_empty.png" alt="star_empty">
+                                        <img src="img/star_empty.png" alt="star_empty">
+                                        </div>
+                                        <p>Mądrość:</p>
+                                        <div class="brains">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain_empty.png" alt="brain_empty">
+                                        <img src="img/brain_empty.png" alt="brain_empty">
+                                        </div>
+                                        <p>Hp:</p>
+                                        <div class="hearts">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        </div>
+                                    </div> 
+                                    <p class="cytat">Zajęć nie było... znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś sie zaliczy.</p>
+                                </div>
+                            </div>
                         </div>
-                        <p>"Byłem na treningu."</p>
+                        <div class="container"  id="secondCard">
+                            <div class="card">
+                                <div class="front">
+                                    <h2>Leniuch</h2>
+                                    <div class="avatar-container">
+                                        <img class="layer skora">
+                                        <img class="layer usta">
+                                        <img class="layer oczy">
+                                        <img class="layer zzz">
+                                        <img class="layer wlosy">
+                                        <img class="layer koszulka">
+                                        <img class="layer spodnie">
+                                        <img class="layer babelek">
+                                    </div>
+                                    <p>"Nie chce mi sie."</p>
+                                </div>
+                                <div class="back">
+                                    <h2>Statystyki</h2>
+                                    <div class="stats">
+                                        <p>Szczęście:</p>
+                                        <div class="stars">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star.png" alt="star">
+                                        </div>
+                                        <p>Mądrość:</p>
+                                        <div class="brains">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain_empty.png" alt="brain_empty">
+                                        <img src="img/brain_empty.png" alt="brain_empty">
+                                        <img src="img/brain_empty.png" alt="brain_empty">
+                                        </div>
+                                        <p>Hp:</p>
+                                        <div class="hearts">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart_empty.png" alt="heart_empty">
+                                        <img src="img/heart_empty.png" alt="heart_empty">
+                                        </div>
+                                    </div> 
+                                    <p class="cytat">Człowiek, który dowiaduje sie o wszystkim jako ostatni. Deadliny traktuje jako sugestie.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="back">
-                        <h2>Statystyki</h2>
-                        <div class="stats">
-                            <p>Szczęście:</p>
-                            <div class="stars">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star_empty.png" alt="star_empty">
-                            <img src="img/star_empty.png" alt="star_empty">
-                            <img src="img/star_empty.png" alt="star_empty">
+                        <div class="container" id="thirdCard">
+                            <div class="card">
+                                <div class="front">
+                                    <h2>Mądrala</h2>
+                                    <div class="avatar-container">
+                                        <img class="layer skora">
+                                        <img class="layer usta">
+                                        <img class="layer oczy">
+                                        <img class="layer okulary">
+                                        <img class="layer wlosy">
+                                        <img class="layer koszulka">
+                                        <img class="layer spodnie">
+                                    </div>
+                                    <p>"To było na slajdzie."</p>
+                                </div>
+                                <div class="back">
+                                    <h2>Statystyki</h2>
+                                    <div class="stats">
+                                        <p>Szczęście:</p>
+                                        <div class="stars">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star.png" alt="star">
+                                        <img src="img/star_empty.png" alt="star_empty">
+                                        <img src="img/star_empty.png" alt="star_empty">
+                                        <img src="img/star_empty.png" alt="star_empty">
+                                        </div>
+                                        <p>Mądrość:</p>
+                                        <div class="brains">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        <img src="img/brain.png" alt="brain">
+                                        </div>
+                                        <p>Hp:</p>
+                                        <div class="hearts">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart.png" alt="heart">
+                                        <img src="img/heart_empty.png" alt="heart_empty">
+                                        <img src="img/heart_empty.png" alt="heart_empty">
+                                        </div>
+                                    </div> 
+                                    <p class="cytat">Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzacy kiwa głową, grupa nie wie dlaczego dostaje punkty.</p>
+                                </div>
                             </div>
-                            <p>Mądrość:</p>
-                            <div class="brains">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain_empty.png" alt="brain_empty">
-                            <img src="img/brain_empty.png" alt="brain_empty">
-                            </div>
-                            <p>Hp:</p>
-                            <div class="hearts">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            </div>
-                        </div> 
-                            <p class="cytat">Zajęć nie było... znaczy były, ale kolidowały z treningiem. Egzamin? Jakoś sie zaliczy.</p>
                         </div>
                     </div>
+                    <div class="buttons">
+                        <button class="class-btn firstCardBtn" id="btn-sportowiec">Wybierz Sportowca</button>
+                        <button class="class-btn secondCardBtn" id="btn-leniuch">Wybierz leniucha</button>
+                        <button class="class-btn thirdCardBtn" id="btn-madrala">Wybierz mądrale</button>
                     </div>
-                    <div class="container"  id="secondCard">
-                    <div class="card">
-                        <div class="front">
-                        <h2>Leniuch</h2>
-                        <div class="avatar-container">
-                            <img class="layer skora">
-                            <img class="layer usta">
-                            <img class="layer oczy">
-                            <img class="layer zzz">
-                            <img class="layer wlosy">
-                            <img class="layer koszulka">
-                            <img class="layer spodnie">
-                            <img class="layer babelek">
-                        </div>
-                        <p>"Nie chce mi sie."</p>
-                        </div>
-                        <div class="back">
-                        <h2>Statystyki</h2>
-                        <div class="stats">
-                            <p>Szczęście:</p>
-                            <div class="stars">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star.png" alt="star">
-                            </div>
-                            <p>Mądrość:</p>
-                            <div class="brains">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain_empty.png" alt="brain_empty">
-                            <img src="img/brain_empty.png" alt="brain_empty">
-                            <img src="img/brain_empty.png" alt="brain_empty">
-                            </div>
-                            <p>Hp:</p>
-                            <div class="hearts">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart_empty.png" alt="heart_empty">
-                            <img src="img/heart_empty.png" alt="heart_empty">
-                            </div>
-                        </div> 
-                        <p class="cytat">Człowiek, który dowiaduje sie o wszystkim jako ostatni. Deadliny traktuje jako sugestie.</p>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="container" id="thirdCard">
-                    <div class="card">
-                        <div class="front">
-                        <h2>Mądrala</h2>
-                        <div class="avatar-container">
-                            <img class="layer skora">
-                            <img class="layer usta">
-                            <img class="layer oczy">
-                            <img class="layer okulary">
-                            <img class="layer wlosy">
-                            <img class="layer koszulka">
-                            <img class="layer spodnie">
-                        </div>
-                        <p>"To było na slajdzie."</p>
-                        </div>
-                        <div class="back">
-                        <h2>Statystyki</h2>
-                        <div class="stats">
-                            <p>Szczęście:</p>
-                            <div class="stars">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star.png" alt="star">
-                            <img src="img/star_empty.png" alt="star_empty">
-                            <img src="img/star_empty.png" alt="star_empty">
-                            <img src="img/star_empty.png" alt="star_empty">
-                            </div>
-                            <p>Mądrość:</p>
-                            <div class="brains">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            <img src="img/brain.png" alt="brain">
-                            </div>
-                            <p>Hp:</p>
-                            <div class="hearts">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart.png" alt="heart">
-                            <img src="img/heart_empty.png" alt="heart_empty">
-                            <img src="img/heart_empty.png" alt="heart_empty">
-                            </div>
-                        </div> 
-                        <p class="cytat">Nigdy nie odpowiada wprost, ale i tak dostaje punkty. Prowadzacy kiwa głową, grupa nie wie dlaczego dostaje punkty.</p>
-                        </div>
-                    </div>
+                    <div class="control">
+                        <button onclick="prev('card')">◀</button>
+                        <button onclick="next('card')">▶</button>
                     </div>
                 </div>
-
-                <div class="buttons">
-                <button class="class-btn firstCardBtn" id="btn-sportowiec">Wybierz Sportowca</button>
-                <button class="class-btn secondCardBtn" id="btn-leniuch">Wybierz leniucha</button>
-                <button class="class-btn thirdCardBtn" id="btn-madrala">Wybierz mądrale</button>
-                </div>
-
-                <div class="control">
-                    <button onclick="prev('card')">◀</button>
-                    <button onclick="next('card')">▶</button>
-                </div>
-
-            </div>
             </div>
             <div id="tooltip"></div>
         
@@ -437,7 +432,7 @@
             <p>Pamiętaj: nie można zmienić wyboru klasy w czasie gry!</p>
             </div>
         </div>
-</div>
+        </div>
 
 <!-- Picker znajomego -->
 <div class="fp-modal" id="fp-modal">

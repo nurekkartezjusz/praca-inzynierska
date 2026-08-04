@@ -127,6 +127,7 @@ button:active{
 	font-family:var(--font-third);
 	padding:12px 40px;
 	box-shadow:var(--shadow);
+	font-size: 18px;
 }
 .start-btn:hover{
 	transform:translate(1px,1px);
