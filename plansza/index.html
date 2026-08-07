@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Plansza</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="okienko.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -236,9 +237,15 @@
 
 
 
+        <!-- Overlay for the choice popup -->
         <div class="overlay">
-            <div class="choice-popup">
-                <h2>Z kim chcesz grać?</h2>
+
+            <!-- Choice popup -->
+            <div class="choice-popup"  id="main-popup">
+                <div class="small-menu">
+                    <p>Z kim chcesz zagrac?</p>
+                    <button class="close-btn">X</button>
+                </div>
                 <div class="choice-options">
                     <div class="bot-column">
                         <h4>Komputer</h4>
@@ -261,7 +268,10 @@
                     </div>
                 </div>
             </div>
-            <div class="class-popup" style="display:none;">
+
+
+            <!-- -->
+            <div class="class-popup" style="display:none;" id="main-popup">
                 <div class="inside">
                     <h1>Wybierz specjalność</h1>
                     <div class="cards-wrapper">

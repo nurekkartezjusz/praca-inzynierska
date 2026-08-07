@@ -1,0 +1,349 @@
+:root{
+    --class-font: "Press Start 2P", monospace;
+	--font-secondary:"Space Grotesk", sans-serif;
+	--font-third:"VT323", monospace;
+    --class-button-color: #e0d4f3;
+    --class-font-color: white;
+    --class-heading-color: #402462;
+    --class-card-color: #94a4fe; 
+    --color-bg:#9EACFC;
+	--shadow:inset 2px 2px 0 #fff, 2px 2px 0 #000;
+	--shadow-small:inset 1px 1px 0 #fff, 1px 1px 0 #000;
+}
+body {
+    margin: 0;
+    background: var(--color-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: var(--font-secondary);
+}
+.overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Style główne dla okien */
+#main-popup {
+    width: 490px;
+    height: 312px;
+}
+
+
+
+
+
+
+
+.class-popup{
+   
+    background-color: var(--color-bg);
+    cursor: pointer;
+    z-index: 101;
+    position: relative;
+    padding: 0 15px 20px;
+}
+.inside{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+.inside h1{
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    font-family: var(--class-font);
+	color:#fff;
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+}
+.cards-wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.container{
+    height: 300px;
+    width: 240px;
+    perspective: 1000px;
+}
+.card{
+    height: 100%;
+    width: 100%;;
+    transition: transform 1500ms;
+    transform-style: preserve-3d;
+    position: relative;
+}
+.container > .card{
+    cursor: pointer;
+    transform-style: preserve-3d;
+}
+.container.flipped > .card {
+    transform: rotateY(180deg);
+}
+.front, .back{
+    background-color: var(--class-card-color);
+    padding: 0 0;
+    box-sizing: border-box;
+    position: absolute;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+.front h2, .back h2{
+    color: var(--class-font-color);
+    font-size: 25px;
+    text-align: center;
+    font-family: var(--font-third);
+    letter-spacing: 1px;
+    font-weight: 400;
+}
+.front{
+    text-align: center;
+}
+.front h2{
+    padding: 0 14px;
+	color:#fff;
+    filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.5)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
+}
+.front p{
+    color: var(--class-font-color);
+    font-size: 15px;
+    letter-spacing: 1px;
+    line-height: 14px;
+    text-align: center;
+    font-family: var(--font-third);
+    padding: 0 14px;
+    transform: translateY(-10px);
+    filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+}
+.back{
+    height: 300px;
+    width: 240px;
+    transform: rotateY(180deg);
+    padding: 0 10px;
+}
+.back p{
+    color: var(--class-font-color);
+    font-size: 17px;
+    line-height: 17px;
+    font-family: var(--font-third);
+    filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+}
+.back .stats p{
+    margin: 3px 0;
+}
+.stars, .hearts, .brains{
+    display: flex;
+    height: 25px;
+    gap: 5px;
+}
+.back .cytat{
+    text-align: center;
+}
+.buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 96px;
+}
+.class-btn{
+    cursor: pointer;
+    margin-top: 15px;
+	background:var(--class-button-color);
+	color:#000;
+	font-family:var(--font-third);
+	padding:8px 20px;
+	box-shadow:var(--shadow);
+	font-size: 1rem;
+    text-transform: uppercase;
+    width: 160px;
+}
+.class-btn:hover{
+	transform:translate(1px,1px);
+}
+.class-popup .avatar-container{
+    display: flex;
+    justify-self: center;
+}
+.class-popup .avatar-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid  var(--class-card-color);
+    pointer-events: none;
+    box-sizing: border-box;
+}
+#tooltip{
+    position: fixed;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: var(--class-font-color);
+    border-radius: 6px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+}
+.control{
+    display: none;
+}
+
+@media (max-width: 768px){
+    .control{
+        display: flex;
+    }
+    .class-popup{
+        width: 560px;
+    }
+    #thirdCard{
+        display: none;
+    }
+    .thirdCardBtn{
+        display: none;
+    }
+}
+@media (max-width: 600px){
+    .control{
+        display: flex;
+    }
+    .class-popup{
+       width: 300px;
+    }
+    #thirdCard, #secondCard{
+        display: none;
+    }
+    .thirdCardBtn, .secondCardBtn{
+        display: none;
+    }
+}
+
+/* Style do potwierdzenia wyboru klasy */
+.confirmation-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+}
+#confirmationBox{
+    display: none;
+}
+.confirm-popup{
+    width: fit-content;
+    height: fit-content;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+}
+.confirm-popup h1{
+    font-size: 20px;
+    font-family: var(--class-font);
+    text-align: center;
+    color: var(--class-font-color);
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+}
+#wyborKlasy{
+    color: var(--class-button-color);
+    font-size: 20px;
+    text-align: center;
+    font-family: var(--class-font);
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+}
+.confirm-popup h3{
+    color: var(--class-font-color);
+    text-align: center;
+    font-family: var(--class-font);
+    font-size: 14px;
+    filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.5)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
+    line-height: 18px;
+}
+.confirm-buttons{
+    display: flex;
+    gap: 50px;
+}
+.confirm-button{
+    cursor: pointer;
+    margin-top: 15px;
+	background:var(--class-button-color);
+	color:#000;
+	font-family:var(--font-third);
+	padding:8px 20px;
+	box-shadow:var(--shadow);
+	font-size: 1.2rem;
+    text-transform: uppercase;
+    width: 165px;
+}
+.confirm-button:hover{
+	transform:translate(1px,1px);
+}
+.confirm-popup p{
+    text-align: center;
+    font-family: var(--font-third);
+    color: var(--class-heading-color);
+    font-size: 1.1rem;
+}
+.choice-popup{
+    background: var(--color-bg);
+    display: flex;
+    padding: 25px;
+    padding-bottom: 55px;
+    width: fit-content;
+    height: fit-content;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; 
+    flex-direction: column;
+}
+.choice-popup h2,.choice-popup h4{
+    font-family: var(--class-font);
+	color:#fff;
+    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+}
+.choice-options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    width: 100%;
+}
+.bot-column, .friends-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+.choice-btn{
+    cursor: pointer;
+    margin-top: 15px;
+	background:var(--class-button-color);
+	color:#000;
+	font-family:var(--font-third);
+	padding:8px 20px;
+	box-shadow:var(--shadow);
+	font-size: 1rem;
+    text-transform: uppercase;
+    width: 160px;
+}
+.choice-btn:hover{
+	transform:translate(1px,1px);
+}
