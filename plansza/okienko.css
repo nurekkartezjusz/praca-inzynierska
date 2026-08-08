@@ -9,6 +9,10 @@
     --color-bg:#9EACFC;
 	--shadow:inset 2px 2px 0 #fff, 2px 2px 0 #000;
 	--shadow-small:inset 1px 1px 0 #fff, 1px 1px 0 #000;
+
+
+    --gradient-popup: background linear-gradient(180deg, #A78BFA 0%, #9CC7FF 100%);
+
 }
 body {
     margin: 0;
@@ -31,14 +35,83 @@ body {
 }
 
 /* Style główne dla okien */
-#main-popup {
-    width: 490px;
-    height: 312px;
+.main-window {
+    width: 800px;
+    height: 500px;
+    overflow: hidden;
+    position: relative;
+    background: var(--gradient-popup);
+}
+.menu-bar{
+    height: 30px;
+    background-color: #422A88;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    border-top: 2px solid #A78BFA;
+    border-left: 2px solid #A78BFA;
+    border-bottom: 2px solid #1E1B3A;
+    border-right: 2px solid #1E1B3A;
+}
+.menu-bar p{
+    color: var(--class-font-color);
+    font-family: var(--class-font);
+    font-size: 10px;
+}
+.menu-bar button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #A78BFA;
+    height: 16px;
+    width: 16px;
+    font-family: var(--class-font);
+    font-size: 8px;
+}
+.main-window h4{
+    color: var(--class-font-color);
+    font-family: var(--class-font);
+    font-size: 12px;
+    text-align: center;
+    filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.5)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
+}
+.main-btn{
+    cursor: pointer;
+    margin-top: 15px;
+	background:var(--class-button-color);
+	color:#000;
+	font-family:var(--font-third);
+	padding:8px 20px;
+	box-shadow:var(--shadow);
+	font-size: 1rem;
+    text-transform: uppercase;
+    width: 160px;
+}
+.main-btn:hover{
+	transform:translate(1px,1px);
 }
 
 
-
-
+.computer-friend-choice{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.computer-column, .friend-column{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+.main-avatar{
+    position: relative;
+    width: 290px;
+    height: 290x;
+}
 
 
 
@@ -157,21 +230,7 @@ body {
     align-items: center;
     gap: 96px;
 }
-.class-btn{
-    cursor: pointer;
-    margin-top: 15px;
-	background:var(--class-button-color);
-	color:#000;
-	font-family:var(--font-third);
-	padding:8px 20px;
-	box-shadow:var(--shadow);
-	font-size: 1rem;
-    text-transform: uppercase;
-    width: 160px;
-}
-.class-btn:hover{
-	transform:translate(1px,1px);
-}
+
 .class-popup .avatar-container{
     display: flex;
     justify-self: center;
@@ -300,50 +359,4 @@ body {
     color: var(--class-heading-color);
     font-size: 1.1rem;
 }
-.choice-popup{
-    background: var(--color-bg);
-    display: flex;
-    padding: 25px;
-    padding-bottom: 55px;
-    width: fit-content;
-    height: fit-content;
-    justify-content: center;
-    align-items: center;
-    gap: 15px; 
-    flex-direction: column;
-}
-.choice-popup h2,.choice-popup h4{
-    font-family: var(--class-font);
-	color:#fff;
-    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
-}
-.choice-options {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 50px;
-    width: 100%;
-}
-.bot-column, .friends-column{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-    position: relative;
-}
-.choice-btn{
-    cursor: pointer;
-    margin-top: 15px;
-	background:var(--class-button-color);
-	color:#000;
-	font-family:var(--font-third);
-	padding:8px 20px;
-	box-shadow:var(--shadow);
-	font-size: 1rem;
-    text-transform: uppercase;
-    width: 160px;
-}
-.choice-btn:hover{
-	transform:translate(1px,1px);
-}
+

@@ -240,8 +240,40 @@
         <!-- Overlay for the choice popup -->
         <div class="overlay">
 
-            <!-- Choice popup -->
-            <div class="choice-popup"  id="main-popup">
+
+            <div class="main-window">
+                <div class="menu-bar">
+                    <p>Z kim chcesz zagrac?</p>
+                    <button class="close-btn" onclick="closeChoicePopup()">x</button>
+                </div>
+                <div class="computer-friend-choice">
+                    <div class="computer-column">
+                        <h4>Komputer</h4>
+                        <div class="avatar-container main-avatar" >
+                            <img class="layer" src="img/komputer.png" alt="Komputer">
+                        </div>
+                        <button class="main-btn" id="bot-choice-btn">Wybierz komputer</button>
+                    </div>
+
+                    <div class="friend-column main-avatar">
+                        <h4>Znajomi</h4>
+                        <div class="avatar-container">
+                            <img class="layer skora main-layer">
+                            <img class="layer usta main-layer">
+                            <img class="layer oczy main-layer">
+                            <img class="layer wlosy main-layer">
+                            <img class="layer koszulka main-layer">
+                            <img class="layer spodnie main-layer">
+                        </div>
+                        <button class="main-btn" id="friend-choice-btn">Wybierz znajomego</button>
+                    </div>
+                </div>
+            </div>
+
+         <!--
+            
+             <div class="main-popup">
+            <div class="choice-popup">
                 <div class="small-menu">
                     <p>Z kim chcesz zagrac?</p>
                     <button class="close-btn">X</button>
@@ -268,9 +300,9 @@
                     </div>
                 </div>
             </div>
+</div>
+-->
 
-
-            <!-- -->
             <div class="class-popup" style="display:none;" id="main-popup">
                 <div class="inside">
                     <h1>Wybierz specjalność</h1>
@@ -419,9 +451,9 @@
                         </div>
                     </div>
                     <div class="buttons">
-                        <button class="class-btn firstCardBtn" id="btn-sportowiec">Wybierz Sportowca</button>
-                        <button class="class-btn secondCardBtn" id="btn-leniuch">Wybierz leniucha</button>
-                        <button class="class-btn thirdCardBtn" id="btn-madrala">Wybierz mądrale</button>
+                        <button class="main-btn firstCardBtn" id="btn-sportowiec">Wybierz Sportowca</button>
+                        <button class="main-btn secondCardBtn" id="btn-leniuch">Wybierz leniucha</button>
+                        <button class="main-btn thirdCardBtn" id="btn-madrala">Wybierz mądrale</button>
                     </div>
                     <div class="control">
                         <button onclick="prev('card')">◀</button>
