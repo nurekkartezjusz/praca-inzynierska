@@ -280,21 +280,40 @@ var incomingPollTimer   = null;
 var pendingIncomingId   = null;
 var opponentName        = 'Bot';
 
+function returnToMainPage() {
+  window.location.href = '../index.html';
+}
+
+function closeChoicePopup() {
+  document.body.classList.remove('confirmation-open');
+  returnToMainPage();
+}
+
+function showClassSelectionPopup() {
+  var overlay = document.querySelector('.overlay');
+  var mainWindow = document.querySelector('.main-window');
+  var classPopup = document.querySelector('.class-popup');
+  document.body.classList.add('confirmation-open');
+  if (overlay) overlay.style.display = 'flex';
+  if (mainWindow) mainWindow.style.display = 'none';
+  if (classPopup) classPopup.style.display = 'block';
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   var confirmationBox = document.getElementById("confirmationBox");
   var wyborKlasy      = document.getElementById("wyborKlasy");
   var overlay         = document.querySelector('.overlay');
-  var choicePopup     = document.querySelector('.choice-popup');
   var classPopup      = document.querySelector('.class-popup');
+  var mainWindow      = document.querySelector('.main-window');
   var selectedClass   = null;
+  document.body.classList.add('confirmation-open');
 
   // Krok 1a: Wybór bota
   var botBtn = document.getElementById('bot-choice-btn');
   if (botBtn) {
     botBtn.addEventListener('click', function() {
       opponentName = 'Bot';
-      if (choicePopup) choicePopup.style.display = 'none';
-      if (classPopup)  classPopup.style.display  = 'block';
+      showClassSelectionPopup();
     });
   }
 
@@ -316,21 +335,32 @@ document.addEventListener("DOMContentLoaded", function() {
     btn.addEventListener('click', function() {
       selectedClass = klasMap[id].klasa;
       if (wyborKlasy)      wyborKlasy.textContent        = klasMap[id].nazwa;
-      if (confirmationBox) confirmationBox.style.display = 'flex';
+      setConfirmationOpen(true);
     });
   });
+
+  function setConfirmationOpen(isOpen) {
+    if (!confirmationBox) return;
+    if (isOpen) {
+      document.body.classList.add('confirmation-open');
+      confirmationBox.style.display = 'flex';
+    } else {
+      confirmationBox.style.display = 'none';
+    }
+  }
 
   // Krok 3: Potwierdzenie
   var confirmNo  = document.getElementById('confirmNo');
   var confirmYes = document.getElementById('confirmYes');
   if (confirmNo) {
     confirmNo.addEventListener('click', function() {
-      if (confirmationBox) confirmationBox.style.display = 'none';
+      setConfirmationOpen(false);
     });
   }
   if (confirmYes) {
     confirmYes.addEventListener('click', function() {
-      if (confirmationBox) confirmationBox.style.display = 'none';
+      setConfirmationOpen(false);
+      document.body.classList.remove('confirmation-open');
       if (overlay)         overlay.style.display         = 'none';
       if (selectedClass)   initGame(selectedClass);
     });
@@ -354,9 +384,7 @@ document.addEventListener("DOMContentLoaded", function() {
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
         // Pokaż wybór klasy
-        if (overlay)     overlay.style.display     = 'flex';
-        if (choicePopup) choicePopup.style.display = 'none';
-        if (classPopup)  classPopup.style.display  = 'block';
+        showClassSelectionPopup();
       })
       .catch(function(e) { alert('Błąd: ' + e.message); });
     });
@@ -487,8 +515,7 @@ function pollOutgoing() {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
             document.getElementById('wait-modal').classList.remove('show');
             resetFriendBtn();
-            document.querySelector('.choice-popup').style.display = 'none';
-            document.querySelector('.class-popup').style.display  = 'block';
+            showClassSelectionPopup();
         } else if (data.status === 'declined' || data.status === 'expired') {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
             document.getElementById('wait-modal').classList.remove('show');

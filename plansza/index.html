@@ -249,15 +249,15 @@
                 <div class="computer-friend-choice">
                     <div class="computer-column">
                         <h4>Komputer</h4>
-                        <div class="avatar-container main-avatar" >
+                        <div class="avatar-container computer-popup-avatar">
                             <img class="layer" src="img/komputer.png" alt="Komputer">
                         </div>
                         <button class="main-btn" id="bot-choice-btn">Wybierz komputer</button>
                     </div>
 
-                    <div class="friend-column main-avatar">
+                    <div class="friend-column">
                         <h4>Znajomi</h4>
-                        <div class="avatar-container">
+                        <div class="avatar-container computer-popup-avatar">
                             <img class="layer skora main-layer">
                             <img class="layer usta main-layer">
                             <img class="layer oczy main-layer">
@@ -303,9 +303,12 @@
 </div>
 -->
 
-            <div class="class-popup" style="display:none;" id="main-popup">
+            <div class="class-popup main-window" style="display:none;" id="class-selection-popup">
+                <div class="menu-bar">
+                    <p>Wybierz specjalność</p>
+                    <button class="close-btn" id="class-popup-close-btn" onclick="returnToMainPage()">x</button>
+                </div>
                 <div class="inside">
-                    <h1>Wybierz specjalność</h1>
                     <div class="cards-wrapper">
                         <div class="container" id="firstCard">
                             <div class="card">

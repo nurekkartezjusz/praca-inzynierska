@@ -37,7 +37,7 @@ body {
 /* Style główne dla okien */
 .main-window {
     width: 800px;
-    height: 500px;
+    height: 440px;
     overflow: hidden;
     position: relative;
     background: var(--gradient-popup);
@@ -72,13 +72,14 @@ body {
 .main-window h4{
     color: var(--class-font-color);
     font-family: var(--class-font);
-    font-size: 12px;
+    font-size: 13px;
     text-align: center;
+    margin: 0 0 6px;
     filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.5)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.5));
 }
 .main-btn{
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 8px;
 	background:var(--class-button-color);
 	color:#000;
 	font-family:var(--font-third);
@@ -92,57 +93,91 @@ body {
 	transform:translate(1px,1px);
 }
 
+.computer-friend-choice .main-btn{
+    margin-top: 10px;
+    padding: 10px 22px;
+    font-size: 1.05rem;
+    width: 180px;
+}
+
 
 .computer-friend-choice{
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100%;
+    flex: 1;
+    min-height: 0;
+    gap: 36px;
+    padding: 14px 28px 20px;
+    box-sizing: border-box;
 }
 .computer-column, .friend-column{
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex: 1;
+    min-width: 0;
+    padding-top: 8px;
 }
-.main-avatar{
+.computer-friend-choice .computer-popup-avatar{
     position: relative;
-    width: 290px;
-    height: 290x;
+    width: min(260px, 32vw);
+    height: min(260px, 32vw);
+    max-width: 260px;
+    max-height: 260px;
+    margin: 8px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
+    box-shadow: none;
 }
-
+.computer-friend-choice .computer-popup-avatar .layer{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+.computer-friend-choice .avatar-container::after {
+    display: none;
+    border: none;
+}
 
 
 .class-popup{
-   
-    background-color: var(--color-bg);
-    cursor: pointer;
     z-index: 101;
-    position: relative;
-    padding: 0 15px 20px;
+    display: none;
 }
-.inside{
+.class-popup .inside{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 18px 24px 24px;
+    width: 100%;
+    height: calc(100% - 30px);
+    box-sizing: border-box;
 }
-.inside h1{
+.class-popup .inside h1{
     color: #fff;
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
 	color:#fff;
     filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+    margin: 4px 0 12px;
 }
-.cards-wrapper{
+.class-popup .cards-wrapper{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
+    width: 100%;
 }
 .container{
     height: 300px;
@@ -164,7 +199,7 @@ body {
     transform: rotateY(180deg);
 }
 .front, .back{
-    background-color: var(--class-card-color);
+    background: linear-gradient(180deg, #A78BFA 0%, #9CC7FF 100%);
     padding: 0 0;
     box-sizing: border-box;
     position: absolute;
@@ -172,6 +207,9 @@ body {
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
+    border: 2px solid rgba(255,255,255,0.55);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(64,36,98,0.15), 0 3px 10px rgba(0,0,0,0.12);
 }
 .front h2, .back h2{
     color: var(--class-font-color);
@@ -204,7 +242,12 @@ body {
     height: 300px;
     width: 240px;
     transform: rotateY(180deg);
-    padding: 0 10px;
+    padding: 10px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 .back p{
     color: var(--class-font-color);
@@ -212,6 +255,7 @@ body {
     line-height: 17px;
     font-family: var(--font-third);
     filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.3)) drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+    margin: 0;
 }
 .back .stats p{
     margin: 3px 0;
@@ -223,6 +267,17 @@ body {
 }
 .back .cytat{
     text-align: center;
+    margin-top: 6px;
+    padding: 0 8px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+    font-size: 14px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .buttons{
     display: flex;
@@ -236,12 +291,7 @@ body {
     justify-self: center;
 }
 .class-popup .avatar-container::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 2px solid  var(--class-card-color);
-    pointer-events: none;
-    box-sizing: border-box;
+    display: none;
 }
 #tooltip{
     position: fixed;
@@ -301,16 +351,28 @@ body {
 #confirmationBox{
     display: none;
 }
+body.confirmation-open .menu-btn,
+body.confirmation-open .fullscreen-btn-corner,
+body.confirmation-open .menu-dropdown-item,
+body.confirmation-open .menu-dropdown {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
 .confirm-popup{
     width: fit-content;
     height: fit-content;
-    background: var(--color-bg);
+    background: linear-gradient(135deg, #A78BFA 0%, #9CC7FF 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 10px;
-    padding: 20px;
+    padding: 24px 28px;
+    border: 2px solid rgba(255,255,255,0.65);
+    border-radius: 12px;
+    box-shadow: inset 0 0 0 1px rgba(64,36,98,0.15), 0 8px 22px rgba(0,0,0,0.18);
 }
 .confirm-popup h1{
     font-size: 20px;
@@ -320,11 +382,11 @@ body {
     filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
 }
 #wyborKlasy{
-    color: var(--class-button-color);
+    color: #6f4fb3;
     font-size: 20px;
     text-align: center;
     font-family: var(--class-font);
-    filter: drop-shadow(1px 0 0 black) drop-shadow(0 1px 0 black);
+    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.7));
 }
 .confirm-popup h3{
     color: var(--class-font-color);
@@ -341,14 +403,26 @@ body {
 .confirm-button{
     cursor: pointer;
     margin-top: 15px;
-	background:var(--class-button-color);
-	color:#000;
+	background: linear-gradient(135deg, #8f77ff 0%, #6f4fb3 100%);
+	color:#fff;
 	font-family:var(--font-third);
-	padding:8px 20px;
-	box-shadow:var(--shadow);
-	font-size: 1.2rem;
+	padding:10px 22px;
+	box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 10px rgba(0,0,0,0.15);
+	font-size: 1.05rem;
     text-transform: uppercase;
     width: 165px;
+    border: 2px solid rgba(255,255,255,0.7);
+}
+
+#confirmYes {
+    background: linear-gradient(135deg, #8f77ff 0%, #6f4fb3 100%);
+}
+
+#confirmNo {
+    background: linear-gradient(135deg, #A78BFA 0%, #9CC7FF 100%);
+    color: #fff;
+    border-color: rgba(255,255,255,0.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 3px 8px rgba(0,0,0,0.14);
 }
 .confirm-button:hover{
 	transform:translate(1px,1px);
