@@ -300,6 +300,22 @@ function showClassSelectionPopup() {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var inviteAcceptedId = urlParams.get('invite_accepted');
+  if (inviteAcceptedId) {
+    var choicePopup = document.querySelector('.choice-popup');
+    var classPopup = document.querySelector('.class-popup');
+    var overlay = document.querySelector('.overlay');
+    var mainWindow = document.querySelector('.main-window');
+
+    if (choicePopup) choicePopup.style.display = 'none';
+    if (classPopup) classPopup.style.display = 'block';
+    if (overlay) overlay.style.display = 'flex';
+    if (mainWindow) mainWindow.style.display = 'none';
+    document.body.classList.add('confirmation-open');
+
+    window.history.replaceState({}, document.title, '/plansza/');
+  }
   var confirmationBox = document.getElementById("confirmationBox");
   var wyborKlasy      = document.getElementById("wyborKlasy");
   var overlay         = document.querySelector('.overlay');

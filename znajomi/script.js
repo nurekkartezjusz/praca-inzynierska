@@ -467,11 +467,11 @@ async function acceptGameInvitation(invitationId, gameType) {
         showToast(`Zaproszenie zaakceptowane! Przechodzę do gry...`, 'success');
         
         // Przekieruj do odpowiedniej gry
-        const gameUrls = {
-            'wielka-studencka-batalla': '/plansza/',
-            'kolko-i-krzyzyk': '/kolko-i-krzyzyk/',
-            'sudoku': '/sudoku/'
-        };
+         const gameUrls = {
+      'wielka-studencka-batalla': '/plansza/?invite_accepted=' + invitationId,  // ← ZMIANA
+      'kolko-i-krzyzyk': '/kolko-i-krzyzyk/',
+      'sudoku': '/sudoku/'
+    };
         
         setTimeout(() => {
             window.location.href = gameUrls[gameType] || '/plansza/';
