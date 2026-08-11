@@ -358,13 +358,17 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
   if (confirmYes) {
-    confirmYes.addEventListener('click', function() {
-      setConfirmationOpen(false);
-      document.body.classList.remove('confirmation-open');
-      if (overlay)         overlay.style.display         = 'none';
-      if (selectedClass)   initGame(selectedClass);
-    });
-  }
+  confirmYes.addEventListener('click', function() {
+    if (!selectedClass) {
+      alert('Wybierz klasę!');
+      return;
+    }
+    setConfirmationOpen(false);
+    document.body.classList.remove('confirmation-open');
+    if (overlay) overlay.style.display = 'none';
+    initGame(selectedClass);
+  });
+}
 
   // Przychodzące zaproszenia: akceptacja / odrzucenie
   var incAccept  = document.getElementById('inc-accept');
@@ -383,27 +387,30 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('inc-modal').classList.remove('show');
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
-        // Pokaż wybór klasy
+        pendingIncomingId = null;
         showClassSelectionPopup();
-      })
+        incomingPollTimer = setInterval(checkIncoming, 5000);  // ← WZNÓW POLLING
+    })
       .catch(function(e) { alert('Błąd: ' + e.message); });
     });
   }
 
   if (incDecline) {
-    incDecline.addEventListener('click', function() {
-      if (!pendingIncomingId) return;
-      var token = localStorage.getItem('access_token');
-      fetch(API_URL + '/game-invitations/decline/' + pendingIncomingId, {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + token }
-      })
-      .finally(function() {
-        document.getElementById('inc-modal').classList.remove('show');
-        pendingIncomingId = null;
-      });
+  incDecline.addEventListener('click', function() {
+    if (!pendingIncomingId) return;
+    var token = localStorage.getItem('access_token');
+    fetch(API_URL + '/game-invitations/decline/' + pendingIncomingId, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .finally(function() {
+      document.getElementById('inc-modal').classList.remove('show');
+      pendingIncomingId = null;
+      clearInterval(incomingPollTimer);
+      incomingPollTimer = setInterval(checkIncoming, 5000);  // ← WZNÓW POLLING
     });
-  }
+  });
+}
 
   // Zacznij sprawdzać przychodzące zaproszenia + przywróć stan wychodzącego
   startIncomingPoll();
@@ -623,13 +630,13 @@ function checkIncoming() {
     })
     .then(function(r) { return r.json(); })
     .then(function(invs) {
-        var inv = invs.find(function(i) { return i.game_type === 'wielka-studencka-batalla'; });
-        if (inv) {
-            pendingIncomingId = inv.id;
-            document.getElementById('inc-from').textContent = inv.inviter.username;
-            document.getElementById('inc-modal').classList.add('show');
-        }
-    })
+      var inv = invs.find(function(i) { return i.game_type === 'wielka-studencka-batalla'; });
+    if (inv && !pendingIncomingId) {  // ← DODAJ WARUNEK
+      pendingIncomingId = inv.id;
+      document.getElementById('inc-from').textContent = inv.inviter.username;
+      document.getElementById('inc-modal').classList.add('show');
+    }
+  })
     .catch(function() {});
 }
 
