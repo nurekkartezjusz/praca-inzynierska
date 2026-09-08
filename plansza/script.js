@@ -663,41 +663,147 @@ function escapeHtml(str) {
 }
 
 // ==========================================
-// SILNIK GRY
+// SILNIK GRY - WIELKA STUDENCKA BATALIA
 // ==========================================
+
+var EASY_QUESTIONS = [
+    {
+        q: "Ile to jest 2 + 2 * 2?",
+        a: ["8", "6", "4", "16"],
+        c: 1
+    },
+    {
+        q: "Co oznacza skrót WSB?",
+        a: ["Warszawska Szkoła Biznesu", "Wyższa Szkoła Bankowa", "Wielka Studencka Batalia", "Samorząd Studencki"],
+        c: 1
+    },
+    {
+        q: "Który skrót klawiszowy służy do kopiowania tekstu?",
+        a: ["Ctrl + C", "Ctrl + V", "Ctrl + X", "Ctrl + Z"],
+        c: 0
+    },
+    {
+        q: "Co jest głównym zadaniem pamięci RAM?",
+        a: ["Przechowywanie plików na dysku", "Pamięć robocza procesora", "Wyświetlanie obrazu", "Zasilanie podzespołów"],
+        c: 1
+    },
+    {
+        q: "Który dokument potwierdza status studenta?",
+        a: ["Dowód osobisty", "Prawo jazdy", "Legitymacja studencka", "Karta biblioteczna"],
+        c: 2
+    },
+    {
+        q: "Który semestr kończy standardowe 3-letnie studia licencjackie?",
+        a: ["5. semestr", "6. semestr", "7. semestr", "8. semestr"],
+        c: 1
+    },
+    {
+        q: "W jakim pliku najczęściej zapisuje się kod JavaScript?",
+        a: ["style.css", "index.html", "script.js", "main.py"],
+        c: 2
+    },
+    {
+        q: "Jakie pismo składamy, ubiegając się o pracę?",
+        a: ["CV", "Paragon", "Podanie o urlop", "Mandat"],
+        c: 0
+    },
+    {
+        q: "Kto przewodniczy komisji obrony pracy dyplomowej?",
+        a: ["Przewodniczący komisji", "Starosta roku", "Dziekan (zawsze)", "Prezydent miasta"],
+        c: 0
+    },
+    {
+        q: "Ile bitów składa się na jeden bajt (Byte)?",
+        a: ["4 bity", "8 bitów", "16 bitów", "32 bity"],
+        c: 1
+    }
+];
+
+var HARD_QUESTIONS = [
+    {
+        q: "Który algorytm sortowania ma najgorszą złożoność czasową O(n^2)?",
+        a: ["Quick Sort", "Merge Sort", "Bubble Sort", "Heap Sort"],
+        c: 2
+    },
+    {
+        q: "Który protokół sieciowy działa w warstwie aplikacji modelu OSI?",
+        a: ["TCP", "IP", "HTTP", "UDP"],
+        c: 2
+    },
+    {
+        q: "Co to jest polimorfizm w programowaniu obiektowym?",
+        a: ["Wielopostaciowość metod", "Ukrywanie pól", "Dziedziczenie wielokrotne", "Tworzenie struktur danych"],
+        c: 0
+    },
+    {
+        q: "Czym jest 'Query' w kontekście baz danych SQL?",
+        a: ["Zapytaniem do bazy", "Strukturą tabeli", "Kluczem głównym", "Dodatkowym indeksem"],
+        c: 0
+    },
+    {
+        q: "Który z tych kierunków nie kończy się tytułem inżyniera?",
+        a: ["Informatyka", "Zarządzanie i Inżynieria Produkcji", "Filologia Angielska", "Logistyka (inżynierska)"],
+        c: 2
+    },
+    {
+        q: "Jaka baza danych przechowuje dane w formacie klucz-wartość?",
+        a: ["PostgreSQL", "SQLite", "Redis", "MySQL"],
+        c: 2
+    },
+    {
+        q: "Która metoda protokołu HTTP jest uważana za idempotentną?",
+        a: ["POST", "GET", "PATCH", "CONNECT"],
+        c: 1
+    },
+    {
+        q: "Co robi polecenie systemów kontroli wersji: git merge?",
+        a: ["Tworzy nowe repozytorium", "Pobiera najnowsze zmiany z serwera", "Scala wybraną gałąź z obecną gałęzią", "Cofa ostatni commit"],
+        c: 2
+    },
+    {
+        q: "Kto jest głównym twórcą języka Python?",
+        a: ["Guido van Rossum", "Dennis Ritchie", "Bjarne Stroustrup", "James Gosling"],
+        c: 0
+    },
+    {
+        q: "Z ilu bitów składa się adres IPv4?",
+        a: ["32 bity", "64 bity", "128 bitów", "16 bitów"],
+        c: 0
+    }
+];
 
 function getCellType(pos) {
     var el = document.querySelector('.c' + pos);
     if (!el) return 'sala';
-    var types = ['start','sala','lazienka','aula','dziekanat','praktyki','szansa','biblioteka','strefarelaksu'];
+    var types = ['start','sala','lazienka','aula','dziekanat','praktyki','szansa','biblioteka','strefarelaksu','automaty','stolowka','piwnica'];
     for (var i = 0; i < types.length; i++) {
         if (el.classList.contains(types[i])) return types[i];
     }
     return 'sala';
 }
 
-var SZANSA_KARTY = [
-    function(n) { return { msg: n + ': "Stypendium naukowe!" → +1 HP',                 hp: 1 }; },
-    function(n) { return { msg: n + ': "Oblałeś kolokwium!" → -1 HP',                  hp: -1 }; },
-    function(n) { return { msg: n + ': "Prowadzący odwołał zajęcia!" → +1 szczęście', luck: 1 }; },
-    function(n) { return { msg: n + ': "Niespodziewana kartkówka!" → -2 wiedzy',         wisdom: -2 }; },
-    function(n) { return { msg: n + ': "Znalazłeś notatki kolegi!" → +2 wiedzy',         wisdom: 2 }; },
-    function(n) { return { msg: n + ': "Energy drink zawiódł!" → cofasz się 3 pola',     move: -3 }; },
-    function(n) { return { msg: n + ': "Kolega z roku pomógł!" → naprzód 2 pola',       move: 2 }; },
-    function(n) { return { msg: n + ': "Konkurs wiedzy!" → +1 HP, +1 mądrość',          hp: 1, wisdom: 1 }; },
-];
+function getCellName(pos) {
+    var el = document.querySelector('.c' + pos);
+    return el ? el.textContent : "Sala";
+}
 
-var EFEKTY = {
-    start:         function(n) { return { msg: n + ' mija Start → +1 HP!', hp: 1 }; },
-    sala:          function(n) { return { msg: n + ' jest na sali. Nic szczególnego.' }; },
-    lazienka:      function(n) { return { msg: n + ' w łazience → traci następną turę!', skip: true }; },
-    aula:          function(n) { return { msg: n + ' w auli → +1 mądrość!', wisdom: 1 }; },
-    dziekanat:     function(n) { return { msg: n + ' w dziekanacie → -1 HP!', hp: -1 }; },
-    praktyki:      function(n) { return { msg: n + ' na praktykach → +2 mądrości!', wisdom: 2 }; },
-    szansa:        function(n) { return SZANSA_KARTY[Math.floor(Math.random() * SZANSA_KARTY.length)](n); },
-    biblioteka:    function(n) { return { msg: n + ' w bibliotece → +1 mądrość, +1 szczęście!', wisdom: 1, luck: 1 }; },
-    strefarelaksu: function(n) { return { msg: n + ' w strefie relaksu → +1 HP!', hp: 1 }; },
-};
+function getFloor(pos) {
+    if (typeof pos !== 'number') return 1;
+    if (pos >= 84 && pos <= 101) return 3;
+    if (pos >= 50 && pos <= 83) return 2;
+    return 1;
+}
+
+var SZANSA_KARTY = [
+    function(p) { p.hp += 1; return { msg: p.name + ': "Stypendium naukowe!" → +1 HP', p: p }; },
+    function(p) { p.hp = Math.max(1, p.hp - 1); return { msg: p.name + ': "Oblałeś kolokwium!" → -1 HP', p: p }; },
+    function(p) { p.luck += 1; return { msg: p.name + ': "Prowadzący odwołał zajęcia!" → +1 szczęście', p: p }; },
+    function(p) { p.wisdom = Math.max(0, p.wisdom - 2); return { msg: p.name + ': "Niespodziewana kartkówka!" → -2 wiedzy', p: p }; },
+    function(p) { p.wisdom += 2; return { msg: p.name + ': "Znalazłeś notatki starszego rocznika!" → +2 wiedzy', p: p }; },
+    function(p) { p.coins += 2; return { msg: p.name + ': "Przelew od rodziców!" → +2 monety', p: p }; },
+    function(p) { p.coins = Math.max(0, p.coins - 2); return { msg: p.name + ': "Zgubiłeś legitymację studencką!" → Wyrobienie nowej kosztuje -2 monety', p: p }; },
+    function(p) { p.crystals += 1; p.coins += 1; return { msg: p.name + ': "Wygrałeś konkurs rzetelności naukowej!" → +1 Kryształek, +1 moneta', p: p }; }
+];
 
 var STATYSTYKI = {
     sportowiec: { hp: 5, luck: 2, wisdom: 3 },
@@ -707,16 +813,29 @@ var STATYSTYKI = {
 
 var gameState = null;
 var _prevStats = [null, null];  // śledzi poprzednie wartości statystyk
+var startModalCallback = null;
+var quizContext = null;
 
 function initGame(playerClass) {
     var botKlasy = Object.keys(STATYSTYKI);
     var botKlasa = botKlasy[Math.floor(Math.random() * botKlasy.length)];
     var ps = STATYSTYKI[playerClass];
     var bs = STATYSTYKI[botKlasa];
+    
+    // Starting coins: leniuch = 3, madrala = 0, sportowiec = 1
+    var playerStartCoins = playerClass === 'leniuch' ? 3 : (playerClass === 'madrala' ? 0 : 1);
+    var botStartCoins = botKlasa === 'leniuch' ? 3 : (botKlasa === 'madrala' ? 0 : 1);
+    
+    // Wisdom addition for mądrala (+1 w mądrość)
+    var playerWisdom = ps.wisdom;
+    var botWisdom = bs.wisdom;
+    if (playerClass === 'madrala') playerWisdom += 1;
+    if (botKlasa === 'madrala') botWisdom += 1;
+
     gameState = {
         players: [
-            { id: 0, name: 'Gracz',      pos: 0, klass: playerClass, skip: false, hp: ps.hp, luck: ps.luck, wisdom: ps.wisdom },
-            { id: 1, name: opponentName, pos: 0, klass: botKlasa,    skip: false, hp: bs.hp, luck: bs.luck, wisdom: bs.wisdom },
+            { id: 0, name: 'Gracz', pos: 84, klass: playerClass, skipTurnsLeft: 0, hp: ps.hp, luck: ps.luck, wisdom: playerWisdom, crystals: 0, coins: playerStartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
+            { id: 1, name: opponentName, pos: 84, klass: botKlasa, skipTurnsLeft: 0, hp: bs.hp, luck: bs.luck, wisdom: botWisdom, crystals: 0, coins: botStartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
         ],
         turn: 0, rolled: false, gameOver: false,
     };
@@ -727,45 +846,629 @@ function initGame(playerClass) {
     document.getElementById('gp-p2').style.display    = 'flex';
     document.getElementById('dice-panel').style.display = 'flex';
     document.getElementById('dice-btn').disabled = false;
-    showMsg('Gra rozpoczęta! Twoja tura – rzuć kostką!');
+    showMsg('Gra rozpoczęta! Rozpoczynasz naukę na 2. piętrze WSB. Rzuć kostką!');
+}
+
+function advanceOneStep(player, pos) {
+    var floor = getFloor(pos);
+    if (floor === 3) {
+        if (pos === 101) {
+            return player.crystals >= 5 ? 50 : 84;
+        }
+        return pos + 1;
+    } else if (floor === 2) {
+        if (pos === 83) {
+            return player.crystals >= 10 ? 0 : 50;
+        }
+        return pos + 1;
+    } else if (floor === 1) {
+        if (pos === 49) {
+            return 0; // Standard loop on Parter
+        }
+        return pos + 1;
+    }
+    return pos;
 }
 
 function rollDice() {
     if (!gameState || gameState.rolled || gameState.gameOver) return;
     var player = gameState.players[gameState.turn];
-    if (player.skip) {
-        player.skip = false;
-        showMsg(player.name + ' traci turę przez łazienkę!');
+    
+    // Check if player is currently in practice or piwnica skip status
+    if (player.skipTurnsLeft > 0) {
+        player.skipTurnsLeft--;
+        showMsg('⏳ ' + player.name + ' odbywa praktyki/przerwę! Pozostało tur do opuszczenia: ' + player.skipTurnsLeft);
         gameState.rolled = true;
-        setTimeout(nextTurn, 1500);
+        updateGamePanel();
+        setTimeout(nextTurn, 1800);
         return;
     }
+    
     var val = Math.floor(Math.random() * 6) + 1;
     document.getElementById('dice-num').textContent = val;
     document.getElementById('dice-btn').disabled = true;
     gameState.rolled = true;
-    player.pos = (player.pos + val) % 50;
+
+    // Movement sequence checking for passing start
+    var currentFloor = getFloor(player.pos);
+    var passedStartCount = 0;
+    
+    var currentPos = player.pos;
+    for (var i = 0; i < val; i++) {
+        var prevPos = currentPos;
+        var nextPos = advanceOneStep(player, prevPos);
+        var floorCurrent = getFloor(prevPos);
+        var floorNext = getFloor(nextPos);
+        
+        if (floorNext === floorCurrent) {
+            // Checks wrapping on same floor (passing Start)
+            if ((floorCurrent === 3 && prevPos === 101 && nextPos === 84) ||
+                (floorCurrent === 2 && prevPos === 83 && nextPos === 50) ||
+                (floorCurrent === 1 && prevPos === 49 && nextPos === 0)) {
+                passedStartCount++;
+            }
+        }
+        currentPos = nextPos;
+    }
+    player.pos = currentPos;
     placeTokens();
-    var type  = getCellType(player.pos);
-    var efekt = (EFEKTY[type] || EFEKTY.sala)(player.name);
-    if (efekt.hp)     player.hp     = Math.max(0, player.hp     + efekt.hp);
-    if (efekt.wisdom) player.wisdom = Math.max(0, player.wisdom + efekt.wisdom);
-    if (efekt.luck)   player.luck   = Math.max(0, player.luck   + efekt.luck);
-    if (efekt.skip)   player.skip   = true;
-    if (efekt.move)  { player.pos = ((player.pos + efekt.move) % 50 + 50) % 50; placeTokens(); }
-    showMsg(efekt.msg);
     updateGamePanel();
-    if (player.hp <= 0) {
-        var winner = gameState.players[(gameState.turn + 1) % 2];
-        showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
-        gameState.gameOver = true;
-        document.getElementById('dice-btn').disabled = true;
+
+    if (passedStartCount > 0) {
+        handlePassStart(player, function() {
+            triggerFieldArrival(player);
+        });
+    } else {
+        triggerFieldArrival(player);
+    }
+}
+
+function handlePassStart(player, onFinished) {
+    var floor = getFloor(player.pos);
+    var tuition = floor === 1 ? 3 : 1;
+    
+    if (player.tempCzesnePaid) {
+        player.tempCzesnePaid = false;
+        showMsg("🎫 " + player.name + " mija Start! Czesne opłacone z góry!");
+        updateGamePanel();
+        promptStartBonus(player, onFinished);
+    } else {
+        if (player.coins >= tuition) {
+            player.coins -= tuition;
+            showMsg("🪙 " + player.name + " mija Start i płaci czesne: " + tuition + " monety (pozostało: " + player.coins + ")");
+            updateGamePanel();
+            promptStartBonus(player, onFinished);
+        } else {
+            player.crystals = Math.max(0, player.crystals - 1);
+            showMsg("⚠️ Brak monet na czesne (" + tuition + ")! " + player.name + " traci 1 kryształek! (pozostało: " + player.crystals + ")");
+            updateGamePanel();
+            
+            if (player.crystals === 0) {
+                var currentFloor = getFloor(player.pos);
+                if (currentFloor === 2) {
+                    player.pos = 84;
+                    showMsg("📉 " + player.name + " ma 0 kryształków! Zostaje cofnięty/a na 2. piętro (Start III, cell 84)!");
+                    placeTokens();
+                    updateGamePanel();
+                } else if (currentFloor === 1) {
+                    player.pos = 50;
+                    showMsg("📉 " + player.name + " ma 0 kryształków! Zostaje cofnięty/a na 1. piętro (Start II, cell 50)!");
+                    placeTokens();
+                    updateGamePanel();
+                }
+            }
+            onFinished();
+        }
+    }
+}
+
+function promptStartBonus(player, onFinished) {
+    if (player.id === 0) {
+        var floor = getFloor(player.pos);
+        var tuition = floor === 1 ? 3 : 1;
+        document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
+        document.getElementById('start-modal').style.display = 'flex';
+        startModalCallback = onFinished;
+    } else {
+        var choices = ['coin', 'hp', 'luck'];
+        var b = choices[Math.floor(Math.random() * choices.length)];
+        if (b === 'coin') {
+            player.coins += 1;
+            showMsg("🤖 " + player.name + " wybrał darmową monetę jako bonus semestralny!");
+        } else if (b === 'hp') {
+            player.hp += 1;
+            showMsg("🤖 " + player.name + " wybrał punkt zdrowia (+1 HP) jako bonus semestralny!");
+        } else {
+            player.luck += 1;
+            showMsg("🤖 " + player.name + " wybrał punkt szczęścia (+1 szczęścia) jako bonus semestralny!");
+        }
+        updateGamePanel();
+        setTimeout(onFinished, 1200);
+    }
+}
+
+function claimStartBonus(type) {
+    if (!gameState) return;
+    var player = gameState.players[0];
+    if (type === 'coin') {
+        player.coins += 1;
+        showMsg("🎉 Wybrałeś/aś dodatkową monetę!");
+    } else if (type === 'hp') {
+        player.hp += 1;
+        showMsg("🎉 Wybrałeś/aś dodatkowe zdrowie (+1 HP)!");
+    } else if (type === 'luck') {
+        player.luck += 1;
+        showMsg("🎉 Wybrałeś/aś punkt szczęścia studenta (+1 szczęścia)!");
+    }
+    document.getElementById('start-modal').style.display = 'none';
+    updateGamePanel();
+    if (startModalCallback) {
+        var cb = startModalCallback;
+        startModalCallback = null;
+        cb();
+    }
+}
+
+function resolveOccupancy(player) {
+    var other = gameState.players.find(function(p) { return p.id !== player.id; });
+    var moved = false;
+    while (player.pos === other.pos) {
+        var floor = getFloor(player.pos);
+        if (floor === 3) {
+            player.pos = player.pos === 84 ? 101 : player.pos - 1;
+        } else if (floor === 2) {
+            player.pos = player.pos === 50 ? 83 : player.pos - 1;
+        } else if (floor === 1) {
+            player.pos = player.pos === 0 ? 49 : player.pos - 1;
+        }
+        moved = true;
+    }
+    if (moved) {
+        showMsg("⚠️ Pole zajęte przez przeciwnika! Cofasz się na najbliższe wolne pole (" + getCellName(player.pos) + ").");
+        placeTokens();
+    }
+}
+
+function triggerFieldArrival(player) {
+    resolveOccupancy(player);
+    
+    var type = getCellType(player.pos);
+    
+    if (type === 'sala') {
+        triggerQuiz(player, 1);
+    } else if (type === 'aula') {
+        triggerQuiz(player, 2);
+    } else if (type === 'dziekanat') {
+        triggerDziekanat(player);
+    } else if (type === 'lazienka') {
+        showMsg("🚽 " + player.name + " w łazience: Pusta kabina! Chwila oddechu, nic się nie dzieje.");
+        setTimeout(nextTurn, 1500);
+    } else if (type === 'praktyki') {
+        player.crystals += 1;
+        if (player.hasShortenCard) {
+            player.skipTurnsLeft = 1;
+            player.hasShortenCard = false;
+            showMsg("📋 " + player.name + " realizuje praktyki! Masz kartę skróconych praktyk → tracisz tylko 1 turę i otrzymujesz +1 kryształek! 💎");
+        } else if (player.klass === 'sportowiec') {
+            player.skipTurnsLeft = 2;
+            showMsg("🏃 " + player.name + " realizuje praktyki! Jako Sportowiec kończysz je szybciej → tracisz 2 tury i otrzymujesz +1 kryształek! 💎");
+        } else {
+            player.skipTurnsLeft = 3;
+            showMsg("💼 " + player.name + " realizuje praktyki! Tracisz 3 tury i otrzymujesz +1 kryształek! 💎");
+        }
+        updateGamePanel();
+        setTimeout(nextTurn, 2200);
+    } else if (type === 'biblioteka') {
+        player.wisdom += 1;
+        player.hints += 1;
+        var floor = getFloor(player.pos);
+        if (floor === 1) {
+            if (player.id === 0) {
+                if (player.coins >= 2) {
+                    var yes = confirm("📖 Biblioteka: Czy chcesz wymienić 2 monety na 1 Kryształek? 💎");
+                    if (yes) {
+                        player.coins -= 2;
+                        player.crystals += 1;
+                        showMsg("📖 Wymiana w bibliotece: -2 monety → +1 Kryształek!");
+                    } else {
+                        showMsg("📖 Odmówiłeś/aś wymiany w bibliotece.");
+                    }
+                } else {
+                    showMsg("📖 Biblioteka: Nie masz wystarczająco dużo monet (min. 2 🪙) na wymianę na kryształek!");
+                }
+            } else {
+                if (player.coins >= 2 && player.crystals < 15) {
+                    player.coins -= 2;
+                    player.crystals += 1;
+                    showMsg("🤖 " + player.name + " wymienił 2 monety na 1 Kryształek w bibliotece!");
+                }
+            }
+        } else {
+            showMsg("📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!");
+        }
+        updateGamePanel();
+        setTimeout(nextTurn, 2000);
+    } else if (type === 'strefarelaksu') {
+        player.luck += 1;
+        showMsg("⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!");
+        updateGamePanel();
+        setTimeout(nextTurn, 1500);
+    } else if (type === 'stolowka') {
+        var floor = getFloor(player.pos);
+        if (floor === 1) {
+            showMsg("🥪 Stołówka na parterze jest zamknięta! Brak bonusów.");
+        } else {
+            player.hp += 1;
+            showMsg("🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥");
+        }
+        updateGamePanel();
+        setTimeout(nextTurn, 1500);
+    } else if (type === 'piwnica') {
+        player.skipTurnsLeft = 1;
+        showMsg("🚬 " + player.name + " w piwnicy (przerwa na dworze): Tracisz 1 kolejkę!");
+        updateGamePanel();
+        setTimeout(nextTurn, 1500);
+    } else if (type === 'automaty') {
+        if (player.coins >= 1) {
+            player.coins -= 1;
+            var hpGained = player.klass === 'sportowiec' ? 2 : 1;
+            player.hp += hpGained;
+            showMsg("🥤 " + player.name + " zjadł przekąskę z automatu! Koszt: -1 moneta, zysk: +" + hpGained + " HP! ♥");
+        } else {
+            showMsg("🥤 " + player.name + " wchodzi na pole automatów, ale nie ma monet na zakup batona.");
+        }
+        updateGamePanel();
+        setTimeout(nextTurn, 2000);
+    } else if (type === 'szansa') {
+        var card = SZANSA_KARTY[Math.floor(Math.random() * SZANSA_KARTY.length)];
+        var result = card(player);
+        showMsg(result.msg);
+        updateGamePanel();
+        
+        if (player.hp <= 0) {
+            var winner = gameState.players[(gameState.turn + 1) % 2];
+            showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
+            gameState.gameOver = true;
+            document.getElementById('dice-btn').disabled = true;
+            return;
+        }
+        setTimeout(nextTurn, 2000);
+    } else {
+        showMsg(player.name + ' stoi na bezpiecznym polu.');
+        setTimeout(nextTurn, 1500);
+    }
+}
+
+function triggerQuiz(player, count) {
+    var floor = getFloor(player.pos);
+    var isHard = (player.klass === 'leniuch') || (floor === 1);
+    var pool = isHard ? HARD_QUESTIONS : EASY_QUESTIONS;
+    var shuffled = pool.slice().sort(function() { return 0.5 - Math.random(); });
+    
+    quizContext = {
+        player: player,
+        total: count,
+        answered: 0,
+        correct: 0,
+        questions: shuffled.slice(0, count)
+    };
+    
+    if (player.id === 0) {
+        showQuizQuestion();
+    } else {
+        runBotQuiz();
+    }
+}
+
+function showQuizQuestion() {
+    var q = quizContext.questions[quizContext.answered];
+    document.getElementById('quiz-question-text').innerHTML = 
+        `<strong>Pytanie ${quizContext.answered + 1} z ${quizContext.total}:</strong><br><br>${q.q}`;
+    
+    var answersContainer = document.getElementById('quiz-answers-container');
+    answersContainer.innerHTML = '';
+    
+    q.a.forEach(function(ans, index) {
+        var btn = document.createElement('button');
+        btn.className = 'custom-modal-btn';
+        btn.innerHTML = `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">${String.fromCharCode(65 + index)}:</span> ${ans}`;
+        btn.onclick = function() { selectQuizAnswer(index); };
+        answersContainer.appendChild(btn);
+    });
+    
+    var hintBtn = document.getElementById('quiz-hint-btn');
+    if (quizContext.player.hints > 0 || quizContext.player.coins >= 1) {
+        hintBtn.style.display = 'block';
+        if (quizContext.player.hints > 0) {
+            hintBtn.innerHTML = `💡 Użyj darmowej podpowiedzi (Dostępne: ${quizContext.player.hints})`;
+        } else {
+            hintBtn.innerHTML = `🪙 Kup podpowiedź 50/50 (Koszt: 1 moneta)`;
+        }
+    } else {
+        hintBtn.style.display = 'none';
+    }
+    
+    document.getElementById('quiz-modal').style.display = 'flex';
+}
+
+function useQuiz1Hint() {
+    var player = quizContext.player;
+    if (player.hints > 0) {
+        player.hints--;
+    } else if (player.coins >= 1) {
+        player.coins--;
+    } else {
         return;
     }
-    setTimeout(nextTurn, 2000);
+    updateGamePanel();
+    
+    var q = quizContext.questions[quizContext.answered];
+    var correctIndex = q.c;
+    var wrongIndices = [];
+    q.a.forEach(function(_, i) {
+        if (i !== correctIndex) wrongIndices.push(i);
+    });
+    wrongIndices.sort(function() { return 0.5 - Math.random(); });
+    var toHide = wrongIndices.slice(0, 2);
+    
+    var buttons = document.getElementById('quiz-answers-container').children;
+    for (var i = 0; i < buttons.length; i++) {
+        if (toHide.includes(i)) {
+            buttons[i].style.opacity = '0.3';
+            buttons[i].style.pointerEvents = 'none';
+        }
+    }
+    document.getElementById('quiz-hint-btn').style.display = 'none';
+    showMsg("💡 Użyto podpowiedzi! Ukryto 2 błędne odpowiedzi.");
+}
+
+function selectQuizAnswer(selectedIndex) {
+    var q = quizContext.questions[quizContext.answered];
+    var buttons = document.getElementById('quiz-answers-container').children;
+    
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].style.pointerEvents = 'none';
+        if (i === q.c) {
+            buttons[i].style.background = '#2ed573';
+            buttons[i].style.borderColor = '#2ed573';
+        } else if (i === selectedIndex) {
+            buttons[i].style.background = '#ff4757';
+            buttons[i].style.borderColor = '#ff4757';
+        }
+    }
+    
+    if (selectedIndex === q.c) {
+        quizContext.correct++;
+        showMsg("🎉 Poprawna odpowiedź!");
+    } else {
+        showMsg("❌ Błędna odpowiedź! Prawidłowa to: " + q.a[q.c]);
+    }
+    
+    quizContext.answered++;
+    
+    setTimeout(function() {
+        if (quizContext.answered < quizContext.total) {
+            showQuizQuestion();
+        } else {
+            document.getElementById('quiz-modal').style.display = 'none';
+            resolveQuizRewards();
+        }
+    }, 1200);
+}
+
+function resolveQuizRewards() {
+    var player = quizContext.player;
+    var floor = getFloor(player.pos);
+    var score = quizContext.correct;
+    var total = quizContext.total;
+    
+    if (total === 1) {
+        if (score === 1) {
+            player.crystals += 1;
+            player.coins += 1;
+            showMsg(`🎉 Poprawna odpowiedź! Zdobywasz +1 Kryształek 💎 i +1 monetę 🪙!`);
+        } else {
+            showMsg(`❌ Pudło! Nie zdobywasz kryształka na sali.`);
+        }
+    } else if (total === 2) {
+        if (floor === 1) {
+            if (score === 2) {
+                player.crystals += 1;
+                player.coins += 2;
+                showMsg(`🎉 Pełen sukces (2/2) w Auli na ostatnim piętrze! Zdobywasz +1 Kryształek 💎 i +2 monety 🪙!`);
+            } else if (score === 1) {
+                player.coins += 1;
+                showMsg(`⚠️ Wynik 1/2. Brak kryształka (tylko pełen sukces ocala cię na parterze), ale zyskujesz +1 monetę 🪙.`);
+            } else {
+                showMsg(`❌ 0/2 w Auli! Brak nagród.`);
+            }
+        } else {
+            if (score === 2) {
+                player.crystals += 1;
+                player.coins += 2;
+                showMsg(`🎉 Doskonały wynik (2/2) w Auli! Otrzymujesz +1 Kryształek 💎 i +2 monety 🪙!`);
+            } else if (score === 1) {
+                player.crystals += 1;
+                player.coins += 1;
+                showMsg(`👍 Dobry wynik (1/2) w Auli! Otrzymujesz +1 Kryształek 💎 i +1 monetę 🪙!`);
+            } else {
+                showMsg(`❌ 0/2 w Auli! Brak nagród.`);
+            }
+        }
+    }
+    quizContext = null;
+    updateGamePanel();
+    setTimeout(nextTurn, 2200);
+}
+
+function runBotQuiz() {
+    var bot = quizContext.player;
+    var count = quizContext.total;
+    var prob = 0.4 + (bot.wisdom * 0.08);
+    if (bot.klass === 'leniuch') prob -= 0.15;
+    if (bot.klass === 'madrala') prob += 0.15;
+    prob = Math.min(0.92, Math.max(0.2, prob));
+    
+    showMsg(`🤖 ${bot.name} odpowiada na pytania naukowe...`);
+    
+    var idx = 0;
+    function answerOneByOne() {
+        var correct = Math.random() < prob;
+        if (correct) {
+            quizContext.correct++;
+        }
+        idx++;
+        if (idx < count) {
+            setTimeout(answerOneByOne, 1000);
+        } else {
+            setTimeout(resolveQuizRewards, 1000);
+        }
+    }
+    setTimeout(answerOneByOne, 1000);
+}
+
+function triggerDziekanat(player) {
+    if (player.id === 0) {
+        var floor = getFloor(player.pos);
+        var obronaBtn = document.getElementById('dk-btn-obrona');
+        if (floor === 1 && player.crystals >= 15) {
+            obronaBtn.style.display = 'block';
+        } else {
+            obronaBtn.style.display = 'none';
+        }
+        
+        document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
+        document.getElementById('dk-btn-hp').disabled = player.coins < 2;
+        document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
+        document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
+        
+        document.getElementById('dziekanat-modal').style.display = 'flex';
+    } else {
+        runBotDziekanat(player);
+    }
+}
+
+function closeDziekanatModal() {
+    document.getElementById('dziekanat-modal').style.display = 'none';
+    setTimeout(nextTurn, 500);
+}
+
+function applyDziekanat(action) {
+    var player = gameState.players[0];
+    var floor = getFloor(player.pos);
+    
+    if (action === 'prepay') {
+        if (player.coins >= 1 && !player.tempCzesnePaid) {
+            player.coins -= 1;
+            player.tempCzesnePaid = true;
+            showMsg("🎫 Zapłacono czesne z góry! Przy najbliższym mminięciu startu nie tracisz monet.");
+        }
+    } else if (action === 'buy_hp') {
+        if (player.coins >= 2) {
+            player.coins -= 2;
+            player.hp += 1;
+            showMsg("♥ Dziekanat: Dokonano zakupu regeneracji sił (+1 HP)!");
+        }
+    } else if (action === 'buy_crystal') {
+        if (player.coins >= 3 && !player.boughtCrystalThisFloor) {
+            player.coins -= 3;
+            player.crystals += 1;
+            player.boughtCrystalThisFloor = true;
+            showMsg("💎 Dziekanat: Zakupiono 1 Kryształek za 3 monety!");
+        }
+    } else if (action === 'buy_shorten') {
+        if (player.coins >= 2 && !player.hasShortenCard) {
+            player.coins -= 2;
+            player.hasShortenCard = true;
+            showMsg("📋 Dziekanat: Zakupiono kartę skróconych praktyk!");
+        }
+    } else if (action === 'obrona') {
+        if (floor === 1 && player.crystals >= 15) {
+            document.getElementById('dziekanat-modal').style.display = 'none';
+            triggerVictory(player);
+            return;
+        }
+    }
+    
+    document.getElementById('dziekanat-modal').style.display = 'none';
+    updateGamePanel();
+    setTimeout(nextTurn, 1500);
+}
+
+function runBotDziekanat(bot) {
+    var floor = getFloor(bot.pos);
+    if (floor === 1 && bot.crystals >= 15) {
+        triggerVictory(bot);
+        return;
+    }
+    
+    var prepayChance = bot.coins >= 1 && !bot.tempCzesnePaid && Math.random() < 0.4;
+    var buyHpChance = bot.coins >= 2 && bot.hp < 4 && Math.random() < 0.5;
+    var buyCrystalChance = bot.coins >= 3 && !bot.boughtCrystalThisFloor && bot.crystals < 15 && Math.random() < 0.6;
+    var shortenChance = bot.coins >= 2 && !bot.hasShortenCard && Math.random() < 0.3;
+    
+    if (buyCrystalChance) {
+        bot.coins -= 3;
+        bot.crystals += 1;
+        bot.boughtCrystalThisFloor = true;
+        showMsg(`🏛️ Dziekanat: Bot ${bot.name} kupił 1 Kryształek 💎 za 3 monety!`);
+    } else if (buyHpChance) {
+        bot.coins -= 2;
+        bot.hp += 1;
+        showMsg(`🏛️ Dziekanat: Bot ${bot.name} wymienił 2 monety na +1 HP!`);
+    } else if (shortenChance) {
+        bot.coins -= 2;
+        bot.hasShortenCard = true;
+        showMsg(`🏛️ Dziekanat: Bot ${bot.name} kupił kartę skróconych praktyk za 2 monety!`);
+    } else if (prepayChance) {
+        bot.coins -= 1;
+        bot.tempCzesnePaid = true;
+        showMsg(`🏛️ Dziekanat: Bot ${bot.name} zapłacił czesne z góry za 1 monetę!`);
+    } else {
+        showMsg(`🏛️ Dziekanat: Bot ${bot.name} załatwił sprawy urzędowe i opuścił dziekanat.`);
+    }
+    
+    updateGamePanel();
+    setTimeout(nextTurn, 2200);
+}
+
+function triggerVictory(winner) {
+    gameState.gameOver = true;
+    gameState.rolled = true;
+    document.getElementById('dice-btn').disabled = true;
+    
+    winner.pos = 'k25';
+    placeTokens();
+    
+    var degreeText = "LICENCJAT";
+    if (winner.klass === 'madrala') {
+        degreeText = "INŻYNIER";
+    } else if (winner.klass === 'sportowiec') {
+        degreeText = Math.random() < 0.5 ? "INŻYNIER" : "LICENCJAT";
+    }
+    
+    if (winner.id === 0) {
+        document.getElementById('diploma-student-name').textContent = winner.name.toUpperCase();
+        document.getElementById('diploma-student-class').textContent = winner.klass.toUpperCase() + " (WSB MERITO)";
+        document.getElementById('diploma-earned-degree').textContent = degreeText;
+        
+        var statSummary = `
+            <strong>Zebrane Kryształki:</strong> ${winner.crystals} 💎 (wymagane 15)<br>
+            <strong>Końcowe Monety:</strong> ${winner.coins} 🪙<br>
+            <strong>Mądrość:</strong> ${winner.wisdom} 🧠<br>
+            <strong>Szczęście:</strong> ${winner.luck} ⭐<br>
+            <strong>Zdrowie (HP):</strong> ${winner.hp} ♥
+        `;
+        document.getElementById('diploma-stats-summary').innerHTML = statSummary;
+        document.getElementById('diploma-modal').style.display = 'flex';
+        showMsg(`🏆 Gratulacje! Ukończyłeś studia z tytułem ${degreeText}!`);
+    } else {
+        showMsg(`🏆 Gra zakończona! Bot ${winner.name} obronił pracę jako pierwszy i otrzymał tytuł: ${degreeText}!`);
+    }
 }
 
 function nextTurn() {
+    if (gameState.gameOver) return;
     gameState.turn   = (gameState.turn + 1) % 2;
     gameState.rolled = false;
     updateGamePanel();
@@ -783,7 +1486,8 @@ function placeTokens() {
     document.querySelectorAll('.player-token').forEach(function(t) { t.remove(); });
     if (!gameState) return;
     gameState.players.forEach(function(p, i) {
-        var cell = document.querySelector('.c' + p.pos);
+        var selector = typeof p.pos === 'string' ? '.' + p.pos : '.c' + p.pos;
+        var cell = document.querySelector(selector);
         if (!cell) return;
         var token = document.createElement('div');
         token.className = 'player-token player-token-' + (i + 1);
@@ -803,8 +1507,8 @@ function updateGamePanel() {
     document.getElementById('gp-p1').classList.toggle('gp-active', gameState.turn === 0 && !gameState.gameOver);
     document.getElementById('gp-p2').classList.toggle('gp-active', gameState.turn === 1 && !gameState.gameOver);
 
-    _prevStats[0] = { hp: p1.hp, wisdom: p1.wisdom, luck: p1.luck };
-    _prevStats[1] = { hp: p2.hp, wisdom: p2.wisdom, luck: p2.luck };
+    _prevStats[0] = { hp: p1.hp, wisdom: p1.wisdom, luck: p1.luck, crystals: p1.crystals, coins: p1.coins };
+    _prevStats[1] = { hp: p2.hp, wisdom: p2.wisdom, luck: p2.luck, crystals: p2.crystals, coins: p2.coins };
 }
 
 function renderStatBar(id, player, prev) {
@@ -819,15 +1523,25 @@ function renderStatBar(id, player, prev) {
     var hpFlash  = prev && prev.hp      !== player.hp     ? ' s-flash' : '';
     var wisFlash = prev && prev.wisdom  !== player.wisdom ? ' s-flash' : '';
     var lukFlash = prev && prev.luck    !== player.luck   ? ' s-flash' : '';
+    var cryFlash = prev && prev.crystals !== player.crystals ? ' s-flash' : '';
+    var coiFlash = prev && prev.coins    !== player.coins   ? ' s-flash' : '';
 
     var hpDelta  = (prev && prev.hp      !== player.hp)     ? getDelta(prev.hp,      player.hp)      : '';
     var wisDelta = (prev && prev.wisdom  !== player.wisdom) ? getDelta(prev.wisdom,  player.wisdom)  : '';
     var lukDelta = (prev && prev.luck    !== player.luck)   ? getDelta(prev.luck,    player.luck)    : '';
+    var cryDelta = (prev && prev.crystals !== player.crystals) ? getDelta(prev.crystals, player.crystals) : '';
+    var coiDelta = (prev && prev.coins    !== player.coins)   ? getDelta(prev.coins,   player.coins)    : '';
+
+    var prepaidInd = player.tempCzesnePaid ? ' 🎫' : '';
+    var shortenInd = player.hasShortenCard ? ' 📋' : '';
+    var hintsInd = player.hints > 0 ? ' 💡' : '';
 
     el.innerHTML =
         '<span class="s-hp'  + hpFlash  + '">' + hearts              + hpDelta  + '</span>' +
         '<span class="s-wis' + wisFlash + '">' + '🧠 ' + player.wisdom + wisDelta + '</span>' +
-        '<span class="s-luk' + lukFlash + '">' + '⭐ '  + player.luck   + lukDelta + '</span>';
+        '<span class="s-luk' + lukFlash + '">' + '⭐ '  + player.luck   + lukDelta + '</span>' +
+        '<span class="s-cry' + cryFlash + '">' + '💎 Kryształy: ' + player.crystals + ' / 15' + cryDelta + '</span>' +
+        '<span class="s-coi' + coiFlash + '">' + '🪙 Monety: ' + player.coins + coiDelta + prepaidInd + shortenInd + hintsInd + '</span>';
 }
 
 function getDelta(oldVal, newVal) {

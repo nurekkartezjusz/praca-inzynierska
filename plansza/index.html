@@ -56,14 +56,14 @@
         <div class="cell c2 sala">Sala</div>
         <div class="cell c3 lazienka">Łazienka</div>
         <div class="cell c4 aula">Aula</div>
-        <div class="cell c5 sala">Sala</div>
+        <div class="cell c5 stolowka">Stołówka</div>
         <div class="cell c6 dziekanat">Dziekanat</div>
         <div class="cell c7 sala">Sala</div>
         <div class="cell c8 sala">Sala</div>
         <div class="cell c9 lazienka">Łazienka</div>
         <div class="cell c10 sala">Sala</div>
         <div class="cell c11 praktyki">Praktyki</div>
-        <div class="cell c12 sala">Sala</div>
+        <div class="cell c12 automaty">Automaty</div>
         <div class="cell c13 sala">Sala</div>
         <div class="cell c14 lazienka">Łazienka</div>
         <div class="cell c15 szansa">Szansa</div>
@@ -73,16 +73,16 @@
         <div class="cell c19 strefarelaksu">Strefa relaksu</div> <!-- Poprawia szczescie gracza -->
         <div class="cell c20 sala">Sala</div>
         <div class="cell c21 lazienka">Łazienka</div>
-        <div class="cell c22 sala">Sala</div>
+        <div class="cell c22 piwnica">Piwnica</div>
         <div class="cell c23 aula">Aula</div>
         <div class="cell c24 lazienka">Łazienka</div>
         <div class="cell c25 sala">Sala</div>
         <div class="cell c26 dziekanat">Dziekanat</div>
-        <div class="cell c27 sala">Sala</div>
+        <div class="cell c27 stolowka">Stołówka</div>
         <div class="cell c28 sala">Sala</div>
         <div class="cell c29 lazienka">Łazienka</div>
         <div class="cell c30 praktyki">Praktyki</div>
-        <div class="cell c31 sala">Sala</div>
+        <div class="cell c31 automaty">Automaty</div>
         <div class="cell c32 sala">Sala</div>
         <div class="cell c33 szansa">Szansa</div>
         <div class="cell c34 lazienka">Łazienka</div>
@@ -105,17 +105,17 @@
         <div class="cell c50 start">Start II</div>
         <div class="cell c51 sala">Sala</div>
         <div class="cell c52 lazienka">Łazienka</div>
-        <div class="cell c53 sala">Sala</div>
+        <div class="cell c53 stolowka">Stołówka</div>
         <div class="cell c54 sala">Sala</div>
         <div class="cell c55 dziekanat">Dziekanat</div>
         <div class="cell c56 szansa">Szansa</div>
         <div class="cell c57 aula">Aula</div>
-        <div class="cell c58 sala">Sala</div>
+        <div class="cell c58 automaty">Automaty</div>
         <div class="cell c59 sala">Sala</div>
         <div class="cell c60 lazienka">Łazienka</div>
         <div class="cell c61 sala">Sala</div>
         <div class="cell c62 praktyki">Praktyki</div>
-        <div class="cell c63 sala">Sala</div>
+        <div class="cell c63 piwnica">Piwnica</div>
         <div class="cell c64 sala">Sala</div>
         <div class="cell c65 biblioteka">Biblioteka</div>
         <div class="cell c66 sala">Sala</div>
@@ -126,7 +126,7 @@
         <div class="cell c71 szansa">Szansa</div>
         <div class="cell c72 sala">Sala</div>
         <div class="cell c73 dziekanat">Dziekanat</div>
-        <div class="cell c74 sala">Sala</div>
+        <div class="cell c74 automaty">Automaty</div>
         <div class="cell c75 sala">Sala</div>
         <div class="cell c76 aula">Aula</div>
         <div class="cell c77 lazienka">Łazienka</div>
@@ -134,7 +134,7 @@
         <div class="cell c79 strefarelaksu">Strefa relaksu</div>
         <div class="cell c80 sala">Sala</div>
         <div class="cell c81 aula">Aula</div>
-        <div class="cell c82 sala">Sala</div>
+        <div class="cell c82 piwnica">Piwnica</div>
         <div class="cell c83 szansa">Szansa</div>
         <!--Piętro III-->
         <div class="cell c84 start">Start III</div>
@@ -142,12 +142,12 @@
         <div class="cell c86 praktyki">Praktyki</div>
         <div class="cell c87 aula">Aula</div>
         <div class="cell c88 dziekanat">Dziekanat</div>
-        <div class="cell c89 sala">Sala</div>
+        <div class="cell c89 stolowka">Stołówka</div>
         <div class="cell c90 szansa">Szansa</div>
-        <div class="cell c91 sala">Sala</div>
+        <div class="cell c91 automaty">Automaty</div>
         <div class="cell c92 aula">Aula</div>
         <div class="cell c93 lazienka">Łazienka</div>
-        <div class="cell c94 sala">Sala</div>
+        <div class="cell c94 piwnica">Piwnica</div>
         <div class="cell c95 biblioteka">Biblioteka</div>
         <div class="cell c96 sala">Sala</div>
         <div class="cell c97 praktyki">Praktyki</div>
@@ -538,6 +538,93 @@
     <button class="dice-btn" id="dice-btn" onclick="rollDice()">&#127922;</button>
     <div class="dice-num" id="dice-num">?</div>
     <div class="gp-msg" id="gp-msg"></div>
+</div>
+
+<!-- Modal Pytań -->
+<div class="custom-modal" id="quiz-modal" style="display:none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3>📖 Pytanie naukowe</h3>
+        </div>
+        <div class="custom-modal-body">
+            <p id="quiz-question-text" class="quiz-q-text">Treść pytania...</p>
+            <div id="quiz-answers-container" class="quiz-answers">
+                <!-- 4 przyciski odpowiedzi -->
+            </div>
+            <button class="custom-modal-btn hint-btn" id="quiz-hint-btn" onclick="useQuiz1Hint()" style="display:none;">
+                💡 Użyj podpowiedzi (Koszt: 1 moneta lub 50/50)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Start (Wybór bonusu) -->
+<div class="custom-modal" id="start-modal" style="display:none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3>🎓 Opłata czesnego oraz nagroda semestralna!</h3>
+        </div>
+        <div class="custom-modal-body">
+            <p id="start-tuition-msg" style="margin-bottom: 12px; font-weight: bold;"></p>
+            <p>Jako student uczelni, odbierz swój bonus semestralny:</p>
+            <div class="start-choices" style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+                <button class="custom-modal-btn" onclick="claimStartBonus('coin')">🪙 Dodatkowa moneta (+1 moneta)</button>
+                <button class="custom-modal-btn" onclick="claimStartBonus('hp')">♥ Regeneracja sił (+1 HP)</button>
+                <button class="custom-modal-btn" onclick="claimStartBonus('luck')">⭐ Szczęście studenta (+1 szczęście)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dziekanatu -->
+<div class="custom-modal" id="dziekanat-modal" style="display:none;">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3>🏛️ Dziekanat (Biuro Obsługi Studenta)</h3>
+        </div>
+        <div class="custom-modal-body">
+            <p style="margin-bottom:12px;">Witaj w dziekanacie! Możesz tu załatwić następujące sprawy studenckie:</p>
+            <div id="dziekanat-choices-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+                <button class="custom-modal-btn" id="dk-btn-prepay" onclick="applyDziekanat('prepay')">🎫 Zapłać czesne z góry (1 moneta)</button>
+                <button class="custom-modal-btn" id="dk-btn-hp" onclick="applyDziekanat('buy_hp')">♥ Kup zdrowie (2 monety → +1 HP)</button>
+                <button class="custom-modal-btn" id="dk-btn-crystal" onclick="applyDziekanat('buy_crystal')">💎 Kup kryształek (3 monety → +1 Kryształek) [Raz na piętro]</button>
+                <button class="custom-modal-btn" id="dk-btn-shorten" onclick="applyDziekanat('buy_shorten')">📋 Kup kartę Skróć Praktyki (2 monety) [Raz na piętro]</button>
+                <button class="custom-modal-btn" id="dk-btn-obrona" onclick="applyDziekanat('obrona')" style="display:none; background: #2ed573; box-shadow: 0 0 10px #2ed573;">🎓 REKRUTACJA DO OBRONY (Ukończ grę!)</button>
+                <button class="custom-modal-btn close-dk-btn" onclick="closeDziekanatModal()" style="background:#555; margin-top:10px;">Anuluj / Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dyplomu (Zwycięstwo) -->
+<div class="custom-modal" id="diploma-modal" style="display:none;">
+    <div class="diploma-content">
+        <div class="diploma-border">
+            <div class="diploma-seal">🏆</div>
+            <h1 class="diploma-title">DYPLOM UKOŃCZENIA STUDIÓW</h1>
+            <h2 class="diploma-subtitle">Uniwersytet WSB Merito</h2>
+            <p class="diploma-text">Niniejszym zaświadcza się, że student/ka</p>
+            <h3 class="diploma-student" id="diploma-student-name">Imię Nazwisko</h3>
+            <p class="diploma-text">ukończył/a wyczerpujące studia o specjalności</p>
+            <h4 class="diploma-class" id="diploma-student-class">Klasa</h4>
+            <p class="diploma-text">i złożył/a z sukcesem egzamin dyplomowy (obronę), uzyskując zaszczytny tytuł zawodowy:</p>
+            <h3 class="diploma-degree" id="diploma-earned-degree">INŻYNIER</h3>
+            <div class="diploma-stats" id="diploma-stats-summary" style="margin-top:15px; font-size:10px; line-height: 1.5; border-top:1px dashed #999; border-bottom:1px dashed #999; padding: 6px 0;">
+                <!-- Podsumowanie statystyk -->
+            </div>
+            <div class="diploma-signatures" style="display:flex; justify-content:space-between; margin-top:20px; font-size:9px;">
+                <div class="sig" style="text-align:center;">
+                    <p>____________________</p>
+                    <p>Promotor</p>
+                </div>
+                <div class="sig" style="text-align:center;">
+                    <p>____________________</p>
+                    <p>Dziekan WSB Merito</p>
+                </div>
+            </div>
+        </div>
+        <button class="custom-modal-btn replay-btn" onclick="location.reload()" style="margin-top:20px; background:#2ed573; box-shadow: 0 0 8px #2ed573; width: 220px; padding: 12px; font-size: 11px;">Zagraj ponownie</button>
+    </div>
 </div>
 
 <script src="script.js"></script>
