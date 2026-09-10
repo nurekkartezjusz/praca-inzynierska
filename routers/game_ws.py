@@ -14,6 +14,8 @@ class GameRoom:
     def __init__(self):
         # Mapuje user_id -> WebSocket
         self.connections: dict[int, WebSocket] = {}
+        # Mapuje user_id -> ostatnia akcja "select_class" (odtwarzana graczowi dołączającemu później)
+        self.last_class_selection: dict[int, dict] = {}
 
     def add(self, user_id: int, websocket: WebSocket):
         self.connections[user_id] = websocket
@@ -108,6 +110,16 @@ async def websocket_game_endpoint(
             "game_type": invitation.game_type
         })
 
+        # Odtwórz ewentualny wcześniejszy wybór klasy drugiego gracza - naprawia wyścig
+        # w którym gracze łączą się z WebSocketem w różnym momencie (polling vs. przekierowanie)
+        for other_id, action in room.last_class_selection.items():
+            if other_id != user.id:
+                await websocket.send_json({
+                    "type": "game_action",
+                    "sender_id": other_id,
+                    "payload": action
+                })
+
         # Powiadomienie drugiego gracza (jeśli jest już połączony) o wejściu oponenta
         await room.broadcast({
             "type": "player_joined",
@@ -118,6 +130,9 @@ async def websocket_game_endpoint(
         # Główna pętla odbierania wiadomości
         while True:
             data = await websocket.receive_json()
+            # Zapamiętaj wybór klasy, żeby móc go odtworzyć drugiemu graczowi po jego (późniejszym) połączeniu
+            if data.get("type") == "select_class":
+                room.last_class_selection[user.id] = data
             # Przesyłamy każdą wiadomość z payloadem do drugiego gracza
             await room.broadcast({
                 "type": "game_action",
