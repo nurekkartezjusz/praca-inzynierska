@@ -280,6 +280,148 @@ var incomingPollTimer   = null;
 var pendingIncomingId   = null;
 var opponentName        = 'Bot';
 
+// Zmienne i połączenia dla trybu multiplayer
+var isMultiplayer          = false;
+var multiplayerInvitationId = null;
+var ws                      = null;
+var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
+var myClass                 = null;
+var opponentClass           = null;
+
+function connectWebSocket(invitationId) {
+    var token = localStorage.getItem('access_token');
+    if (!token) return;
+    
+    isMultiplayer = true;
+    multiplayerInvitationId = invitationId;
+    
+    var wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    var wsUrl = wsProtocol + '://' + window.location.host + '/api/ws/game/' + invitationId + '?token=' + token;
+    
+    ws = new WebSocket(wsUrl);
+    
+    ws.onopen = function() {
+        console.log("Połączono z serwerem gier multiplayer!");
+    };
+    
+    ws.onmessage = function(event) {
+        var data = JSON.parse(event.data);
+        console.log("Multiplayer odebrano:", data);
+        
+        if (data.type === "system") {
+            if (data.role === "inviter") {
+                myPlayerId = 0;
+            } else {
+                myPlayerId = 1;
+            }
+            opponentName = data.opponent_username;
+            console.log("Twoja rola: " + data.role + ", Oponent: " + opponentName);
+        } else if (data.type === "player_joined") {
+            console.log("Przeciwnik dołączył: " + data.username);
+        } else if (data.type === "player_left") {
+            console.log("Przeciwnik wyszedł: " + data.username);
+            showMsg("⚠️ Przeciwnik " + data.username + " rozłączył się!");
+        } else if (data.type === "game_action") {
+            var payload = data.payload;
+            handleMultiplayerAction(payload);
+        }
+    };
+    
+    ws.onclose = function() {
+        console.log("Rozłączono z serwerem gier.");
+    };
+    
+    ws.onerror = function(err) {
+        console.error("Błąd WebSocket:", err);
+    };
+}
+
+function sendGameAction(payload) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        payload.username = localStorage.getItem('user_username') || 'Bez nazwy';
+        ws.send(JSON.stringify(payload));
+    }
+}
+
+function handleMultiplayerAction(payload) {
+    if (payload.type === "select_class") {
+        opponentClass = payload.class;
+        opponentName = payload.username || opponentName;
+        console.log("Oponent wybrał klasę: " + opponentClass);
+        
+        if (myClass) {
+            var overlay = document.querySelector('.overlay');
+            var classPopup = document.querySelector('.class-popup');
+            document.body.classList.remove('confirmation-open');
+            if (overlay) overlay.style.display = 'none';
+            if (classPopup) classPopup.style.display = 'none';
+            
+            initMultiplayerGame();
+        }
+    } else if (payload.type === "roll_dice") {
+        executeRoll(payload.value);
+    } else if (payload.type === "claim_start_bonus") {
+        var opponent = gameState.players[gameState.turn];
+        var type = payload.bonusType;
+        if (type === 'coin') {
+            opponent.coins += 1;
+            showMsg("🎉 " + opponent.name + " wybrał darmową monetę!");
+        } else if (type === 'hp') {
+            opponent.hp += 1;
+            showMsg("🎉 " + opponent.name + " wybrał dodatkowe zdrowie (+1 HP)!");
+        } else if (type === 'luck') {
+            opponent.luck += 1;
+            showMsg("🎉 " + opponent.name + " wybrał punkt szczęścia (+1 szczęścia)!");
+        }
+        updateGamePanel();
+        if (startModalCallback) {
+            var cb = startModalCallback;
+            startModalCallback = null;
+            cb();
+        }
+    } else if (payload.type === "draw_chance") {
+        executeChanceCard(payload.cardIndex);
+    } else if (payload.type === "quiz_completed") {
+        if (payload.gameState) {
+            gameState.players = payload.gameState.players;
+            gameState.turn = payload.gameState.turn;
+            gameState.gameOver = payload.gameState.gameOver;
+            gameState.rolled = payload.gameState.rolled;
+        }
+        if (payload.msg) {
+            showMsg(payload.msg);
+        }
+        updateGamePanel();
+        placeTokens();
+        setTimeout(nextTurn, 2200);
+    } else if (payload.type === "dziekanat_completed") {
+        if (payload.gameState) {
+            gameState.players = payload.gameState.players;
+            gameState.turn = payload.gameState.turn;
+            gameState.gameOver = payload.gameState.gameOver;
+            gameState.rolled = payload.gameState.rolled;
+        }
+        if (payload.msg) {
+            showMsg(payload.msg);
+        }
+        updateGamePanel();
+        placeTokens();
+        setTimeout(nextTurn, 1500);
+    } else if (payload.type === "sync_game_state") {
+        if (payload.gameState) {
+            gameState.players = payload.gameState.players;
+            gameState.turn = payload.gameState.turn;
+            gameState.gameOver = payload.gameState.gameOver;
+            gameState.rolled = payload.gameState.rolled;
+        }
+        updateGamePanel();
+        placeTokens();
+    } else if (payload.type === "victory") {
+        var winner = gameState.players[payload.winnerId];
+        triggerVictory(winner);
+    }
+}
+
 function returnToMainPage() {
   window.location.href = '../index.html';
 }
@@ -303,6 +445,8 @@ document.addEventListener("DOMContentLoaded", function() {
   var urlParams = new URLSearchParams(window.location.search);
   var inviteAcceptedId = urlParams.get('invite_accepted');
   if (inviteAcceptedId) {
+    connectWebSocket(inviteAcceptedId);
+    
     var choicePopup = document.querySelector('.choice-popup');
     var classPopup = document.querySelector('.class-popup');
     var overlay = document.querySelector('.overlay');
@@ -374,17 +518,39 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
   if (confirmYes) {
-  confirmYes.addEventListener('click', function() {
-    if (!selectedClass) {
-      alert('Wybierz klasę!');
-      return;
-    }
-    setConfirmationOpen(false);
-    document.body.classList.remove('confirmation-open');
-    if (overlay) overlay.style.display = 'none';
-    initGame(selectedClass);
-  });
-}
+    confirmYes.addEventListener('click', function() {
+      if (!selectedClass) {
+        alert('Wybierz klasę!');
+        return;
+      }
+      setConfirmationOpen(false);
+      if (isMultiplayer) {
+        myClass = selectedClass;
+        sendGameAction({ type: "select_class", class: selectedClass });
+        showMsg("Oczekiwanie na wybór klasy przez przeciwnika...");
+        
+        var cardsWrapper = document.querySelector('.cards-wrapper');
+        if (cardsWrapper) {
+            cardsWrapper.innerHTML = '<div style="text-align:center; padding: 50px; font-size: 1.5rem; color:#fff; font-family:\'VT323\', monospace;">Wybrałeś: ' + selectedClass.toUpperCase() + '.<br>Czekanie na oponenta...</div>';
+        }
+        var closeBtn = document.getElementById('class-popup-close-btn');
+        if (closeBtn) closeBtn.style.display = 'none';
+        
+        // Sprawdź czy drugi gracz już wybrał (często gra_action przychodzi zanim zamkniemy popup)
+        if (opponentClass) {
+            var classPopup = document.querySelector('.class-popup');
+            if (overlay) overlay.style.display = 'none';
+            if (classPopup) classPopup.style.display = 'none';
+            
+            initMultiplayerGame();
+        }
+      } else {
+        document.body.classList.remove('confirmation-open');
+        if (overlay) overlay.style.display = 'none';
+        initGame(selectedClass);
+      }
+    });
+  }
 
   // Przychodzące zaproszenia: akceptacja / odrzucenie
   var incAccept  = document.getElementById('inc-accept');
@@ -403,6 +569,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('inc-modal').classList.remove('show');
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
+        connectWebSocket(pendingIncomingId);
         pendingIncomingId = null;
         showClassSelectionPopup();
         incomingPollTimer = setInterval(checkIncoming, 5000);  // ← WZNÓW POLLING
@@ -538,6 +705,7 @@ function pollOutgoing() {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
             document.getElementById('wait-modal').classList.remove('show');
             resetFriendBtn();
+            connectWebSocket(pendingInvitationId);
             showClassSelectionPopup();
         } else if (data.status === 'declined' || data.status === 'expired') {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
@@ -816,6 +984,47 @@ var _prevStats = [null, null];  // śledzi poprzednie wartości statystyk
 var startModalCallback = null;
 var quizContext = null;
 
+function initMultiplayerGame() {
+    var p1Class = myPlayerId === 0 ? myClass : opponentClass;
+    var p2Class = myPlayerId === 0 ? opponentClass : myClass;
+    
+    var p1Stats = STATYSTYKI[p1Class];
+    var p2Stats = STATYSTYKI[p2Class];
+    
+    var p1StartCoins = p1Class === 'leniuch' ? 3 : (p1Class === 'madrala' ? 0 : 1);
+    var p2StartCoins = p2Class === 'leniuch' ? 3 : (p2Class === 'madrala' ? 0 : 1);
+    
+    var p1Wisdom = p1Stats.wisdom + (p1Class === 'madrala' ? 1 : 0);
+    var p2Wisdom = p2Stats.wisdom + (p2Class === 'madrala' ? 1 : 0);
+    
+    var p1Name = myPlayerId === 0 ? localStorage.getItem('user_username') || 'Gracz 1' : opponentName;
+    var p2Name = myPlayerId === 0 ? opponentName : localStorage.getItem('user_username') || 'Gracz 2';
+
+    gameState = {
+        players: [
+            { id: 0, name: p1Name, pos: 84, klass: p1Class, skipTurnsLeft: 0, hp: p1Stats.hp, luck: p1Stats.luck, wisdom: p1Wisdom, crystals: 0, coins: p1StartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
+            { id: 1, name: p2Name, pos: 84, klass: p2Class, skipTurnsLeft: 0, hp: p2Stats.hp, luck: p2Stats.luck, wisdom: p2Wisdom, crystals: 0, coins: p2StartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
+        ],
+        turn: 0, rolled: false, gameOver: false,
+    };
+    
+    placeTokens();
+    updateGamePanel();
+    _prevStats = [null, null];
+    
+    document.getElementById('gp-p1').style.display    = 'flex';
+    document.getElementById('gp-p2').style.display    = 'flex';
+    document.getElementById('dice-panel').style.display = 'flex';
+    
+    if (gameState.turn === myPlayerId) {
+        document.getElementById('dice-btn').disabled = false;
+        showMsg('Gra rozpoczęta! Rozpoczynasz naukę na 2. piętrze WSB. Rzuć kostką!');
+    } else {
+        document.getElementById('dice-btn').disabled = true;
+        showMsg('Gra rozpoczęta! Kolejka gracza ' + opponentName + '...');
+    }
+}
+
 function initGame(playerClass) {
     var botKlasy = Object.keys(STATYSTYKI);
     var botKlasa = botKlasy[Math.floor(Math.random() * botKlasy.length)];
@@ -870,21 +1079,8 @@ function advanceOneStep(player, pos) {
     return pos;
 }
 
-function rollDice() {
-    if (!gameState || gameState.rolled || gameState.gameOver) return;
+function executeRoll(val) {
     var player = gameState.players[gameState.turn];
-    
-    // Check if player is currently in practice or piwnica skip status
-    if (player.skipTurnsLeft > 0) {
-        player.skipTurnsLeft--;
-        showMsg('⏳ ' + player.name + ' odbywa praktyki/przerwę! Pozostało tur do opuszczenia: ' + player.skipTurnsLeft);
-        gameState.rolled = true;
-        updateGamePanel();
-        setTimeout(nextTurn, 1800);
-        return;
-    }
-    
-    var val = Math.floor(Math.random() * 6) + 1;
     document.getElementById('dice-num').textContent = val;
     document.getElementById('dice-btn').disabled = true;
     gameState.rolled = true;
@@ -923,6 +1119,30 @@ function rollDice() {
     }
 }
 
+function rollDice() {
+    if (!gameState || gameState.rolled || gameState.gameOver) return;
+    var player = gameState.players[gameState.turn];
+    
+    // Check if player is currently in practice or piwnica skip status
+    if (player.skipTurnsLeft > 0) {
+        player.skipTurnsLeft--;
+        showMsg('⏳ ' + player.name + ' odbywa praktyki/przerwę! Pozostało tur do opuszczenia: ' + player.skipTurnsLeft);
+        gameState.rolled = true;
+        updateGamePanel();
+        if (isMultiplayer) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
+        setTimeout(nextTurn, 1800);
+        return;
+    }
+    
+    var val = Math.floor(Math.random() * 6) + 1;
+    if (isMultiplayer) {
+        sendGameAction({ type: "roll_dice", value: val });
+    }
+    executeRoll(val);
+}
+
 function handlePassStart(player, onFinished) {
     var floor = getFloor(player.pos);
     var tuition = floor === 1 ? 3 : 1;
@@ -957,39 +1177,47 @@ function handlePassStart(player, onFinished) {
                     updateGamePanel();
                 }
             }
+            if (isMultiplayer) {
+                sendGameAction({ type: "sync_game_state", gameState: gameState });
+            }
             onFinished();
         }
     }
 }
 
 function promptStartBonus(player, onFinished) {
-    if (player.id === 0) {
+    if (player.id === myPlayerId) {
         var floor = getFloor(player.pos);
         var tuition = floor === 1 ? 3 : 1;
         document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
         document.getElementById('start-modal').style.display = 'flex';
         startModalCallback = onFinished;
     } else {
-        var choices = ['coin', 'hp', 'luck'];
-        var b = choices[Math.floor(Math.random() * choices.length)];
-        if (b === 'coin') {
-            player.coins += 1;
-            showMsg("🤖 " + player.name + " wybrał darmową monetę jako bonus semestralny!");
-        } else if (b === 'hp') {
-            player.hp += 1;
-            showMsg("🤖 " + player.name + " wybrał punkt zdrowia (+1 HP) jako bonus semestralny!");
+        if (isMultiplayer) {
+            showMsg("⏳ Oczekiwanie na wybór bonusu przez gracza: " + player.name + "...");
+            startModalCallback = onFinished;
         } else {
-            player.luck += 1;
-            showMsg("🤖 " + player.name + " wybrał punkt szczęścia (+1 szczęścia) jako bonus semestralny!");
+            var choices = ['coin', 'hp', 'luck'];
+            var b = choices[Math.floor(Math.random() * choices.length)];
+            if (b === 'coin') {
+                player.coins += 1;
+                showMsg("🤖 " + player.name + " wybrał darmową monetę jako bonus semestralny!");
+            } else if (b === 'hp') {
+                player.hp += 1;
+                showMsg("🤖 " + player.name + " wybrał punkt zdrowia (+1 HP) jako bonus semestralny!");
+            } else {
+                player.luck += 1;
+                showMsg("🤖 " + player.name + " wybrał punkt szczęścia (+1 szczęścia) jako bonus semestralny!");
+            }
+            updateGamePanel();
+            setTimeout(onFinished, 1200);
         }
-        updateGamePanel();
-        setTimeout(onFinished, 1200);
     }
 }
 
 function claimStartBonus(type) {
     if (!gameState) return;
-    var player = gameState.players[0];
+    var player = gameState.players[myPlayerId];
     if (type === 'coin') {
         player.coins += 1;
         showMsg("🎉 Wybrałeś/aś dodatkową monetę!");
@@ -1002,6 +1230,11 @@ function claimStartBonus(type) {
     }
     document.getElementById('start-modal').style.display = 'none';
     updateGamePanel();
+    
+    if (isMultiplayer) {
+        sendGameAction({ type: "claim_start_bonus", bonusType: type });
+    }
+    
     if (startModalCallback) {
         var cb = startModalCallback;
         startModalCallback = null;
@@ -1029,6 +1262,26 @@ function resolveOccupancy(player) {
     }
 }
 
+function executeChanceCard(cardIndex) {
+    var player = gameState.players[gameState.turn];
+    var card = SZANSA_KARTY[cardIndex];
+    var result = card(player);
+    showMsg(result.msg);
+    updateGamePanel();
+    
+    if (player.hp <= 0) {
+        var winner = gameState.players[(gameState.turn + 1) % 2];
+        showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
+        gameState.gameOver = true;
+        document.getElementById('dice-btn').disabled = true;
+        if (isMultiplayer) {
+            sendGameAction({ type: "victory", winnerId: winner.id });
+        }
+        return;
+    }
+    setTimeout(nextTurn, 2000);
+}
+
 function triggerFieldArrival(player) {
     resolveOccupancy(player);
     
@@ -1042,6 +1295,9 @@ function triggerFieldArrival(player) {
         triggerDziekanat(player);
     } else if (type === 'lazienka') {
         showMsg("🚽 " + player.name + " w łazience: Pusta kabina! Chwila oddechu, nic się nie dzieje.");
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
         setTimeout(nextTurn, 1500);
     } else if (type === 'praktyki') {
         player.crystals += 1;
@@ -1057,13 +1313,16 @@ function triggerFieldArrival(player) {
             showMsg("💼 " + player.name + " realizuje praktyki! Tracisz 3 tury i otrzymujesz +1 kryształek! 💎");
         }
         updateGamePanel();
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
         setTimeout(nextTurn, 2200);
     } else if (type === 'biblioteka') {
         player.wisdom += 1;
         player.hints += 1;
         var floor = getFloor(player.pos);
         if (floor === 1) {
-            if (player.id === 0) {
+            if (player.id === myPlayerId) {
                 if (player.coins >= 2) {
                     var yes = confirm("📖 Biblioteka: Czy chcesz wymienić 2 monety na 1 Kryształek? 💎");
                     if (yes) {
@@ -1076,22 +1335,35 @@ function triggerFieldArrival(player) {
                 } else {
                     showMsg("📖 Biblioteka: Nie masz wystarczająco dużo monet (min. 2 🪙) na wymianę na kryształek!");
                 }
+                if (isMultiplayer) {
+                    sendGameAction({ type: "sync_game_state", gameState: gameState });
+                }
             } else {
-                if (player.coins >= 2 && player.crystals < 15) {
-                    player.coins -= 2;
-                    player.crystals += 1;
-                    showMsg("🤖 " + player.name + " wymienił 2 monety na 1 Kryształek w bibliotece!");
+                if (!isMultiplayer) {
+                    if (player.coins >= 2 && player.crystals < 15) {
+                        player.coins -= 2;
+                        player.crystals += 1;
+                        showMsg("🤖 " + player.name + " wymienił 2 monety na 1 Kryształek w bibliotece!");
+                    }
                 }
             }
         } else {
             showMsg("📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!");
+            if (isMultiplayer && player.id === myPlayerId) {
+                sendGameAction({ type: "sync_game_state", gameState: gameState });
+            }
         }
         updateGamePanel();
-        setTimeout(nextTurn, 2000);
+        if (!isMultiplayer || player.id === myPlayerId) {
+            setTimeout(nextTurn, 2000);
+        }
     } else if (type === 'strefarelaksu') {
         player.luck += 1;
         showMsg("⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!");
         updateGamePanel();
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
         setTimeout(nextTurn, 1500);
     } else if (type === 'stolowka') {
         var floor = getFloor(player.pos);
@@ -1102,11 +1374,17 @@ function triggerFieldArrival(player) {
             showMsg("🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥");
         }
         updateGamePanel();
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
         setTimeout(nextTurn, 1500);
     } else if (type === 'piwnica') {
         player.skipTurnsLeft = 1;
         showMsg("🚬 " + player.name + " w piwnicy (przerwa na dworze): Tracisz 1 kolejkę!");
         updateGamePanel();
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
         setTimeout(nextTurn, 1500);
     } else if (type === 'automaty') {
         if (player.coins >= 1) {
@@ -1118,23 +1396,26 @@ function triggerFieldArrival(player) {
             showMsg("🥤 " + player.name + " wchodzi na pole automatów, ale nie ma monet na zakup batona.");
         }
         updateGamePanel();
-        setTimeout(nextTurn, 2000);
-    } else if (type === 'szansa') {
-        var card = SZANSA_KARTY[Math.floor(Math.random() * SZANSA_KARTY.length)];
-        var result = card(player);
-        showMsg(result.msg);
-        updateGamePanel();
-        
-        if (player.hp <= 0) {
-            var winner = gameState.players[(gameState.turn + 1) % 2];
-            showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
-            gameState.gameOver = true;
-            document.getElementById('dice-btn').disabled = true;
-            return;
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
         setTimeout(nextTurn, 2000);
+    } else if (type === 'szansa') {
+        if (isMultiplayer) {
+            if (player.id === myPlayerId) {
+                var cardIndex = Math.floor(Math.random() * SZANSA_KARTY.length);
+                sendGameAction({ type: "draw_chance", cardIndex: cardIndex });
+                executeChanceCard(cardIndex);
+            }
+        } else {
+            var cardIndex = Math.floor(Math.random() * SZANSA_KARTY.length);
+            executeChanceCard(cardIndex);
+        }
     } else {
         showMsg(player.name + ' stoi na bezpiecznym polu.');
+        if (isMultiplayer && player.id === myPlayerId) {
+            sendGameAction({ type: "sync_game_state", gameState: gameState });
+        }
         setTimeout(nextTurn, 1500);
     }
 }
@@ -1153,10 +1434,18 @@ function triggerQuiz(player, count) {
         questions: shuffled.slice(0, count)
     };
     
-    if (player.id === 0) {
-        showQuizQuestion();
+    if (isMultiplayer) {
+        if (player.id === myPlayerId) {
+            showQuizQuestion();
+        } else {
+            showMsg("⏳ Gracz " + player.name + " odpowiada na pytania naukowe...");
+        }
     } else {
-        runBotQuiz();
+        if (player.id === 0) {
+            showQuizQuestion();
+        } else {
+            runBotQuiz();
+        }
     }
 }
 
@@ -1298,7 +1587,15 @@ function resolveQuizRewards() {
     }
     quizContext = null;
     updateGamePanel();
-    setTimeout(nextTurn, 2200);
+    
+    if (isMultiplayer) {
+         if (player.id === myPlayerId) {
+             sendGameAction({ type: "quiz_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
+             setTimeout(nextTurn, 2200);
+         }
+    } else {
+         setTimeout(nextTurn, 2200);
+    }
 }
 
 function runBotQuiz() {
@@ -1328,23 +1625,44 @@ function runBotQuiz() {
 }
 
 function triggerDziekanat(player) {
-    if (player.id === 0) {
-        var floor = getFloor(player.pos);
-        var obronaBtn = document.getElementById('dk-btn-obrona');
-        if (floor === 1 && player.crystals >= 15) {
-            obronaBtn.style.display = 'block';
+    if (isMultiplayer) {
+        if (player.id === myPlayerId) {
+            var floor = getFloor(player.pos);
+            var obronaBtn = document.getElementById('dk-btn-obrona');
+            if (floor === 1 && player.crystals >= 15) {
+                obronaBtn.style.display = 'block';
+            } else {
+                obronaBtn.style.display = 'none';
+            }
+            
+            document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
+            document.getElementById('dk-btn-hp').disabled = player.coins < 2;
+            document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
+            document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
+            
+            document.getElementById('dziekanat-modal').style.display = 'flex';
         } else {
-            obronaBtn.style.display = 'none';
+            showMsg("⏳ Gracz " + player.name + " załatwia sprawy w Dziekanacie...");
         }
-        
-        document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
-        document.getElementById('dk-btn-hp').disabled = player.coins < 2;
-        document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
-        document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
-        
-        document.getElementById('dziekanat-modal').style.display = 'flex';
     } else {
-        runBotDziekanat(player);
+        if (player.id === 0) {
+            var floor = getFloor(player.pos);
+            var obronaBtn = document.getElementById('dk-btn-obrona');
+            if (floor === 1 && player.crystals >= 15) {
+                obronaBtn.style.display = 'block';
+            } else {
+                obronaBtn.style.display = 'none';
+            }
+            
+            document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
+            document.getElementById('dk-btn-hp').disabled = player.coins < 2;
+            document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
+            document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
+            
+            document.getElementById('dziekanat-modal').style.display = 'flex';
+        } else {
+            runBotDziekanat(player);
+        }
     }
 }
 
@@ -1354,14 +1672,15 @@ function closeDziekanatModal() {
 }
 
 function applyDziekanat(action) {
-    var player = gameState.players[0];
+    var activeId = isMultiplayer ? myPlayerId : 0;
+    var player = gameState.players[activeId];
     var floor = getFloor(player.pos);
     
     if (action === 'prepay') {
         if (player.coins >= 1 && !player.tempCzesnePaid) {
             player.coins -= 1;
             player.tempCzesnePaid = true;
-            showMsg("🎫 Zapłacono czesne z góry! Przy najbliższym mminięciu startu nie tracisz monet.");
+            showMsg("🎫 Zapłacono czesne z góry! Przy najbliższym minięciu startu nie tracisz monet.");
         }
     } else if (action === 'buy_hp') {
         if (player.coins >= 2) {
@@ -1385,6 +1704,9 @@ function applyDziekanat(action) {
     } else if (action === 'obrona') {
         if (floor === 1 && player.crystals >= 15) {
             document.getElementById('dziekanat-modal').style.display = 'none';
+            if (isMultiplayer) {
+                sendGameAction({ type: "victory", winnerId: activeId });
+            }
             triggerVictory(player);
             return;
         }
@@ -1392,7 +1714,13 @@ function applyDziekanat(action) {
     
     document.getElementById('dziekanat-modal').style.display = 'none';
     updateGamePanel();
-    setTimeout(nextTurn, 1500);
+    
+    if (isMultiplayer) {
+        sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
+        setTimeout(nextTurn, 1500);
+    } else {
+        setTimeout(nextTurn, 1500);
+    }
 }
 
 function runBotDziekanat(bot) {
@@ -1447,7 +1775,7 @@ function triggerVictory(winner) {
         degreeText = Math.random() < 0.5 ? "INŻYNIER" : "LICENCJAT";
     }
     
-    if (winner.id === 0) {
+    if (winner.id === myPlayerId) {
         document.getElementById('diploma-student-name').textContent = winner.name.toUpperCase();
         document.getElementById('diploma-student-class').textContent = winner.klass.toUpperCase() + " (WSB MERITO)";
         document.getElementById('diploma-earned-degree').textContent = degreeText;
@@ -1463,7 +1791,7 @@ function triggerVictory(winner) {
         document.getElementById('diploma-modal').style.display = 'flex';
         showMsg(`🏆 Gratulacje! Ukończyłeś studia z tytułem ${degreeText}!`);
     } else {
-        showMsg(`🏆 Gra zakończona! Bot ${winner.name} obronił pracę jako pierwszy i otrzymał tytuł: ${degreeText}!`);
+        showMsg(`🏆 Gra zakończona! Gracz ${winner.name} obronił pracę jako pierwszy i otrzymał tytuł: ${degreeText}!`);
     }
 }
 
@@ -1473,12 +1801,23 @@ function nextTurn() {
     gameState.rolled = false;
     updateGamePanel();
     var current = gameState.players[gameState.turn];
-    if (current.id === 1) {
-        showMsg('Tura ' + current.name + '...');
-        setTimeout(rollDice, 1200);
+    
+    if (isMultiplayer) {
+        if (gameState.turn === myPlayerId) {
+            document.getElementById('dice-btn').disabled = false;
+            showMsg('Twoja tura – rzuć kostką!');
+        } else {
+            document.getElementById('dice-btn').disabled = true;
+            showMsg('Tura gracza ' + current.name + '...');
+        }
     } else {
-        document.getElementById('dice-btn').disabled = false;
-        showMsg('Twoja tura – rzuć kostką!');
+        if (current.id === 1) {
+            showMsg('Tura ' + current.name + '...');
+            setTimeout(rollDice, 1200);
+        } else {
+            document.getElementById('dice-btn').disabled = false;
+            showMsg('Twoja tura – rzuć kostką!');
+        }
     }
 }
 

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from routers import auth, friends, game_invitations, profile
+from routers import auth, friends, game_invitations, profile, game_ws
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,6 +39,7 @@ app.include_router(auth.router, prefix=_API_PREFIX)
 app.include_router(profile.router, prefix=_API_PREFIX)
 app.include_router(friends.router, prefix=_API_PREFIX)
 app.include_router(game_invitations.router, prefix=_API_PREFIX)
+app.include_router(game_ws.router, prefix=_API_PREFIX)
 
 # Serwowanie plików statycznych (frontend)
 # Tabele bazy danych należy tworzyć przez migracje (np. Alembic), nie Base.metadata.create_all
