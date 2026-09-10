@@ -288,12 +288,30 @@ var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
 var myClass                 = null;
 var opponentClass           = null;
 
-function connectWebSocket(invitationId) {
+// Sprawdza lokalnie (bez zapytania do serwera), czy token JWT już wygasł
+function isTokenExpired(token) {
+    try {
+        var payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        return !payload.exp || (payload.exp * 1000) < Date.now();
+    } catch (e) {
+        return true;
+    }
+}
+
+function connectWebSocket(invitationId, attempt) {
     var token = localStorage.getItem('access_token');
     if (!token) return;
+    attempt = attempt || 1;
+
+    if (isTokenExpired(token)) {
+        alert('Twoja sesja wygasła. Zaloguj się ponownie, aby zagrać.');
+        window.location.href = '../logowanie/index.html';
+        return;
+    }
     
     isMultiplayer = true;
     multiplayerInvitationId = invitationId;
+    var wsReachedOpen = false;
     
     var wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     var wsUrl = wsProtocol + '://' + window.location.host + '/api/ws/game/' + invitationId + '?token=' + token;
@@ -301,6 +319,7 @@ function connectWebSocket(invitationId) {
     ws = new WebSocket(wsUrl);
     
     ws.onopen = function() {
+        wsReachedOpen = true;
         console.log("Połączono z serwerem gier multiplayer!");
         // Jeśli już wybraliśmy klasę przed połączeniem lub przy ponownym połączeniu, wyślijmy ją
         if (myClass) {
@@ -339,12 +358,22 @@ function connectWebSocket(invitationId) {
         }
     };
     
-    ws.onclose = function() {
-        console.log("Rozłączono z serwerem gier.");
+    ws.onclose = function(event) {
+        console.log("Rozłączono z serwerem gier. Kod: " + event.code + ", czysto: " + event.wasClean);
+        // Połączenie nigdy nie doszło do skutku (np. Render dopiero się budzi po uśpieniu) - spróbuj ponownie
+        if (!wsReachedOpen) {
+            if (attempt < 4) {
+                showMsg("⏳ Łączenie z serwerem gry (próba " + (attempt + 1) + "/4)...");
+                setTimeout(function() { connectWebSocket(invitationId, attempt + 1); }, attempt * 2000);
+            } else {
+                showMsg("❌ Nie udało się połączyć z serwerem gry.");
+                alert('Nie udało się połączyć z serwerem gry po kilku próbach. Sprawdź połączenie internetowe i spróbuj ponownie za chwilę (serwer mógł się właśnie wybudzać z uśpienia).');
+            }
+        }
     };
     
     ws.onerror = function(err) {
-        console.error("Błąd WebSocket:", err);
+        console.error("Błąd WebSocket (próba " + attempt + "):", err);
     };
 }
 

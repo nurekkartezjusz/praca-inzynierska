@@ -16,7 +16,7 @@ if not SECRET_KEY:
     SECRET_KEY = "dev-only-insecure-key-change-before-production"
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
 
 _SUPPORTED_HASH_SCHEMES = ["argon2", "bcrypt", "pbkdf2_sha256"]
 _HASH_SCHEME = os.getenv("HASH_SCHEME", "argon2")
