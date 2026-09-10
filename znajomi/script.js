@@ -332,9 +332,16 @@ async function selectGame(game) {
             throw new Error(data.detail || 'Błąd wysyłania zaproszenia');
         }
 
-        showToast(`Zaproszenie do gry "${gameNames[game]}" zostało wysłane do ${currentInvitedUser}!`, 'success');
+        showToast(`Zaproszenie do gry "${gameNames[game]}" zostało wysłane do ${currentInvitedUser}! Przejdź do planszy...`, 'success');
         closeGameModal();
-        loadGameInvitations(); // Odśwież listę zaproszeń
+        
+        if (game === 'wielka-studencka-batalla') {
+            setTimeout(() => {
+                window.location.href = '/plansza/';
+            }, 1000);
+        } else {
+            loadGameInvitations(); // Odśwież listę zaproszeń
+        }
     } catch (error) {
         console.error('Błąd:', error);
         showToast(error.message, 'error');

@@ -302,6 +302,10 @@ function connectWebSocket(invitationId) {
     
     ws.onopen = function() {
         console.log("Połączono z serwerem gier multiplayer!");
+        // Jeśli już wybraliśmy klasę przed połączeniem lub przy ponownym połączeniu, wyślijmy ją
+        if (myClass) {
+            sendGameAction({ type: "select_class", class: myClass });
+        }
     };
     
     ws.onmessage = function(event) {
@@ -316,8 +320,16 @@ function connectWebSocket(invitationId) {
             }
             opponentName = data.opponent_username;
             console.log("Twoja rola: " + data.role + ", Oponent: " + opponentName);
+            // Wyślij naszą klasę, jeśli została już wybrana (np. na wypadek gdyby oponent połączył się później)
+            if (myClass) {
+                sendGameAction({ type: "select_class", class: myClass });
+            }
         } else if (data.type === "player_joined") {
             console.log("Przeciwnik dołączył: " + data.username);
+            // Ponieważ nowy gracz dołączył, na pewno nie zna jeszcze naszej klasy. Wyślijmy ją!
+            if (myClass) {
+                sendGameAction({ type: "select_class", class: myClass });
+            }
         } else if (data.type === "player_left") {
             console.log("Przeciwnik wyszedł: " + data.username);
             showMsg("⚠️ Przeciwnik " + data.username + " rozłączył się!");
@@ -985,6 +997,13 @@ var startModalCallback = null;
 var quizContext = null;
 
 function initMultiplayerGame() {
+    // Upewnij się, że okna wyboru są zamknięte
+    var overlay = document.querySelector('.overlay');
+    var classPopup = document.getElementById('class-selection-popup') || document.querySelector('.class-popup');
+    document.body.classList.remove('confirmation-open');
+    if (overlay) overlay.style.display = 'none';
+    if (classPopup) classPopup.style.display = 'none';
+
     var p1Class = myPlayerId === 0 ? myClass : opponentClass;
     var p2Class = myPlayerId === 0 ? opponentClass : myClass;
     
