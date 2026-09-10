@@ -359,16 +359,23 @@ function handleMultiplayerAction(payload) {
     if (payload.type === "select_class") {
         opponentClass = payload.class;
         opponentName = payload.username || opponentName;
-        console.log("Oponent wybrał klasę: " + opponentClass);
+        console.log("Oponent wybrał klasę: " + opponentClass + " (" + opponentName + ")");
         
         if (myClass) {
-            var overlay = document.querySelector('.overlay');
-            var classPopup = document.querySelector('.class-popup');
-            document.body.classList.remove('confirmation-open');
-            if (overlay) overlay.style.display = 'none';
-            if (classPopup) classPopup.style.display = 'none';
-            
-            initMultiplayerGame();
+            // Unikaj podwójnej inicjalizacji gry na wypadek pętli pingu lub powtórzeń
+            if (!gameState) {
+                // Wyślij naszą klasę z powrotem jako potwierdzenie (handshake)
+                sendGameAction({ type: "select_class", class: myClass });
+                
+                var overlay = document.querySelector('.overlay');
+                var classPopup = document.querySelector('.class-popup');
+                document.body.classList.remove('confirmation-open');
+                if (overlay) overlay.style.display = 'none';
+                if (classPopup) classPopup.style.display = 'none';
+                
+                console.log("Inicjalizacja gry multiplayer po otrzymaniu klasy oponenta...");
+                initMultiplayerGame();
+            }
         }
     } else if (payload.type === "roll_dice") {
         executeRoll(payload.value);
@@ -545,16 +552,26 @@ document.addEventListener("DOMContentLoaded", function() {
         if (cardsWrapper) {
             cardsWrapper.innerHTML = '<div style="text-align:center; padding: 50px; font-size: 1.5rem; color:#fff; font-family:\'VT323\', monospace;">Wybrałeś: ' + selectedClass.toUpperCase() + '.<br>Czekanie na oponenta...</div>';
         }
+        
+        // Ukryj przyciski i strzałki sterujące w popapie, żeby uniknąć ponownego klikania
+        var btns = document.querySelector('.class-popup .buttons');
+        if (btns) btns.style.display = 'none';
+        var ctrl = document.querySelector('.class-popup .control');
+        if (ctrl) ctrl.style.display = 'none';
+        
         var closeBtn = document.getElementById('class-popup-close-btn');
         if (closeBtn) closeBtn.style.display = 'none';
         
         // Sprawdź czy drugi gracz już wybrał (często gra_action przychodzi zanim zamkniemy popup)
         if (opponentClass) {
-            var classPopup = document.querySelector('.class-popup');
-            if (overlay) overlay.style.display = 'none';
-            if (classPopup) classPopup.style.display = 'none';
-            
-            initMultiplayerGame();
+            if (!gameState) {
+                var classPopup = document.querySelector('.class-popup');
+                if (overlay) overlay.style.display = 'none';
+                if (classPopup) classPopup.style.display = 'none';
+                
+                console.log("Inicjalizacja gry multiplayer po własnym wyborze (oponent już wybrał)...");
+                initMultiplayerGame();
+            }
         }
       } else {
         document.body.classList.remove('confirmation-open');
