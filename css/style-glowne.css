@@ -29,7 +29,7 @@ body::before{
     content: "";
     position: fixed;
     inset: 0;
-    background: url(../img_glowna/Illustration222.jpg) center/cover no-repeat;
+    background: url(../img_glowna/Illustration.png) center/cover no-repeat;
     opacity: 1;
     transition: opacity 0.8s ease;
     z-index: 0;
