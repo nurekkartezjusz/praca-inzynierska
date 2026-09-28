@@ -21,8 +21,8 @@ body {
 }
 .board {
     display: grid;
-    grid-template-columns: repeat(15, 50px);
-    grid-template-rows: repeat(12, 50px);
+    grid-template-columns: repeat(15, 60px);
+    grid-template-rows: repeat(12, 60px);
     gap: 1px;
     background: radial-gradient(circle at center,#2a3a7a 0%,#141e50 100%);
     padding: 20px;
