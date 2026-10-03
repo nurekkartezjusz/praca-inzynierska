@@ -1893,8 +1893,18 @@ function placeTokens() {
         var selector = typeof p.pos === 'string' ? '.' + p.pos : '.c' + p.pos;
         var cell = document.querySelector(selector);
         if (!cell) return;
+
         var token = document.createElement('div');
         token.className = 'player-token player-token-' + (i + 1);
+
+         if (p.id === 1) {
+            var img = document.createElement('img');
+            img.src = 'img/komputer.png';
+            img.alt = p.name || 'Komputer';
+            img.title = p.name || 'Komputer';
+            token.appendChild(img);
+        }
+
         cell.appendChild(token);
     });
 }

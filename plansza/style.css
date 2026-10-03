@@ -575,17 +575,27 @@ body {
    ========================================== */
 .cell { position: relative; }
 .player-token {
+    
+    overflow: hidden;
     position: absolute;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 2px solid #000;
+    width: 20px;
+    height: 20px;
+    
     z-index: 20;
     pointer-events: none;
     box-shadow: 1px 1px 0 #000;
 }
-.player-token-1 { background: #e74c3c; left: 2px;  bottom: 2px; }
-.player-token-2 { background: #3498db; right: 2px; bottom: 2px; }
+.player-token img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.player-token-1 { background: #e74c3c; left: 2px;  bottom: 2px; border-radius: 50%;
+    border: 2px solid #000; }
+.player-token-2 { background:transparent !important; left: 2px;  top: 2px; border: none !important; box-shadow: none !important; }
 
 /* ==========================================
    PANELE GRACZY I KOSTKA (nowy układ)
@@ -630,8 +640,13 @@ body {
     box-shadow: 2px 2px 0 #000;
 }
 .pp-dot-1 { background: #e74c3c; }
-.pp-dot-2 { background: #3498db; }
-
+.pp-dot-2 { 
+    background: url("img/komputer.png") center center / cover no-repeat;
+    border: none;
+    box-shadow: none;
+    border-radius: 50%;
+}
+    
 .pp-info {
     display: flex;
     flex-direction: column;
