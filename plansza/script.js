@@ -175,6 +175,20 @@ function renderAvatar(avatarState, container) {
     }
 }
 
+var currentUserAvatar = null;
+
+function renderAvatarLayers(container, avatarState) {
+    ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"].forEach(part => {
+        if (!container.querySelector("." + part)) {
+            const img = document.createElement("img");
+            img.className = "layer " + part;
+            container.appendChild(img);
+        }
+    });
+    container.classList.add("avatar-container");
+    renderAvatar(avatarState, container);
+}
+
 // Awatar na kartach
 document.addEventListener("DOMContentLoaded", () => { 
     const API_URL = '/api';
@@ -205,13 +219,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!userData.avatar) return;
 
             const avatarState = JSON.parse(userData.avatar);
+            currentUserAvatar = avatarState;
 
             const containers = document.querySelectorAll('.avatar-container');
-            if (!containers.length) return;
-
             containers.forEach(container => {
-                renderAvatar(avatarState, container); // ✔️ poprawne wywołanie
+                renderAvatar(avatarState, container);
             });
+
+            if (gameState) {
+                placeTokens();
+                updateGamePanel();
+            }
 
         } catch (err) {
             console.error("Błąd ładowania awatara:", err);
@@ -1897,7 +1915,10 @@ function placeTokens() {
         var token = document.createElement('div');
         token.className = 'player-token player-token-' + (i + 1);
 
-         if (p.id === 1) {
+        var isCurrentUser = isMultiplayer ? p.id === myPlayerId : p.id === 0;
+        if (isCurrentUser && currentUserAvatar) {
+            renderAvatarLayers(token, currentUserAvatar);
+        } else if (p.id === 1) {
             var img = document.createElement('img');
             img.src = 'img/komputer.png';
             img.alt = p.name || 'Komputer';
@@ -1912,6 +1933,23 @@ function placeTokens() {
 function updateGamePanel() {
     if (!gameState) return;
     var p1 = gameState.players[0], p2 = gameState.players[1];
+
+    [p1, p2].forEach(function(player, index) {
+        var badge = document.querySelector('#gp-p' + (index + 1) + ' .pp-dot');
+        var isCurrentUser = isMultiplayer ? player.id === myPlayerId : player.id === 0;
+        if (!badge) return;
+
+        if (isCurrentUser && currentUserAvatar) {
+            if (!badge.classList.contains('avatar-container')) {
+                renderAvatarLayers(badge, currentUserAvatar);
+            }
+            badge.style.background = 'transparent';
+        } else {
+            badge.classList.remove('avatar-container');
+            badge.replaceChildren();
+            badge.style.background = '';
+        }
+    });
 
     renderStatBar('gp-p1-stat', p1, _prevStats[0]);
     renderStatBar('gp-p2-stat', p2, _prevStats[1]);
