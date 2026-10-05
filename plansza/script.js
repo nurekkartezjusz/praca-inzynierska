@@ -1162,6 +1162,104 @@ function advanceOneStep(player, pos) {
     return pos;
 }
 
+function animatePlayerMovement(player, path, onComplete) {
+    var playerIndex = gameState.players.indexOf(player);
+    var isCurrentUser = isMultiplayer ? player.id === myPlayerId : player.id === 0;
+    var token = document.querySelector('.player-token-' + (playerIndex + 1));
+    if (!token || path.length === 0) {
+        onComplete();
+        return;
+    }
+    var boardMap = token.closest('.board-map');
+    var stepDuration = 250;
+    isPlayerMoving = true;
+
+    var proxy = token.cloneNode(true);
+    var tokenRect = token.getBoundingClientRect();
+    proxy.classList.remove('player-token-current');
+    proxy.style.position = 'fixed';
+    proxy.style.left = tokenRect.left + 'px';
+    proxy.style.top = tokenRect.top + 'px';
+    proxy.style.right = 'auto';
+    proxy.style.bottom = 'auto';
+    proxy.style.width = tokenRect.width + 'px';
+    proxy.style.height = tokenRect.height + 'px';
+    proxy.style.margin = '0';
+    proxy.style.zIndex = '6000';
+    document.body.appendChild(proxy);
+    token.style.visibility = 'hidden';
+
+    function animateStep(stepIndex) {
+        if (stepIndex >= path.length) {
+            proxy.remove();
+            token.style.visibility = '';
+            isPlayerMoving = false;
+            onComplete();
+            return;
+        }
+
+        var nextCell = document.querySelector('.c' + path[stepIndex]);
+        if (!nextCell) {
+            proxy.remove();
+            token.style.visibility = '';
+            isPlayerMoving = false;
+            onComplete();
+            return;
+        }
+
+        nextCell.appendChild(token);
+        var targetRect = token.getBoundingClientRect();
+        var cameraDeltaX = 0;
+        var cameraDeltaY = 0;
+
+        if (isCurrentUser && boardZoom > 1 && boardMap) {
+            cameraDeltaX = window.innerWidth / 2 - (targetRect.left + targetRect.width / 2);
+            cameraDeltaY = window.innerHeight / 2 - (targetRect.top + targetRect.height / 2);
+            var currentTransform = new DOMMatrix(getComputedStyle(boardMap).transform);
+            boardCameraX = currentTransform.m41 + cameraDeltaX;
+            boardCameraY = currentTransform.m42 + cameraDeltaY;
+            boardMap.style.transitionDuration = stepDuration + 'ms';
+            boardMap.style.transitionTimingFunction = 'ease-in-out';
+            updateBoardCamera(boardMap);
+        }
+        var targetLeft = targetRect.left + cameraDeltaX;
+        var targetTop = targetRect.top + cameraDeltaY;
+
+        var animation = proxy.animate([
+            {
+                left: proxy.style.left,
+                top: proxy.style.top,
+                width: proxy.style.width,
+                height: proxy.style.height
+            },
+            {
+                left: targetLeft + 'px',
+                top: targetTop + 'px',
+                width: targetRect.width + 'px',
+                height: targetRect.height + 'px'
+            }
+        ], {
+            duration: stepDuration,
+            easing: 'ease-in-out'
+        });
+
+        animation.onfinish = function() {
+            proxy.style.left = targetLeft + 'px';
+            proxy.style.top = targetTop + 'px';
+            proxy.style.width = targetRect.width + 'px';
+            proxy.style.height = targetRect.height + 'px';
+            animation.cancel();
+            if (stepIndex === path.length - 1 && boardMap) {
+                boardMap.style.removeProperty('transition-duration');
+                boardMap.style.removeProperty('transition-timing-function');
+            }
+            animateStep(stepIndex + 1);
+        };
+    }
+
+    animateStep(0);
+}
+
 function executeRoll(val) {
     var player = gameState.players[gameState.turn];
     document.getElementById('dice-num').textContent = val;
@@ -1171,6 +1269,7 @@ function executeRoll(val) {
     // Movement sequence checking for passing start
     var currentFloor = getFloor(player.pos);
     var passedStartCount = 0;
+    var movementPath = [];
     
     var currentPos = player.pos;
     for (var i = 0; i < val; i++) {
@@ -1188,18 +1287,22 @@ function executeRoll(val) {
             }
         }
         currentPos = nextPos;
+        movementPath.push(nextPos);
     }
-    player.pos = currentPos;
-    placeTokens();
-    updateGamePanel();
 
-    if (passedStartCount > 0) {
-        handlePassStart(player, function() {
+    animatePlayerMovement(player, movementPath, function() {
+        player.pos = currentPos;
+        placeTokens();
+        updateGamePanel();
+
+        if (passedStartCount > 0) {
+            handlePassStart(player, function() {
+                triggerFieldArrival(player);
+            });
+        } else {
             triggerFieldArrival(player);
-        });
-    } else {
-        triggerFieldArrival(player);
-    }
+        }
+    });
 }
 
 function rollDice() {
@@ -1907,6 +2010,7 @@ function nextTurn() {
 var boardZoom = 1;
 var boardCameraX = 0;
 var boardCameraY = 0;
+var isPlayerMoving = false;
 
 function getMinBoardZoom(board, boardMap) {
     var frameWidth = board.offsetWidth - boardMap.offsetWidth;
@@ -1924,12 +2028,21 @@ function updateBoardCamera(boardMap) {
     boardMap.style.transform = 'translate(' + boardCameraX + 'px, ' + boardCameraY + 'px) scale(' + boardZoom + ')';
 }
 
+function getBoardTransformOrigin(boardMap) {
+    var values = getComputedStyle(boardMap).transformOrigin.split(' ');
+    return { x: parseFloat(values[0]), y: parseFloat(values[1]) };
+}
+
 function initializeBoardZoom() {
     var board = document.querySelector('.board');
     var boardMap = board && board.querySelector('.board-map');
     if (!board || !boardMap) return;
 
     board.addEventListener('wheel', function(event) {
+        if (isPlayerMoving) {
+            event.preventDefault();
+            return;
+        }
         if (!board.querySelector('.player-token-current')) return;
         if (event.target.closest('.overlay, .class-popup, .confirmation-overlay, .custom-modal, .fp-modal, .wait-modal, .diploma-content')) return;
 
@@ -1951,14 +2064,19 @@ function initializeBoardZoom() {
             var token = board.querySelector('.player-token-current');
             if (token) {
                 var tokenRect = token.getBoundingClientRect();
+                var mapRect = boardMap.getBoundingClientRect();
+                var currentTransform = new DOMMatrix(getComputedStyle(boardMap).transform);
+                var transformOrigin = getBoardTransformOrigin(boardMap);
                 var viewportCenterX = window.innerWidth / 2;
                 var viewportCenterY = window.innerHeight / 2;
-                var tokenOffsetX = (tokenRect.left + tokenRect.width / 2 - viewportCenterX - boardCameraX) / boardZoom;
-                var tokenOffsetY = (tokenRect.top + tokenRect.height / 2 - viewportCenterY - boardCameraY) / boardZoom;
+                var tokenOffsetX = (tokenRect.left + tokenRect.width / 2 - mapRect.left) / currentTransform.a;
+                var tokenOffsetY = (tokenRect.top + tokenRect.height / 2 - mapRect.top) / currentTransform.d;
+                var mapOriginX = mapRect.left - currentTransform.m41 - (1 - currentTransform.a) * transformOrigin.x;
+                var mapOriginY = mapRect.top - currentTransform.m42 - (1 - currentTransform.d) * transformOrigin.y;
 
                 boardZoom = nextZoom;
-                boardCameraX = -tokenOffsetX * boardZoom;
-                boardCameraY = -tokenOffsetY * boardZoom;
+                boardCameraX = viewportCenterX - mapOriginX - tokenOffsetX * boardZoom - (1 - boardZoom) * transformOrigin.x;
+                boardCameraY = viewportCenterY - mapOriginY - tokenOffsetY * boardZoom - (1 - boardZoom) * transformOrigin.y;
             } else {
                 boardZoom = nextZoom;
             }
