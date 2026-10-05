@@ -1904,6 +1904,81 @@ function nextTurn() {
     }
 }
 
+var boardZoom = 1;
+var boardCameraX = 0;
+var boardCameraY = 0;
+
+function getMinBoardZoom(board, boardMap) {
+    var frameWidth = board.offsetWidth - boardMap.offsetWidth;
+    var frameHeight = board.offsetHeight - boardMap.offsetHeight;
+    var availableWidth = Math.max(1, window.innerWidth - frameWidth - 32);
+    var availableHeight = Math.max(1, window.innerHeight - frameHeight - 32);
+    return Math.min(1, availableWidth / boardMap.offsetWidth, availableHeight / boardMap.offsetHeight);
+}
+
+function updateBoardCamera(boardMap) {
+    if (boardZoom === 1 && boardCameraX === 0 && boardCameraY === 0) {
+        boardMap.style.removeProperty('transform');
+        return;
+    }
+    boardMap.style.transform = 'translate(' + boardCameraX + 'px, ' + boardCameraY + 'px) scale(' + boardZoom + ')';
+}
+
+function initializeBoardZoom() {
+    var board = document.querySelector('.board');
+    var boardMap = board && board.querySelector('.board-map');
+    if (!board || !boardMap) return;
+
+    board.addEventListener('wheel', function(event) {
+        if (!board.querySelector('.player-token-current')) return;
+        if (event.target.closest('.overlay, .class-popup, .confirmation-overlay, .custom-modal, .fp-modal, .wait-modal, .diploma-content')) return;
+
+        event.preventDefault();
+
+        var minZoom = getMinBoardZoom(board, boardMap);
+        var nextZoom = Math.max(minZoom, Math.min(3, boardZoom * Math.exp(-event.deltaY * 0.001)));
+        if (nextZoom === boardZoom) return;
+
+        if (nextZoom <= minZoom) {
+            boardZoom = minZoom;
+            boardCameraX = 0;
+            boardCameraY = 0;
+        } else if (nextZoom <= 1) {
+            boardZoom = nextZoom;
+            boardCameraX = 0;
+            boardCameraY = 0;
+        } else {
+            var token = board.querySelector('.player-token-current');
+            if (token) {
+                var tokenRect = token.getBoundingClientRect();
+                var viewportCenterX = window.innerWidth / 2;
+                var viewportCenterY = window.innerHeight / 2;
+                var tokenOffsetX = (tokenRect.left + tokenRect.width / 2 - viewportCenterX - boardCameraX) / boardZoom;
+                var tokenOffsetY = (tokenRect.top + tokenRect.height / 2 - viewportCenterY - boardCameraY) / boardZoom;
+
+                boardZoom = nextZoom;
+                boardCameraX = -tokenOffsetX * boardZoom;
+                boardCameraY = -tokenOffsetY * boardZoom;
+            } else {
+                boardZoom = nextZoom;
+            }
+        }
+
+        updateBoardCamera(boardMap);
+    }, { passive: false });
+
+    window.addEventListener('resize', function() {
+        if (boardZoom === 1 && boardCameraX === 0 && boardCameraY === 0) return;
+        var minZoom = getMinBoardZoom(board, boardMap);
+        if (boardZoom <= minZoom) {
+            boardZoom = minZoom;
+            boardCameraX = 0;
+            boardCameraY = 0;
+        }
+        updateBoardCamera(boardMap);
+    });
+}
+
 function placeTokens() {
     document.querySelectorAll('.player-token').forEach(function(t) { t.remove(); });
     if (!gameState) return;
@@ -1916,6 +1991,7 @@ function placeTokens() {
         token.className = 'player-token player-token-' + (i + 1);
 
         var isCurrentUser = isMultiplayer ? p.id === myPlayerId : p.id === 0;
+        if (isCurrentUser) token.classList.add('player-token-current');
         if (isCurrentUser && currentUserAvatar) {
             renderAvatarLayers(token, currentUserAvatar);
         } else if (p.id === 1) {
@@ -2006,3 +2082,5 @@ function showMsg(text) {
     var el = document.getElementById('gp-msg');
     if (el) el.textContent = text;
 }
+
+initializeBoardZoom();
