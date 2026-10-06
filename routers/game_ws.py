@@ -268,6 +268,7 @@ async def websocket_game_endpoint(
                 if not isinstance(game_players, list) or len(game_players) != len(player_user_ids) or any(
                     not isinstance(player, dict)
                     or player.get("id") != index
+                    or player.get("user_id") != player_user_id
                     or player.get("klass") != room.last_class_selection[player_user_id].get("class")
                     for index, (player_user_id, player) in enumerate(zip(player_user_ids, game_players))
                 ):

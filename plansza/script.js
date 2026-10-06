@@ -503,6 +503,13 @@ function restoreGameSession(saved) {
     isResumingGame = true;
     gameState = saved.state;
     if (!Number.isInteger(gameState.turnNumber)) gameState.turnNumber = 0;
+    if (myUserId !== null) {
+        var savedPlayer = gameState.players.find(function(player) { return player.user_id === myUserId; });
+        if (!savedPlayer && myUsername) {
+            savedPlayer = gameState.players.find(function(player) { return player.name === myUsername; });
+        }
+        if (savedPlayer) myPlayerId = savedPlayer.id;
+    }
     gamePhase = saved.phase || "awaiting_roll";
     gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
     myClass = gameState.players[myPlayerId].klass;
@@ -1423,6 +1430,7 @@ function initMultiplayerGame() {
             var stats = STATYSTYKI[klass];
             return {
                 id: index,
+                user_id: player.user_id,
                 name: player.username || selection.name || 'Gracz ' + (index + 1),
                 pos: 84,
                 klass: klass,
