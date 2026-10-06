@@ -482,6 +482,19 @@ function handleMultiplayerAction(payload) {
         }
         updateGamePanel();
         placeTokens();
+    } else if (payload.type === "turn_skipped") {
+        if (payload.gameState) {
+            gameState.players = payload.gameState.players;
+            gameState.turn = payload.gameState.turn;
+            gameState.gameOver = payload.gameState.gameOver;
+            gameState.rolled = payload.gameState.rolled;
+        }
+        if (payload.msg) {
+            showMsg(payload.msg);
+        }
+        updateGamePanel();
+        placeTokens();
+        setTimeout(nextTurn, 1800);
     } else if (payload.type === "victory") {
         var winner = gameState.players[payload.winnerId];
         triggerVictory(winner);
@@ -1316,7 +1329,11 @@ function rollDice() {
         gameState.rolled = true;
         updateGamePanel();
         if (isMultiplayer) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
+            sendGameAction({
+                type: "turn_skipped",
+                gameState: gameState,
+                msg: '⏳ ' + player.name + ' opuszcza turę. Pozostało tur do opuszczenia: ' + player.skipTurnsLeft
+            });
         }
         setTimeout(nextTurn, 1800);
         return;
@@ -1854,7 +1871,12 @@ function triggerDziekanat(player) {
 
 function closeDziekanatModal() {
     document.getElementById('dziekanat-modal').style.display = 'none';
-    setTimeout(nextTurn, 500);
+    if (isMultiplayer) {
+        sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: "Gracz wyszedł z dziekanatu." });
+        setTimeout(nextTurn, 1500);
+    } else {
+        setTimeout(nextTurn, 500);
+    }
 }
 
 function applyDziekanat(action) {
