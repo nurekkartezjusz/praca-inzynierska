@@ -309,6 +309,11 @@ var gameSessionVersion      = 0;
 var gamePhase               = "class_selection";
 var awaitingSavedSessionCheck = false;
 var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
+var roomPlayers             = [];
+var playerClasses           = {};
+var isRoomHost               = false;
+var lobbyPollTimer           = null;
+var myUsername              = localStorage.getItem('user_username') || null;
 var myClass                 = null;
 var opponentClass           = null;
 
@@ -371,9 +376,18 @@ function connectWebSocket(invitationId) {
             } else {
                 myPlayerId = 1;
             }
-            opponentName = data.opponent_username;
+                if (Number.isInteger(data.player_id)) myPlayerId = data.player_id;
+            roomPlayers = Array.isArray(data.players) ? data.players : [];
+            isRoomHost = data.host_id === roomPlayers[myPlayerId]?.user_id;
+            myUsername = data.username || myUsername;
+                opponentName = data.opponent_username;
+                if (Array.isArray(data.players)) {
+                    var firstOpponent = data.players.find(function(player) { return player.id !== myPlayerId; });
+                    if (firstOpponent) opponentName = firstOpponent.username;
+                }
             console.log("Twoja rola: " + data.role + ", Oponent: " + opponentName);
             if (data.has_saved_session) {
+                hideLobby();
                 awaitingSavedSessionCheck = false;
                 document.body.classList.remove('confirmation-open');
                 var resumeOverlay = document.querySelector('.overlay');
@@ -382,8 +396,9 @@ function connectWebSocket(invitationId) {
                 if (resumeClassPopup) resumeClassPopup.style.display = 'none';
             } else if (awaitingSavedSessionCheck) {
                 awaitingSavedSessionCheck = false;
-                showClassSelectionPopup();
+                showLobby();
             }
+            renderLobby();
             // Wyślij naszą klasę, jeśli została już wybrana (np. na wypadek gdyby oponent połączył się później)
             if (myClass) {
                 sendGameAction({ type: "select_class", class: myClass });
@@ -395,6 +410,8 @@ function connectWebSocket(invitationId) {
             gameSessionVersion = data.version || gameSessionVersion;
         } else if (data.type === "player_joined") {
             console.log("Przeciwnik dołączył: " + data.username);
+            if (Array.isArray(data.players)) roomPlayers = data.players;
+            renderLobby();
             // Ponieważ nowy gracz dołączył, na pewno nie zna jeszcze naszej klasy. Wyślijmy ją!
             if (myClass) {
                 sendGameAction({ type: "select_class", class: myClass });
@@ -405,7 +422,9 @@ function connectWebSocket(invitationId) {
         } else if (data.type === "game_action") {
             var payload = data.payload;
             if (Number.isInteger(data.version)) gameSessionVersion = data.version;
-            handleMultiplayerAction(payload, data.sender_role);
+            handleMultiplayerAction(payload, data.sender_role, data.sender_player_id);
+        } else if (data.type === "error") {
+            showMsg(data.message || 'Nie udało się wykonać akcji w lobby.');
         }
     };
     
@@ -434,7 +453,7 @@ function scheduleGameReconnect(invitationId) {
 
 function sendGameAction(payload) {
     var action = Object.assign({}, payload, {
-        username: localStorage.getItem('user_username') || 'Bez nazwy'
+        username: myUsername || localStorage.getItem('user_username') || 'Bez nazwy'
     });
     if (action.gameState && !action.phase) action.phase = gamePhase;
     var serialized = JSON.stringify(action);
@@ -472,9 +491,11 @@ function saveGameCheckpoint(phase, resumeData) {
 function restoreGameSession(saved) {
     gameState = saved.state;
     gamePhase = saved.phase || "awaiting_roll";
+    gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
     myClass = gameState.players[myPlayerId].klass;
-    opponentClass = gameState.players[1 - myPlayerId].klass;
-    opponentName = gameState.players[1 - myPlayerId].name;
+    var firstOpponent = gameState.players.find(function(player) { return player.id !== myPlayerId; });
+    opponentClass = firstOpponent ? firstOpponent.klass : null;
+    opponentName = firstOpponent ? firstOpponent.name : opponentName;
     quizContext = null;
 
     document.body.classList.remove('confirmation-open');
@@ -482,8 +503,11 @@ function restoreGameSession(saved) {
     var classPopup = document.querySelector('.class-popup');
     if (overlay) overlay.style.display = 'none';
     if (classPopup) classPopup.style.display = 'none';
-    document.getElementById('gp-p1').style.display = 'flex';
-    document.getElementById('gp-p2').style.display = 'flex';
+    gameState.players.forEach(function(player, index) {
+        var panel = document.getElementById('gp-p' + (index + 1));
+        if (panel) panel.style.display = 'flex';
+    });
+    hideLobby();
     document.getElementById('dice-panel').style.display = 'flex';
     document.getElementById('quiz-modal').style.display = 'none';
     document.getElementById('dziekanat-modal').style.display = 'none';
@@ -526,30 +550,12 @@ function restoreGameSession(saved) {
     }
 }
 
-function handleMultiplayerAction(payload, senderRole) {
+function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
     if (payload.type === "select_class") {
-        opponentClass = payload.class;
-        opponentName = payload.username || opponentName;
-        console.log("Oponent wybrał klasę: " + opponentClass + " (" + opponentName + ")");
-        
-        if (myClass) {
-            // Unikaj podwójnej inicjalizacji gry na wypadek pętli pingu lub powtórzeń
-            if (!gameState) {
-                // Wyślij naszą klasę z powrotem jako potwierdzenie (handshake)
-                sendGameAction({ type: "select_class", class: myClass });
-                
-                var overlay = document.querySelector('.overlay');
-                var classPopup = document.querySelector('.class-popup');
-                document.body.classList.remove('confirmation-open');
-                if (overlay) overlay.style.display = 'none';
-                if (classPopup) classPopup.style.display = 'none';
-                
-                console.log("Inicjalizacja gry multiplayer po otrzymaniu klasy oponenta...");
-                initMultiplayerGame();
-            }
-        }
+        if (!Number.isInteger(senderPlayerId) || senderPlayerId < 0) return;
+        playerClasses[senderPlayerId] = { klass: payload.class, name: payload.username || (roomPlayers[senderPlayerId] || {}).username };
+        renderLobby();
     } else if (payload.type === "roll_dice") {
-        var senderPlayerId = senderRole === "inviter" ? 0 : senderRole === "invitee" ? 1 : -1;
         if (!gameState || senderPlayerId !== gameState.turn || gameState.rolled ||
             !Number.isInteger(payload.value) || payload.value < 1 || payload.value > 6) {
             console.warn("Odrzucono nieprawidłowy lub powtórzony rzut kością:", payload);
@@ -586,6 +592,9 @@ function handleMultiplayerAction(payload, senderRole) {
         if (payload.gameState) {
             gameState = payload.gameState;
             gamePhase = payload.phase || gamePhase;
+        }
+        if (payload.type === "game_init") {
+            showStartedGame();
         }
         updateGamePanel();
         placeTokens();
@@ -705,6 +714,89 @@ function showClassSelectionPopup() {
     });
 }
 
+function showLobby() {
+    var modal = document.getElementById('lobby-modal');
+    if (modal) modal.style.display = 'flex';
+    renderLobby();
+    if (lobbyPollTimer) clearInterval(lobbyPollTimer);
+    lobbyPollTimer = setInterval(refreshLobby, 5000);
+}
+
+function hideLobby() {
+    var modal = document.getElementById('lobby-modal');
+    if (modal) modal.style.display = 'none';
+    if (lobbyPollTimer) clearInterval(lobbyPollTimer);
+    lobbyPollTimer = null;
+}
+
+function refreshLobby() {
+    if (!isMultiplayer || !multiplayerInvitationId || !localStorage.getItem('access_token')) return;
+    fetch(API_URL + '/game-rooms/' + encodeURIComponent(multiplayerInvitationId), {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('access_token') }
+    }).then(function(response) {
+        if (!response.ok) throw new Error('Nie udało się odświeżyć lobby');
+        return response.json();
+    }).then(function(data) {
+        roomPlayers = data.players || [];
+        renderLobby(data.pending || []);
+    }).catch(function(error) { console.warn(error.message); });
+}
+
+function renderLobby(pendingPlayers) {
+    var roster = document.getElementById('lobby-roster');
+    var summary = document.getElementById('lobby-summary');
+    var startButton = document.getElementById('lobby-start-btn');
+    var inviteButton = document.getElementById('lobby-invite-btn');
+    var classButton = document.getElementById('lobby-class-btn');
+    if (!roster || !startButton) return;
+    pendingPlayers = pendingPlayers || [];
+    roster.replaceChildren();
+    roomPlayers.forEach(function(player) {
+        var item = document.createElement('li');
+        var name = document.createElement('span');
+        var status = document.createElement('span');
+        var picked = playerClasses[player.id];
+        name.textContent = (player.username || 'Gracz') + (player.user_id === (roomPlayers[0] || {}).user_id ? ' (gospodarz)' : '');
+        status.textContent = picked ? 'Klasa: ' + picked.klass : 'Wybiera klasę';
+        item.append(name, status);
+        roster.appendChild(item);
+    });
+    pendingPlayers.forEach(function(player) {
+        var item = document.createElement('li');
+        item.textContent = player.username + ' - oczekuje';
+        roster.appendChild(item);
+    });
+    var allClassesChosen = roomPlayers.length >= 2 && roomPlayers.every(function(player) { return !!playerClasses[player.id]; });
+    summary.textContent = roomPlayers.length + '/4 graczy; potrzeba co najmniej 2 i wyboru klasy przez każdego.';
+    startButton.style.display = isRoomHost ? '' : 'none';
+    inviteButton.style.display = isRoomHost && roomPlayers.length + pendingPlayers.length < 4 ? '' : 'none';
+    classButton.textContent = playerClasses[myPlayerId] ? 'Zmieniono klasę: ' + playerClasses[myPlayerId].klass : 'Wybierz klasę';
+    classButton.disabled = !!playerClasses[myPlayerId];
+    startButton.disabled = !allClassesChosen;
+}
+
+function showLobbyClassPicker() {
+    var lobby = document.getElementById('lobby-modal');
+    if (lobby) lobby.style.display = 'none';
+    displayClassSelectionPopup();
+}
+
+function showStartedGame() {
+    hideLobby();
+    var overlay = document.querySelector('.overlay');
+    var classPopup = document.querySelector('.class-popup');
+    document.body.classList.remove('confirmation-open');
+    if (overlay) overlay.style.display = 'none';
+    if (classPopup) classPopup.style.display = 'none';
+    gameState.players.forEach(function(player, index) {
+        var panel = document.getElementById('gp-p' + (index + 1));
+        if (panel) panel.style.display = 'flex';
+    });
+    document.getElementById('dice-panel').style.display = 'flex';
+    updateGamePanel();
+    placeTokens();
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   var urlParams = new URLSearchParams(window.location.search);
   var inviteAcceptedId = urlParams.get('invite_accepted');
@@ -733,6 +825,12 @@ document.addEventListener("DOMContentLoaded", function() {
   var classPopup      = document.querySelector('.class-popup');
   var mainWindow      = document.querySelector('.main-window');
   var selectedClass   = null;
+    var lobbyClassButton = document.getElementById('lobby-class-btn');
+    var lobbyInviteButton = document.getElementById('lobby-invite-btn');
+    var lobbyStartButton = document.getElementById('lobby-start-btn');
+    if (lobbyClassButton) lobbyClassButton.addEventListener('click', showLobbyClassPicker);
+    if (lobbyInviteButton) lobbyInviteButton.addEventListener('click', openFriendPicker);
+    if (lobbyStartButton) lobbyStartButton.addEventListener('click', initMultiplayerGame);
     if (!inviteAcceptedId) document.body.classList.add('confirmation-open');
 
   // Krok 1a: Wybór bota
@@ -793,8 +891,9 @@ document.addEventListener("DOMContentLoaded", function() {
       setConfirmationOpen(false);
       if (isMultiplayer) {
         myClass = selectedClass;
+                playerClasses[myPlayerId] = { klass: selectedClass, name: myUsername };
         sendGameAction({ type: "select_class", class: selectedClass });
-        showMsg("Oczekiwanie na wybór klasy przez przeciwnika...");
+                showMsg("Klasa wybrana. Gospodarz rozpocznie grę, gdy wszyscy będą gotowi.");
         
         var cardsWrapper = document.querySelector('.cards-wrapper');
         if (cardsWrapper) {
@@ -810,17 +909,13 @@ document.addEventListener("DOMContentLoaded", function() {
         var closeBtn = document.getElementById('class-popup-close-btn');
         if (closeBtn) closeBtn.style.display = 'none';
         
-        // Sprawdź czy drugi gracz już wybrał (często gra_action przychodzi zanim zamkniemy popup)
-        if (opponentClass) {
-            if (!gameState) {
-                var classPopup = document.querySelector('.class-popup');
-                if (overlay) overlay.style.display = 'none';
-                if (classPopup) classPopup.style.display = 'none';
-                
-                console.log("Inicjalizacja gry multiplayer po własnym wyborze (oponent już wybrał)...");
-                initMultiplayerGame();
-            }
-        }
+        var classPopup = document.querySelector('.class-popup');
+        document.body.classList.remove('confirmation-open');
+        if (overlay) overlay.style.display = 'none';
+        if (classPopup) classPopup.style.display = 'none';
+        var lobby = document.getElementById('lobby-modal');
+        if (lobby) lobby.style.display = 'flex';
+        renderLobby();
       } else {
         document.body.classList.remove('confirmation-open');
         if (overlay) overlay.style.display = 'none';
@@ -847,7 +942,7 @@ document.addEventListener("DOMContentLoaded", function() {
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
         awaitingSavedSessionCheck = true;
-        connectWebSocket(pendingIncomingId);
+        connectWebSocket(data.room_id || pendingIncomingId);
         pendingIncomingId = null;
         showClassSelectionPopup();
         incomingPollTimer = setInterval(checkIncoming, 5000);  // ← WZNÓW POLLING
@@ -920,8 +1015,11 @@ function closeFriendPicker() {
 function inviteFriend(username) {
     var token = localStorage.getItem('access_token');
     closeFriendPicker();
+    var inviteUrl = isRoomHost && multiplayerInvitationId
+        ? API_URL + '/game-rooms/' + encodeURIComponent(multiplayerInvitationId) + '/invite'
+        : API_URL + '/game-invitations/send';
 
-    fetch(API_URL + '/game-invitations/send', {
+    fetch(inviteUrl, {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token,
@@ -941,6 +1039,11 @@ function inviteFriend(username) {
     })
     .then(function(data) {
         if (!data || !data.invitation_id) return; // już obsłużone przez recoverPendingInvitation
+        if (isRoomHost && multiplayerInvitationId) {
+            showMsg('Zaproszenie wysłane do ' + username + '.');
+            refreshLobby();
+            return;
+        }
         pendingInvitationId = data.invitation_id;
         opponentName = username;
         document.getElementById('wait-name').textContent = username;
@@ -984,7 +1087,7 @@ function pollOutgoing() {
             document.getElementById('wait-modal').classList.remove('show');
             resetFriendBtn();
             awaitingSavedSessionCheck = true;
-            connectWebSocket(pendingInvitationId);
+            connectWebSocket(data.room_id || pendingInvitationId);
             showClassSelectionPopup();
         } else if (data.status === 'declined' || data.status === 'expired') {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
@@ -1259,60 +1362,41 @@ var STATYSTYKI = {
 };
 
 var gameState = null;
-var _prevStats = [null, null];  // śledzi poprzednie wartości statystyk
+var _prevStats = [null, null, null, null];
 var startModalCallback = null;
 var quizContext = null;
 
 function initMultiplayerGame() {
-    // Upewnij się, że okna wyboru są zamknięte
-    var overlay = document.querySelector('.overlay');
-    var classPopup = document.getElementById('class-selection-popup') || document.querySelector('.class-popup');
-    document.body.classList.remove('confirmation-open');
-    if (overlay) overlay.style.display = 'none';
-    if (classPopup) classPopup.style.display = 'none';
-
-    var p1Class = myPlayerId === 0 ? myClass : opponentClass;
-    var p2Class = myPlayerId === 0 ? opponentClass : myClass;
-    
-    var p1Stats = STATYSTYKI[p1Class];
-    var p2Stats = STATYSTYKI[p2Class];
-    
-    var p1StartCoins = p1Class === 'leniuch' ? 3 : (p1Class === 'madrala' ? 0 : 1);
-    var p2StartCoins = p2Class === 'leniuch' ? 3 : (p2Class === 'madrala' ? 0 : 1);
-    
-    var p1Wisdom = p1Stats.wisdom + (p1Class === 'madrala' ? 1 : 0);
-    var p2Wisdom = p2Stats.wisdom + (p2Class === 'madrala' ? 1 : 0);
-    
-    var p1Name = myPlayerId === 0 ? localStorage.getItem('user_username') || 'Gracz 1' : opponentName;
-    var p2Name = myPlayerId === 0 ? opponentName : localStorage.getItem('user_username') || 'Gracz 2';
-
+    if (!isRoomHost || roomPlayers.length < 2 || roomPlayers.length > 4 ||
+        roomPlayers.some(function(player) { return !playerClasses[player.id]; })) return;
     gameState = {
-        players: [
-            { id: 0, name: p1Name, pos: 84, klass: p1Class, skipTurnsLeft: 0, hp: p1Stats.hp, luck: p1Stats.luck, wisdom: p1Wisdom, crystals: 0, coins: p1StartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
-            { id: 1, name: p2Name, pos: 84, klass: p2Class, skipTurnsLeft: 0, hp: p2Stats.hp, luck: p2Stats.luck, wisdom: p2Wisdom, crystals: 0, coins: p2StartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
-        ],
-        turn: 0, rolled: false, gameOver: false,
+        players: roomPlayers.map(function(player, index) {
+            var klass = playerClasses[index].klass;
+            var stats = STATYSTYKI[klass];
+            return {
+                id: index,
+                name: player.username || playerClasses[index].name || 'Gracz ' + (index + 1),
+                pos: 84,
+                klass: klass,
+                skipTurnsLeft: 0,
+                hp: stats.hp,
+                luck: stats.luck,
+                wisdom: stats.wisdom + (klass === 'madrala' ? 1 : 0),
+                crystals: 0,
+                coins: klass === 'leniuch' ? 3 : (klass === 'madrala' ? 0 : 1),
+                tempCzesnePaid: false,
+                hasShortenCard: false,
+                boughtCrystalThisFloor: false,
+                hints: 0
+            };
+        }),
+        turn: 0, rolled: false, gameOver: false
     };
     gamePhase = "awaiting_roll";
-    
-    placeTokens();
-    updateGamePanel();
-    _prevStats = [null, null];
-    
-    document.getElementById('gp-p1').style.display    = 'flex';
-    document.getElementById('gp-p2').style.display    = 'flex';
-    document.getElementById('dice-panel').style.display = 'flex';
-    
-    if (gameState.turn === myPlayerId) {
-        document.getElementById('dice-btn').disabled = false;
-        showMsg('Gra rozpoczęta! Rozpoczynasz naukę na 2. piętrze WSB. Rzuć kostką!');
-    } else {
-        document.getElementById('dice-btn').disabled = true;
-        showMsg('Gra rozpoczęta! Kolejka gracza ' + opponentName + '...');
-    }
-    if (myPlayerId === 0) {
-        sendGameAction({ type: "game_init", gameState: gameState, phase: gamePhase });
-    }
+    _prevStats = [null, null, null, null];
+    showStartedGame();
+    sendGameAction({ type: "game_init", gameState: gameState, phase: gamePhase });
+    showMsg('Gra rozpoczęta! Tura gracza ' + gameState.players[gameState.turn].name + '.');
 }
 
 function initGame(playerClass) {
@@ -1644,9 +1728,8 @@ function claimStartBonus(type) {
 }
 
 function resolveOccupancy(player) {
-    var other = gameState.players.find(function(p) { return p.id !== player.id; });
     var moved = false;
-    while (player.pos === other.pos) {
+    while (gameState.players.some(function(other) { return other.id !== player.id && other.pos === player.pos; })) {
         var floor = getFloor(player.pos);
         if (floor === 3) {
             player.pos = player.pos === 84 ? 101 : player.pos - 1;
@@ -1671,7 +1754,7 @@ function executeChanceCard(cardIndex) {
     updateGamePanel();
     
     if (player.hp <= 0) {
-        var winner = gameState.players[(gameState.turn + 1) % 2];
+        var winner = gameState.players[(gameState.turn + 1) % gameState.players.length];
         showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
         gameState.gameOver = true;
         document.getElementById('dice-btn').disabled = true;
@@ -2252,7 +2335,7 @@ function triggerVictory(winner) {
 function nextTurn() {
     if (gameState.gameOver) return;
     if (isMultiplayer && gameState.turn !== myPlayerId) return;
-    gameState.turn   = (gameState.turn + 1) % 2;
+    gameState.turn   = (gameState.turn + 1) % gameState.players.length;
     gameState.rolled = false;
     gamePhase = "awaiting_roll";
     updateGamePanel();
@@ -2385,7 +2468,7 @@ function placeTokens() {
         if (isCurrentUser) token.classList.add('player-token-current');
         if (isCurrentUser && currentUserAvatar) {
             renderAvatarLayers(token, currentUserAvatar);
-        } else if (p.id === 1) {
+        } else if (!isMultiplayer && p.id === 1) {
             var img = document.createElement('img');
             img.src = 'img/komputer.png';
             img.alt = p.name || 'Komputer';
@@ -2399,14 +2482,15 @@ function placeTokens() {
 
 function updateGamePanel() {
     if (!gameState) return;
-    var p1 = gameState.players[0], p2 = gameState.players[1];
     var diceButton = document.getElementById('dice-btn');
     if (diceButton) {
         diceButton.disabled = gameState.gameOver || gameState.rolled ||
             (isMultiplayer ? gameState.turn !== myPlayerId : gameState.turn !== 0);
     }
 
-    [p1, p2].forEach(function(player, index) {
+    gameState.players.forEach(function(player, index) {
+        var panel = document.getElementById('gp-p' + (index + 1));
+        if (panel) panel.style.display = 'flex';
         var badge = document.querySelector('#gp-p' + (index + 1) + ' .pp-dot');
         var isCurrentUser = isMultiplayer ? player.id === myPlayerId : player.id === 0;
         if (!badge) return;
@@ -2419,20 +2503,19 @@ function updateGamePanel() {
         } else {
             badge.classList.remove('avatar-container');
             badge.replaceChildren();
-            badge.style.background = '';
+            badge.style.background = isMultiplayer
+                ? ['#e74c3c', '#4488d6', '#31a36b', '#e5ac28'][index]
+                : '';
         }
+        renderStatBar('gp-p' + (index + 1) + '-stat', player, _prevStats[index]);
+        document.getElementById('gp-p' + (index + 1) + '-name').textContent = player.name + ' [' + player.klass + ']';
+        if (panel) panel.classList.toggle('gp-active', gameState.turn === index && !gameState.gameOver);
+        _prevStats[index] = { hp: player.hp, wisdom: player.wisdom, luck: player.luck, crystals: player.crystals, coins: player.coins };
     });
-
-    renderStatBar('gp-p1-stat', p1, _prevStats[0]);
-    renderStatBar('gp-p2-stat', p2, _prevStats[1]);
-
-    document.getElementById('gp-p1-name').textContent = p1.name + ' [' + p1.klass + ']';
-    document.getElementById('gp-p2-name').textContent = p2.name + ' [' + p2.klass + ']';
-    document.getElementById('gp-p1').classList.toggle('gp-active', gameState.turn === 0 && !gameState.gameOver);
-    document.getElementById('gp-p2').classList.toggle('gp-active', gameState.turn === 1 && !gameState.gameOver);
-
-    _prevStats[0] = { hp: p1.hp, wisdom: p1.wisdom, luck: p1.luck, crystals: p1.crystals, coins: p1.coins };
-    _prevStats[1] = { hp: p2.hp, wisdom: p2.wisdom, luck: p2.luck, crystals: p2.crystals, coins: p2.coins };
+    for (var index = gameState.players.length; index < 4; index++) {
+        var unusedPanel = document.getElementById('gp-p' + (index + 1));
+        if (unusedPanel) unusedPanel.style.display = 'none';
+    }
 }
 
 function renderStatBar(id, player, prev) {

@@ -499,6 +499,19 @@
 <!-- Toast po anulowaniu -->
 <div class="cancel-toast" id="cancel-toast"></div>
 
+<div class="lobby-modal" id="lobby-modal" style="display:none;">
+    <section class="lobby-content" aria-labelledby="lobby-title">
+        <h2 id="lobby-title">Lobby gry</h2>
+        <p id="lobby-summary">Oczekiwanie na graczy</p>
+        <ul id="lobby-roster"></ul>
+        <div class="lobby-actions">
+            <button id="lobby-class-btn" type="button">Wybierz klasę</button>
+            <button id="lobby-invite-btn" type="button" style="display:none;">Zaproś znajomego</button>
+            <button id="lobby-start-btn" type="button" disabled style="display:none;">Rozpocznij grę</button>
+        </div>
+    </section>
+</div>
+
 <!-- Przychodzące zaproszenie do gry -->
 <div class="inc-modal" id="inc-modal">
     <div class="inc-content">
@@ -527,6 +540,22 @@
     <div class="pp-info">
         <div class="pp-name" id="gp-p2-name">Bot</div>
         <div class="pp-stat" id="gp-p2-stat"></div>
+    </div>
+</div>
+
+<div class="p-panel p3-panel" id="gp-p3" style="display:none;">
+    <span class="pp-dot pp-dot-3"></span>
+    <div class="pp-info">
+        <div class="pp-name" id="gp-p3-name">Gracz 3</div>
+        <div class="pp-stat" id="gp-p3-stat"></div>
+    </div>
+</div>
+
+<div class="p-panel p4-panel" id="gp-p4" style="display:none;">
+    <span class="pp-dot pp-dot-4"></span>
+    <div class="pp-info">
+        <div class="pp-name" id="gp-p4-name">Gracz 4</div>
+        <div class="pp-stat" id="gp-p4-stat"></div>
     </div>
 </div>
 

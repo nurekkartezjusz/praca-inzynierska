@@ -624,6 +624,13 @@ body {
 
 .player-token-1 { left: 2px;  bottom: 2px; }
 .player-token-2 { left: 2px;  top: 2px;  }
+.player-token-3 { right: 2px; bottom: 2px; }
+.player-token-4 { right: 2px; top: 2px; }
+.player-token-1 { background-color: #e74c3c !important; }
+.player-token-2 { background-color: #4488d6 !important; }
+.player-token-3 { background-color: #31a36b !important; }
+.player-token-4 { background-color: #e5ac28 !important; }
+.player-token { border-radius: 50%; }
 
 /* ==========================================
    PANELE GRACZY I KOSTKA (nowy układ)
@@ -658,6 +665,8 @@ body {
 
 /* Przeciwnik – lewy górny (poniżej przycisku Powrót) */
 .p2-panel { top: 72px; }
+.p3-panel { bottom: 190px; }
+.p4-panel { top: 242px; }
 
 .pp-dot {
     width: 24px;
@@ -673,6 +682,14 @@ body {
     border: none;
     box-shadow: none;
     border-radius: 50%;
+}
+.pp-dot-3 { background: #31a36b; }
+.pp-dot-4 { background: #e5ac28; }
+
+@media (max-height: 760px) {
+    .p-panel { padding: 8px 10px; min-width: 220px; }
+    .p3-panel { bottom: 160px; }
+    .p4-panel { top: 210px; }
 }
 .pp-dot.avatar-container { position: relative; overflow: hidden; }
 .pp-dot.avatar-container::after { display: none; }
@@ -1234,3 +1251,29 @@ body {
     margin: 15px 0 !important;
     text-align: center !important;
 }
+.lobby-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(10, 18, 42, 0.72);
+}
+.lobby-content {
+    width: min(440px, 100%);
+    padding: 24px;
+    border: 3px solid #fff;
+    background: #f7f8fc;
+    color: #1e2940;
+    box-shadow: 8px 8px 0 #17213f;
+}
+.lobby-content h2 { margin: 0 0 8px; font-size: 22px; }
+.lobby-content p { margin: 0 0 14px; }
+#lobby-roster { margin: 0 0 18px; padding: 0; list-style: none; }
+#lobby-roster li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid #d7dce7; }
+.lobby-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.lobby-actions button { min-height: 40px; padding: 8px 12px; border: 2px solid #1e2940; background: #fff; color: #1e2940; font: inherit; cursor: pointer; }
+.lobby-actions button:disabled { opacity: .48; cursor: not-allowed; }
+.lobby-actions #lobby-start-btn:not(:disabled) { background: #bce6c3; }

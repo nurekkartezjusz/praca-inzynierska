@@ -50,6 +50,7 @@ class GameInvitation(Base):
     id = Column(Integer, primary_key=True, index=True)
     inviter_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     invitee_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    room_id = Column(Integer, ForeignKey("game_invitations.id", ondelete="CASCADE"), nullable=True, index=True)
     game_type = Column(String, nullable=False)
     status = Column(Enum(GameInvitationStatus), default=GameInvitationStatus.PENDING)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

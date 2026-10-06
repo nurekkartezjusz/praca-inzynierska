@@ -475,7 +475,7 @@ async function acceptGameInvitation(invitationId, gameType) {
         
         // Przekieruj do odpowiedniej gry
          const gameUrls = {
-      'wielka-studencka-batalla': '/plansza/?invite_accepted=' + invitationId,  // ← ZMIANA
+    'wielka-studencka-batalla': '/plansza/?invite_accepted=' + (data.room_id || invitationId),
       'kolko-i-krzyzyk': '/kolko-i-krzyzyk/',
       'sudoku': '/sudoku/'
     };
