@@ -502,6 +502,7 @@ function saveGameCheckpoint(phase, resumeData) {
 function restoreGameSession(saved) {
     isResumingGame = true;
     gameState = saved.state;
+    if (!Number.isInteger(gameState.turnNumber)) gameState.turnNumber = 0;
     gamePhase = saved.phase || "awaiting_roll";
     gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
     myClass = gameState.players[myPlayerId].klass;
@@ -555,7 +556,7 @@ function restoreGameSession(saved) {
     } else if (gamePhase === "awaiting_field_resolution") {
         triggerFieldArrival(currentPlayer);
     } else if (gamePhase === "turn_resolution" || gamePhase === "resolving_field") {
-        setTimeout(nextTurn, 0);
+        scheduleNextTurn(0);
     } else if (gamePhase === "finished" && gameState.gameOver) {
         var winner = gameState.players.find(function(player) { return player.pos === 'k25'; });
         if (winner) triggerVictory(winner);
@@ -619,6 +620,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
             gameState.turn = payload.gameState.turn;
+            gameState.turnNumber = payload.gameState.turnNumber || 0;
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
@@ -631,6 +633,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
             gameState.turn = payload.gameState.turn;
+            gameState.turnNumber = payload.gameState.turnNumber || 0;
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
@@ -643,6 +646,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
             gameState.turn = payload.gameState.turn;
+            gameState.turnNumber = payload.gameState.turnNumber || 0;
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
@@ -652,6 +656,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
             gameState.turn = payload.gameState.turn;
+            gameState.turnNumber = payload.gameState.turnNumber || 0;
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
@@ -668,6 +673,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
             gameState.turn = payload.gameState.turn;
+            gameState.turnNumber = payload.gameState.turnNumber || 0;
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
@@ -1432,7 +1438,7 @@ function initMultiplayerGame() {
                 hints: 0
             };
         }),
-        turn: 0, rolled: false, gameOver: false
+        turn: 0, turnNumber: 0, rolled: false, gameOver: false
     };
     isResumingGame = false;
     gamePhase = "awaiting_roll";
@@ -1462,7 +1468,7 @@ function initGame(playerClass) {
             { id: 0, name: 'Gracz', pos: 84, klass: playerClass, skipTurnsLeft: 0, hp: ps.hp, luck: ps.luck, wisdom: playerWisdom, crystals: 0, coins: playerStartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
             { id: 1, name: opponentName, pos: 84, klass: botKlasa, skipTurnsLeft: 0, hp: bs.hp, luck: bs.luck, wisdom: botWisdom, crystals: 0, coins: botStartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
         ],
-        turn: 0, rolled: false, gameOver: false,
+        turn: 0, turnNumber: 0, rolled: false, gameOver: false,
     };
     placeTokens();
     updateGamePanel();
@@ -1661,7 +1667,7 @@ function rollDice() {
                 msg: '⏳ ' + player.name + ' opuszcza turę. Pozostało tur do opuszczenia: ' + player.skipTurnsLeft
             });
         }
-        setTimeout(nextTurn, 1800);
+        scheduleNextTurn(1800);
         return;
     }
     
@@ -1773,25 +1779,6 @@ function claimStartBonus(type) {
     }
 }
 
-function resolveOccupancy(player) {
-    var moved = false;
-    while (gameState.players.some(function(other) { return other.id !== player.id && other.pos === player.pos; })) {
-        var floor = getFloor(player.pos);
-        if (floor === 3) {
-            player.pos = player.pos === 84 ? 101 : player.pos - 1;
-        } else if (floor === 2) {
-            player.pos = player.pos === 50 ? 83 : player.pos - 1;
-        } else if (floor === 1) {
-            player.pos = player.pos === 0 ? 49 : player.pos - 1;
-        }
-        moved = true;
-    }
-    if (moved) {
-        showMsg("⚠️ Pole zajęte przez przeciwnika! Cofasz się na najbliższe wolne pole (" + getCellName(player.pos) + ").");
-        placeTokens();
-    }
-}
-
 function executeChanceCard(cardIndex) {
     var player = gameState.players[gameState.turn];
     var card = SZANSA_KARTY[cardIndex];
@@ -1809,13 +1796,11 @@ function executeChanceCard(cardIndex) {
         }
         return;
     }
-    setTimeout(nextTurn, 2000);
+    scheduleNextTurn(2000);
 }
 
 function triggerFieldArrival(player) {
     gamePhase = "resolving_field";
-    resolveOccupancy(player);
-    
     var type = getCellType(player.pos);
     
     if (type === 'sala') {
@@ -1829,7 +1814,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     } else if (type === 'praktyki') {
         player.crystals += 1;
         if (player.hasShortenCard) {
@@ -1847,7 +1832,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 2200);
+        scheduleNextTurn(2200);
     } else if (type === 'biblioteka') {
         player.wisdom += 1;
         player.hints += 1;
@@ -1886,7 +1871,7 @@ function triggerFieldArrival(player) {
         }
         updateGamePanel();
         if (!isMultiplayer || player.id === myPlayerId) {
-            setTimeout(nextTurn, 2000);
+            scheduleNextTurn(2000);
         }
     } else if (type === 'strefarelaksu') {
         player.luck += 1;
@@ -1895,7 +1880,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     } else if (type === 'stolowka') {
         var floor = getFloor(player.pos);
         if (floor === 1) {
@@ -1908,7 +1893,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 1500);
+            scheduleNextTurn(1500);
     } else if (type === 'piwnica') {
         player.skipTurnsLeft = 1;
         showMsg("🚬 " + player.name + " w piwnicy (przerwa na dworze): Tracisz 1 kolejkę!");
@@ -1916,7 +1901,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     } else if (type === 'automaty') {
         if (player.coins >= 1) {
             player.coins -= 1;
@@ -1930,7 +1915,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 2000);
+        scheduleNextTurn(2000);
     } else if (type === 'szansa') {
         if (isMultiplayer) {
             if (player.id === myPlayerId) {
@@ -1947,7 +1932,7 @@ function triggerFieldArrival(player) {
         if (isMultiplayer && player.id === myPlayerId) {
             sendGameAction({ type: "sync_game_state", gameState: gameState });
         }
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     }
 }
 
@@ -2164,10 +2149,10 @@ function resolveQuizRewards() {
     if (isMultiplayer) {
          if (player.id === myPlayerId) {
              sendGameAction({ type: "quiz_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
-             setTimeout(nextTurn, 2200);
+             scheduleNextTurn(2200);
          }
     } else {
-         setTimeout(nextTurn, 2200);
+         scheduleNextTurn(2200);
     }
 }
 
@@ -2245,9 +2230,9 @@ function closeDziekanatModal() {
     if (isMultiplayer) {
         gamePhase = "turn_resolution";
         sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: "Gracz wyszedł z dziekanatu." });
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     } else {
-        setTimeout(nextTurn, 500);
+        scheduleNextTurn(500);
     }
 }
 
@@ -2298,9 +2283,9 @@ function applyDziekanat(action) {
     if (isMultiplayer) {
         gamePhase = "turn_resolution";
         sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     } else {
-        setTimeout(nextTurn, 1500);
+        scheduleNextTurn(1500);
     }
 }
 
@@ -2338,7 +2323,7 @@ function runBotDziekanat(bot) {
     }
     
     updateGamePanel();
-    setTimeout(nextTurn, 2200);
+    scheduleNextTurn(2200);
 }
 
 function triggerVictory(winner) {
@@ -2378,10 +2363,19 @@ function triggerVictory(winner) {
     }
 }
 
-function nextTurn() {
+function scheduleNextTurn(delay) {
+    if (!gameState) return;
+    var scheduledTurnNumber = Number.isInteger(gameState.turnNumber) ? gameState.turnNumber : 0;
+    setTimeout(function() { nextTurn(scheduledTurnNumber); }, delay);
+}
+
+function nextTurn(expectedTurnNumber) {
     if (gameState.gameOver) return;
+    var currentTurnNumber = Number.isInteger(gameState.turnNumber) ? gameState.turnNumber : 0;
+    if (expectedTurnNumber !== undefined && expectedTurnNumber !== currentTurnNumber) return;
     if (isMultiplayer && gameState.turn !== myPlayerId) return;
     gameState.turn   = (gameState.turn + 1) % gameState.players.length;
+    gameState.turnNumber = currentTurnNumber + 1;
     gameState.rolled = false;
     gamePhase = "awaiting_roll";
     updateGamePanel();
