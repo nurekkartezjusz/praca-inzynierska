@@ -416,6 +416,10 @@ function connectWebSocket(invitationId) {
             gameSessionVersion = data.version || gameSessionVersion;
             snapshotSaveInFlight = false;
             sendNextSnapshotAction();
+        } else if (data.type === "game_state_rejected") {
+            gameSessionVersion = Number.isInteger(data.version) ? data.version : gameSessionVersion;
+            snapshotSaveInFlight = false;
+            sendNextSnapshotAction();
         } else if (data.type === "game_state_conflict") {
             clearPendingSnapshotActions();
             gameSessionVersion = data.version || 0;
@@ -557,6 +561,7 @@ function restoreGameSession(saved) {
         if (savedPlayer) myPlayerId = savedPlayer.id;
     }
     gamePhase = saved.phase || "awaiting_roll";
+    if (gamePhase === "awaiting_roll") gameState.rolled = false;
     gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
     myClass = gameState.players[myPlayerId].klass;
     var firstOpponent = gameState.players.find(function(player) { return player.id !== myPlayerId; });
@@ -1698,12 +1703,12 @@ function executeRoll(val) {
         if (passedStartCount > 0) {
             handlePassStart(player, function() {
                 gamePhase = "awaiting_field_resolution";
-                saveGameCheckpoint(gamePhase);
+                if (player.id === myPlayerId) saveGameCheckpoint(gamePhase);
                 triggerFieldArrival(player);
             });
         } else {
             gamePhase = "awaiting_field_resolution";
-            saveGameCheckpoint(gamePhase);
+            if (player.id === myPlayerId) saveGameCheckpoint(gamePhase);
             triggerFieldArrival(player);
         }
     });
@@ -2411,7 +2416,7 @@ function triggerVictory(winner) {
     
     winner.pos = 'k25';
     gamePhase = "finished";
-    if (isMultiplayer) saveGameCheckpoint(gamePhase);
+    if (isMultiplayer && winner.id === myPlayerId) saveGameCheckpoint(gamePhase);
     placeTokens();
     
     var degreeText = "LICENCJAT";

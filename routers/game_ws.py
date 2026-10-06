@@ -54,6 +54,32 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+SNAPSHOT_TYPES = {
+    "game_init",
+    "game_checkpoint",
+    "claim_start_bonus",
+    "sync_game_state",
+    "quiz_completed",
+    "dziekanat_completed",
+    "turn_skipped",
+    "turn_changed",
+}
+
+
+def may_write_snapshot(session: GameSession | None, data: dict, player_id: int) -> bool:
+    # Zapis stanu (poza game_init) ma prawo wykonać tylko gracz, którego jest tura w zapisanej sesji.
+    if session is None or session.status == "finished":
+        return False
+    if data.get("phase") == "finished":
+        players = data["gameState"].get("players")
+        return (
+            isinstance(players, list)
+            and 0 <= player_id < len(players)
+            and isinstance(players[player_id], dict)
+            and players[player_id].get("pos") == "k25"
+        )
+    return session.state.get("turn") == player_id
+
 
 def save_game_snapshot(db: Session, invitation_id: int, data: dict) -> GameSession | None:
     state = data["gameState"]
@@ -284,16 +310,21 @@ async def websocket_game_endpoint(
                 ):
                     await websocket.send_json({"type": "error", "message": "Stan gry nie pasuje do składu pokoju"})
                     continue
-            if data.get("type") in {
-                "game_init",
-                "game_checkpoint",
-                "claim_start_bonus",
-                "sync_game_state",
-                "quiz_completed",
-                "dziekanat_completed",
-                "turn_skipped",
-                "turn_changed",
-            } and isinstance(data.get("gameState"), dict):
+            if data.get("type") in SNAPSHOT_TYPES and isinstance(data.get("gameState"), dict):
+                if data.get("type") != "game_init":
+                    current_session = db.query(GameSession).filter(
+                        GameSession.invitation_id == room_id
+                    ).populate_existing().first()
+                    if not may_write_snapshot(current_session, data, player_id):
+                        logger.warning(
+                            "Odrzucono snapshot %s od gracza %s w pokoju %s",
+                            data.get("type"), player_id, room_id,
+                        )
+                        await websocket.send_json({
+                            "type": "game_state_rejected",
+                            "version": current_session.version if current_session is not None else 0,
+                        })
+                        continue
                 try:
                     saved_session = save_game_snapshot(db, room_id, data)
                     if saved_session is None:
