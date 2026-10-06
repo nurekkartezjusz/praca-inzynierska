@@ -67,4 +67,4 @@ class GameSession(Base):
     phase = Column(String, nullable=False, default="awaiting_roll")
     resume_data = Column(JSONB, nullable=False, default=dict)
     version = Column(Integer, nullable=False, default=1)
-    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone=True))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))

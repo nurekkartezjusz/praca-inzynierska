@@ -1,8 +1,10 @@
 import logging
+import posixpath
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from routers import auth, friends, game_invitations, profile, game_ws
 
@@ -41,9 +43,25 @@ app.include_router(friends.router, prefix=_API_PREFIX)
 app.include_router(game_invitations.router, prefix=_API_PREFIX)
 app.include_router(game_ws.router, prefix=_API_PREFIX)
 
-# Serwowanie plików statycznych (frontend)
+# Tylko te wpisy z katalogu projektu są publiczne (reszta to .env, kod, migracje itd.)
+_PUBLIC_ENTRIES = {
+    "index.html", "css", "haslo", "img", "img_glowna", "js", "karty", "logowanie",
+    "plansza", "regulamin", "rejestracja", "statystyki", "uczelnia", "wybor awatara",
+    "zasady", "znajomi",
+}
+
+
+class FrontendFiles(StaticFiles):
+    async def get_response(self, path, scope):
+        normalized = posixpath.normpath(path.replace("\\", "/")).lstrip("/")
+        top = normalized.split("/")[0]
+        if top not in ("", ".") and top not in _PUBLIC_ENTRIES:
+            raise StarletteHTTPException(status_code=404)
+        return await super().get_response(path, scope)
+
+
 # Tabele bazy danych należy tworzyć przez migracje (np. Alembic), nie Base.metadata.create_all
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
+app.mount("/", FrontendFiles(directory=".", html=True), name="static")
 
 
 if __name__ == "__main__":

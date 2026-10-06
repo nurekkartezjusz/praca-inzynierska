@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 import logging
 import os
 import secrets
@@ -31,6 +33,14 @@ logger = logging.getLogger(__name__)
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
 
 router = APIRouter(tags=["auth"])
+
+MAX_RESET_ATTEMPTS = 5
+# Licznik nieudanych prób per e-mail (w pamięci procesu).
+_failed_reset_attempts: dict[str, int] = {}
+
+
+def _hash_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 def _send_email(to_address: str, subject: str, html_content: str) -> None:
@@ -105,9 +115,10 @@ def request_password_reset(
         return {"message": "Jeśli email istnieje w systemie, wysłano link do resetowania hasła"}
 
     reset_token = "".join([str(secrets.randbelow(10)) for _ in range(6)])
-    user.reset_token = reset_token
+    user.reset_token = _hash_reset_token(reset_token)
     user.reset_token_expires = datetime.now(timezone.utc) + timedelta(minutes=15)
     db.commit()
+    _failed_reset_attempts.pop(user.email, None)
 
     if BREVO_API_KEY:
         try:
@@ -139,12 +150,13 @@ def request_password_reset(
 
 @router.post("/password-reset")
 def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.reset_token == reset_data.token).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Nieprawidłowy token resetowania",
-        )
+    invalid_token = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="Nieprawidłowy token resetowania",
+    )
+    user = db.query(User).filter(User.email == reset_data.email).first()
+    if not user or not user.reset_token or not user.reset_token_expires:
+        raise invalid_token
 
     token_expires = user.reset_token_expires
     if token_expires.tzinfo is None:
@@ -155,6 +167,18 @@ def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
             detail="Token resetowania wygasł",
         )
 
+    if not hmac.compare_digest(user.reset_token, _hash_reset_token(reset_data.token)):
+        attempts = _failed_reset_attempts.get(user.email, 0) + 1
+        if attempts >= MAX_RESET_ATTEMPTS:
+            _failed_reset_attempts.pop(user.email, None)
+            user.reset_token = None
+            user.reset_token_expires = None
+            db.commit()
+        else:
+            _failed_reset_attempts[user.email] = attempts
+        raise invalid_token
+
+    _failed_reset_attempts.pop(user.email, None)
     user.hashed_password = get_password_hash(reset_data.new_password)
     user.reset_token = None
     user.reset_token_expires = None
