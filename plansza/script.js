@@ -666,6 +666,7 @@ function closeChoicePopup() {
 }
 
 function showClassSelectionPopup() {
+    if (awaitingSavedSessionCheck) return;
   var overlay = document.querySelector('.overlay');
   var mainWindow = document.querySelector('.main-window');
   var classPopup = document.querySelector('.class-popup');
@@ -816,6 +817,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('inc-modal').classList.remove('show');
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
+        awaitingSavedSessionCheck = true;
         connectWebSocket(pendingIncomingId);
         pendingIncomingId = null;
         showClassSelectionPopup();
@@ -952,6 +954,7 @@ function pollOutgoing() {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
             document.getElementById('wait-modal').classList.remove('show');
             resetFriendBtn();
+            awaitingSavedSessionCheck = true;
             connectWebSocket(pendingInvitationId);
             showClassSelectionPopup();
         } else if (data.status === 'declined' || data.status === 'expired') {
