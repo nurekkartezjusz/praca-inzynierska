@@ -476,6 +476,10 @@ function sendGameAction(payload) {
     var action = Object.assign({}, payload, {
         username: myUsername || localStorage.getItem('user_username') || 'Bez nazwy'
     });
+    if (action.type === "sync_game_state" && !action.msg) {
+        var currentMessage = document.getElementById('gp-msg');
+        if (currentMessage) action.msg = currentMessage.textContent;
+    }
     if (action.gameState && !action.phase) action.phase = gamePhase;
 
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -646,6 +650,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
                 showMsg("🎉 " + opponent.name + " wybrał punkt szczęścia (+1 szczęścia)!");
             }
         }
+        if (payload.msg) showMsg(payload.msg);
         updateGamePanel();
         if (startModalCallback) {
             var cb = startModalCallback;
@@ -673,6 +678,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
+        gamePhase = payload.phase || "turn_resolution";
         if (payload.msg) {
             showMsg(payload.msg);
         }
@@ -686,6 +692,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
+        gamePhase = payload.phase || "turn_resolution";
         if (payload.msg) {
             showMsg(payload.msg);
         }
@@ -699,6 +706,8 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
+        gamePhase = payload.phase || gamePhase;
+        if (payload.msg) showMsg(payload.msg);
         updateGamePanel();
         placeTokens();
     } else if (payload.type === "turn_changed") {
@@ -709,6 +718,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
+        gamePhase = payload.phase || "awaiting_roll";
         updateGamePanel();
         placeTokens();
         var currentPlayer = gameState.players[gameState.turn];
@@ -726,6 +736,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
             gameState.gameOver = payload.gameState.gameOver;
             gameState.rolled = payload.gameState.rolled;
         }
+        gamePhase = payload.phase || "turn_resolution";
         if (payload.msg) {
             showMsg(payload.msg);
         }
@@ -1830,7 +1841,13 @@ function claimStartBonus(type) {
     
     if (isMultiplayer) {
         gamePhase = "resolving_field";
-        sendGameAction({ type: "claim_start_bonus", bonusType: type, gameState: gameState, phase: gamePhase });
+        sendGameAction({
+            type: "claim_start_bonus",
+            bonusType: type,
+            gameState: gameState,
+            phase: gamePhase,
+            msg: document.getElementById('gp-msg').textContent
+        });
     }
     
     if (startModalCallback) {
