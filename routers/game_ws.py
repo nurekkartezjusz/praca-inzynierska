@@ -226,6 +226,15 @@ async def websocket_game_endpoint(
         while True:
             data = await websocket.receive_json()
             saved_version = None
+            accepted_invitations = db.query(GameInvitation).filter(
+                or_(GameInvitation.id == room_id, GameInvitation.room_id == room_id),
+                GameInvitation.status == GameInvitationStatus.ACCEPTED,
+            ).order_by(GameInvitation.updated_at.asc(), GameInvitation.id.asc()).all()
+            player_user_ids = [room_invitation.inviter_id] + [item.invitee_id for item in accepted_invitations]
+            if user.id not in player_user_ids:
+                await websocket.close(code=1008)
+                break
+            player_id = player_user_ids.index(user.id)
             # Zapamiętaj wybór klasy, żeby móc go odtworzyć drugiemu graczowi po jego (późniejszym) połączeniu
             if data.get("type") == "select_class":
                 if data.get("class") not in {"sportowiec", "leniuch", "madrala"}:
@@ -284,7 +293,7 @@ async def websocket_game_endpoint(
                 "sender_player_id": player_id,
                 "version": saved_version,
                 "payload": data
-            }, exclude_user_id=user.id)
+            }, exclude_user_id=None if data.get("type") == "game_init" else user.id)
 
     except WebSocketDisconnect:
         if user:

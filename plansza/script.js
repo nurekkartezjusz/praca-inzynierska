@@ -430,7 +430,12 @@ function connectWebSocket(invitationId) {
             if (Number.isInteger(data.version)) gameSessionVersion = data.version;
             handleMultiplayerAction(payload, data.sender_role, data.sender_player_id);
         } else if (data.type === "error") {
-            showMsg(data.message || 'Nie udało się wykonać akcji w lobby.');
+            var lobbySummary = document.getElementById('lobby-summary');
+            if (lobbySummary && document.getElementById('lobby-modal').style.display !== 'none') {
+                lobbySummary.textContent = data.message || 'Nie udało się wykonać akcji w lobby.';
+            } else {
+                showMsg(data.message || 'Nie udało się wykonać akcji w lobby.');
+            }
         }
     };
     
@@ -1418,9 +1423,8 @@ function initMultiplayerGame() {
     };
     gamePhase = "awaiting_roll";
     _prevStats = [null, null, null, null];
-    showStartedGame();
     sendGameAction({ type: "game_init", gameState: gameState, phase: gamePhase });
-    showMsg('Gra rozpoczęta! Tura gracza ' + gameState.players[gameState.turn].name + '.');
+    showMsg('Uruchamianie gry...');
 }
 
 function initGame(playerClass) {
