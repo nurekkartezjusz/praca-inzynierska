@@ -245,6 +245,18 @@ async def websocket_game_endpoint(
                 if user.id != room_invitation.inviter_id:
                     await websocket.send_json({"type": "error", "message": "Tylko gospodarz może uruchomić grę"})
                     continue
+                existing_session = db.query(GameSession).filter(
+                    GameSession.invitation_id == room_id
+                ).first()
+                if existing_session is not None:
+                    await websocket.send_json({
+                        "type": "game_state",
+                        "state": existing_session.state,
+                        "phase": existing_session.phase,
+                        "resumeData": existing_session.resume_data,
+                        "version": existing_session.version,
+                    })
+                    continue
                 if not 2 <= len(player_user_ids) <= 4:
                     await websocket.send_json({"type": "error", "message": "Do rozpoczęcia potrzeba od 2 do 4 graczy"})
                     continue

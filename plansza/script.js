@@ -500,6 +500,7 @@ function saveGameCheckpoint(phase, resumeData) {
 }
 
 function restoreGameSession(saved) {
+    isResumingGame = true;
     gameState = saved.state;
     gamePhase = saved.phase || "awaiting_roll";
     gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
@@ -551,6 +552,8 @@ function restoreGameSession(saved) {
         document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
         document.getElementById('start-modal').style.display = 'flex';
         startModalCallback = function() { triggerFieldArrival(currentPlayer); };
+    } else if (gamePhase === "awaiting_field_resolution") {
+        triggerFieldArrival(currentPlayer);
     } else if (gamePhase === "turn_resolution" || gamePhase === "resolving_field") {
         setTimeout(nextTurn, 0);
     } else if (gamePhase === "finished" && gameState.gameOver) {
@@ -602,6 +605,7 @@ function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
     } else if (payload.type === "draw_chance") {
         executeChanceCard(payload.cardIndex);
     } else if (payload.type === "game_init" || payload.type === "game_checkpoint") {
+        if (payload.type === "game_init" && isResumingGame) return;
         if (payload.gameState) {
             gameState = payload.gameState;
             gamePhase = payload.phase || gamePhase;
@@ -735,6 +739,11 @@ function showLobby() {
     lobbyPollTimer = setInterval(refreshLobby, 3000);
 }
 
+function keepGameRoomInUrl(roomId) {
+    var url = '/plansza/?invite_accepted=' + encodeURIComponent(roomId);
+    window.history.replaceState({}, document.title, url);
+}
+
 function hideLobby() {
     var modal = document.getElementById('lobby-modal');
     if (modal) modal.style.display = 'none';
@@ -841,7 +850,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.classList.remove('confirmation-open');
     if (isResume) showMsg('Wznawianie zapisanej gry...');
 
-    window.history.replaceState({}, document.title, '/plansza/');
+    window.history.replaceState({}, document.title, '/plansza/?invite_accepted=' + encodeURIComponent(inviteAcceptedId) + (isResume ? '&resume=1' : ''));
   }
   var confirmationBox = document.getElementById("confirmationBox");
   var wyborKlasy      = document.getElementById("wyborKlasy");
@@ -967,6 +976,7 @@ document.addEventListener("DOMContentLoaded", function() {
         opponentName = data.inviter || 'Znajomy';
         awaitingSavedSessionCheck = true;
         connectWebSocket(data.room_id || pendingIncomingId);
+        keepGameRoomInUrl(data.room_id || pendingIncomingId);
         pendingIncomingId = null;
         showClassSelectionPopup();
         incomingPollTimer = setInterval(checkIncoming, 5000);  // ← WZNÓW POLLING
@@ -1070,6 +1080,7 @@ function inviteFriend(username) {
         }
         pendingInvitationId = data.invitation_id;
         multiplayerInvitationId = data.room_id || data.invitation_id;
+        keepGameRoomInUrl(multiplayerInvitationId);
         isMultiplayer = true;
         isRoomHost = true;
         roomPlayers = [{ id: 0, username: myUsername || 'Gospodarz' }];
@@ -1114,6 +1125,7 @@ function pollOutgoing() {
             resetFriendBtn();
             awaitingSavedSessionCheck = true;
             connectWebSocket(data.room_id || pendingInvitationId);
+            keepGameRoomInUrl(data.room_id || pendingInvitationId);
             showClassSelectionPopup();
         } else if (data.status === 'declined' || data.status === 'expired') {
             clearInterval(outgoingPollTimer); outgoingPollTimer = null;
@@ -1390,12 +1402,13 @@ var STATYSTYKI = {
 };
 
 var gameState = null;
+var isResumingGame = false;
 var _prevStats = [null, null, null, null];
 var startModalCallback = null;
 var quizContext = null;
 
 function initMultiplayerGame() {
-    if (!isRoomHost || roomPlayers.length < 2 || roomPlayers.length > 4 ||
+    if (gameState || !isRoomHost || roomPlayers.length < 2 || roomPlayers.length > 4 ||
         roomPlayers.some(function(player) { return !playerClasses[player.user_id]; })) return;
     gameState = {
         players: roomPlayers.map(function(player, index) {
@@ -1421,6 +1434,7 @@ function initMultiplayerGame() {
         }),
         turn: 0, rolled: false, gameOver: false
     };
+    isResumingGame = false;
     gamePhase = "awaiting_roll";
     _prevStats = [null, null, null, null];
     sendGameAction({ type: "game_init", gameState: gameState, phase: gamePhase });
@@ -1616,9 +1630,13 @@ function executeRoll(val) {
 
         if (passedStartCount > 0) {
             handlePassStart(player, function() {
+                gamePhase = "awaiting_field_resolution";
+                saveGameCheckpoint(gamePhase);
                 triggerFieldArrival(player);
             });
         } else {
+            gamePhase = "awaiting_field_resolution";
+            saveGameCheckpoint(gamePhase);
             triggerFieldArrival(player);
         }
     });
