@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Text, ForeignKey, Enum, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB
 from database import Base
 from datetime import datetime, timezone
 import enum
@@ -53,3 +54,16 @@ class GameInvitation(Base):
     status = Column(Enum(GameInvitationStatus), default=GameInvitationStatus.PENDING)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+
+
+class GameSession(Base):
+    __tablename__ = "game_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    invitation_id = Column(Integer, ForeignKey("game_invitations.id", ondelete="CASCADE"), nullable=False, unique=True)
+    status = Column(String, nullable=False, default="active")
+    state = Column(JSONB, nullable=False)
+    phase = Column(String, nullable=False, default="awaiting_roll")
+    resume_data = Column(JSONB, nullable=False, default=dict)
+    version = Column(Integer, nullable=False, default=1)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone=True))

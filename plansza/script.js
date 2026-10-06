@@ -302,6 +302,11 @@ var opponentName        = 'Bot';
 var isMultiplayer          = false;
 var multiplayerInvitationId = null;
 var ws                      = null;
+var pendingGameActions      = [];
+var wsReconnectTimer        = null;
+var wsReconnectAttempt      = 0;
+var gameSessionVersion      = 0;
+var gamePhase               = "class_selection";
 var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
 var myClass                 = null;
 var opponentClass           = null;
@@ -316,10 +321,11 @@ function isTokenExpired(token) {
     }
 }
 
-function connectWebSocket(invitationId, attempt) {
+function connectWebSocket(invitationId) {
     var token = localStorage.getItem('access_token');
     if (!token) return;
-    attempt = attempt || 1;
+
+    if (ws && (ws.readyState === WebSocket.CONNECTING || ws.readyState === WebSocket.OPEN)) return;
 
     if (isTokenExpired(token)) {
         alert('Twoja sesja wygasła. Zaloguj się ponownie, aby zagrać.');
@@ -329,23 +335,32 @@ function connectWebSocket(invitationId, attempt) {
     
     isMultiplayer = true;
     multiplayerInvitationId = invitationId;
-    var wsReachedOpen = false;
+    if (wsReconnectTimer) {
+        clearTimeout(wsReconnectTimer);
+        wsReconnectTimer = null;
+    }
     
     var wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     var wsUrl = wsProtocol + '://' + window.location.host + '/api/ws/game/' + invitationId + '?token=' + token;
     
-    ws = new WebSocket(wsUrl);
+    var socket = new WebSocket(wsUrl);
+    ws = socket;
     
-    ws.onopen = function() {
-        wsReachedOpen = true;
+    socket.onopen = function() {
+        if (ws !== socket) return;
+        wsReconnectAttempt = 0;
         console.log("Połączono z serwerem gier multiplayer!");
         // Jeśli już wybraliśmy klasę przed połączeniem lub przy ponownym połączeniu, wyślijmy ją
         if (myClass) {
             sendGameAction({ type: "select_class", class: myClass });
         }
+        while (pendingGameActions.length && socket.readyState === WebSocket.OPEN) {
+            socket.send(pendingGameActions.shift());
+        }
     };
     
-    ws.onmessage = function(event) {
+    socket.onmessage = function(event) {
+        if (ws !== socket) return;
         var data = JSON.parse(event.data);
         console.log("Multiplayer odebrano:", data);
         
@@ -361,6 +376,11 @@ function connectWebSocket(invitationId, attempt) {
             if (myClass) {
                 sendGameAction({ type: "select_class", class: myClass });
             }
+        } else if (data.type === "game_state") {
+            gameSessionVersion = data.version || 0;
+            restoreGameSession(data);
+        } else if (data.type === "game_state_saved") {
+            gameSessionVersion = data.version || gameSessionVersion;
         } else if (data.type === "player_joined") {
             console.log("Przeciwnik dołączył: " + data.username);
             // Ponieważ nowy gracz dołączył, na pewno nie zna jeszcze naszej klasy. Wyślijmy ją!
@@ -372,37 +392,126 @@ function connectWebSocket(invitationId, attempt) {
             showMsg("⚠️ Przeciwnik " + data.username + " rozłączył się!");
         } else if (data.type === "game_action") {
             var payload = data.payload;
-            handleMultiplayerAction(payload);
+            if (Number.isInteger(data.version)) gameSessionVersion = data.version;
+            handleMultiplayerAction(payload, data.sender_role);
         }
     };
     
-    ws.onclose = function(event) {
+    socket.onclose = function(event) {
+        if (ws !== socket) return;
         console.log("Rozłączono z serwerem gier. Kod: " + event.code + ", czysto: " + event.wasClean);
-        // Połączenie nigdy nie doszło do skutku (np. Render dopiero się budzi po uśpieniu) - spróbuj ponownie
-        if (!wsReachedOpen) {
-            if (attempt < 4) {
-                showMsg("⏳ Łączenie z serwerem gry (próba " + (attempt + 1) + "/4)...");
-                setTimeout(function() { connectWebSocket(invitationId, attempt + 1); }, attempt * 2000);
-            } else {
-                showMsg("❌ Nie udało się połączyć z serwerem gry.");
-                alert('Nie udało się połączyć z serwerem gry po kilku próbach. Sprawdź połączenie internetowe i spróbuj ponownie za chwilę (serwer mógł się właśnie wybudzać z uśpienia).');
-            }
-        }
+        ws = null;
+        scheduleGameReconnect(invitationId);
     };
     
-    ws.onerror = function(err) {
-        console.error("Błąd WebSocket (próba " + attempt + "):", err);
+    socket.onerror = function(err) {
+        console.error("Błąd WebSocket:", err);
     };
+}
+
+function scheduleGameReconnect(invitationId) {
+    if (!isMultiplayer || wsReconnectTimer) return;
+    var delay = Math.min(15000, 1000 * Math.pow(2, Math.min(wsReconnectAttempt, 4)));
+    wsReconnectAttempt++;
+    showMsg("⏳ Utracono połączenie z grą. Ponawiam próbę za " + Math.ceil(delay / 1000) + " s...");
+    wsReconnectTimer = setTimeout(function() {
+        wsReconnectTimer = null;
+        connectWebSocket(invitationId);
+    }, delay);
 }
 
 function sendGameAction(payload) {
+    var action = Object.assign({}, payload, {
+        username: localStorage.getItem('user_username') || 'Bez nazwy'
+    });
+    if (action.gameState && !action.phase) action.phase = gamePhase;
+    var serialized = JSON.stringify(action);
+
     if (ws && ws.readyState === WebSocket.OPEN) {
-        payload.username = localStorage.getItem('user_username') || 'Bez nazwy';
-        ws.send(JSON.stringify(payload));
+        ws.send(serialized);
+        return true;
+    }
+
+    if (!multiplayerInvitationId) return false;
+    if (action.type !== "select_class") {
+        showMsg("❌ Brak połączenia z grą. Poczekaj na ponowne połączenie i ponów akcję.");
+        return false;
+    }
+    if (pendingGameActions.length >= 100) {
+        console.error("Kolejka wiadomości gry jest pełna; wybór klasy nie został zakolejkowany.");
+        return false;
+    }
+    pendingGameActions.push(serialized);
+    if (!ws) scheduleGameReconnect(multiplayerInvitationId);
+    return false;
+}
+
+function saveGameCheckpoint(phase, resumeData) {
+    if (!isMultiplayer || !gameState) return;
+    gamePhase = phase;
+    sendGameAction({
+        type: "game_checkpoint",
+        gameState: gameState,
+        phase: phase,
+        resumeData: resumeData || null
+    });
+}
+
+function restoreGameSession(saved) {
+    gameState = saved.state;
+    gamePhase = saved.phase || "awaiting_roll";
+    quizContext = null;
+
+    document.body.classList.remove('confirmation-open');
+    var overlay = document.querySelector('.overlay');
+    var classPopup = document.querySelector('.class-popup');
+    if (overlay) overlay.style.display = 'none';
+    if (classPopup) classPopup.style.display = 'none';
+    document.getElementById('gp-p1').style.display = 'flex';
+    document.getElementById('gp-p2').style.display = 'flex';
+    document.getElementById('dice-panel').style.display = 'flex';
+    document.getElementById('quiz-modal').style.display = 'none';
+    document.getElementById('dziekanat-modal').style.display = 'none';
+    document.getElementById('start-modal').style.display = 'none';
+    updateGamePanel();
+    placeTokens();
+
+    var currentPlayer = gameState.players[gameState.turn];
+    if (gamePhase === "awaiting_quiz" && saved.resumeData && saved.resumeData.quiz) {
+        var quiz = saved.resumeData.quiz;
+        quizContext = {
+            player: gameState.players.find(function(player) { return player.id === quiz.playerId; }),
+            total: quiz.total,
+            answered: quiz.answered,
+            correct: quiz.correct,
+            questions: quiz.questions,
+            hiddenAnswers: quiz.hiddenAnswers || []
+        };
+        if (quizContext.answered >= quizContext.total) {
+            resolveQuizRewards();
+        } else {
+            showQuizQuestion();
+            showMsg('Wznawianie quizu...');
+        }
+    } else if (gamePhase === "awaiting_dziekanat") {
+        triggerDziekanat(currentPlayer);
+    } else if (gamePhase === "awaiting_start_bonus") {
+        var floor = getFloor(currentPlayer.pos);
+        var tuition = floor === 1 ? 3 : 1;
+        document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
+        document.getElementById('start-modal').style.display = 'flex';
+        startModalCallback = function() { triggerFieldArrival(currentPlayer); };
+    } else if (gamePhase === "turn_resolution" || gamePhase === "resolving_field") {
+        setTimeout(nextTurn, 0);
+    } else if (gamePhase === "finished" && gameState.gameOver) {
+        var winner = gameState.players.find(function(player) { return player.pos === 'k25'; });
+        if (winner) triggerVictory(winner);
+    } else {
+        showMsg(gameState.turn === myPlayerId ? 'Wznowiono grę. Twoja tura – rzuć kostką!' : 'Wznowiono grę. Tura gracza ' + currentPlayer.name + '...');
     }
 }
 
-function handleMultiplayerAction(payload) {
+function handleMultiplayerAction(payload, senderRole) {
     if (payload.type === "select_class") {
         opponentClass = payload.class;
         opponentName = payload.username || opponentName;
@@ -425,19 +534,30 @@ function handleMultiplayerAction(payload) {
             }
         }
     } else if (payload.type === "roll_dice") {
+        var senderPlayerId = senderRole === "inviter" ? 0 : senderRole === "invitee" ? 1 : -1;
+        if (!gameState || senderPlayerId !== gameState.turn || gameState.rolled ||
+            !Number.isInteger(payload.value) || payload.value < 1 || payload.value > 6) {
+            console.warn("Odrzucono nieprawidłowy lub powtórzony rzut kością:", payload);
+            return;
+        }
         executeRoll(payload.value);
     } else if (payload.type === "claim_start_bonus") {
-        var opponent = gameState.players[gameState.turn];
-        var type = payload.bonusType;
-        if (type === 'coin') {
-            opponent.coins += 1;
-            showMsg("🎉 " + opponent.name + " wybrał darmową monetę!");
-        } else if (type === 'hp') {
-            opponent.hp += 1;
-            showMsg("🎉 " + opponent.name + " wybrał dodatkowe zdrowie (+1 HP)!");
-        } else if (type === 'luck') {
-            opponent.luck += 1;
-            showMsg("🎉 " + opponent.name + " wybrał punkt szczęścia (+1 szczęścia)!");
+        if (payload.gameState) {
+            gameState = payload.gameState;
+            gamePhase = payload.phase || "resolving_field";
+        } else {
+            var opponent = gameState.players[gameState.turn];
+            var type = payload.bonusType;
+            if (type === 'coin') {
+                opponent.coins += 1;
+                showMsg("🎉 " + opponent.name + " wybrał darmową monetę!");
+            } else if (type === 'hp') {
+                opponent.hp += 1;
+                showMsg("🎉 " + opponent.name + " wybrał dodatkowe zdrowie (+1 HP)!");
+            } else if (type === 'luck') {
+                opponent.luck += 1;
+                showMsg("🎉 " + opponent.name + " wybrał punkt szczęścia (+1 szczęścia)!");
+            }
         }
         updateGamePanel();
         if (startModalCallback) {
@@ -447,6 +567,13 @@ function handleMultiplayerAction(payload) {
         }
     } else if (payload.type === "draw_chance") {
         executeChanceCard(payload.cardIndex);
+    } else if (payload.type === "game_init" || payload.type === "game_checkpoint") {
+        if (payload.gameState) {
+            gameState = payload.gameState;
+            gamePhase = payload.phase || gamePhase;
+        }
+        updateGamePanel();
+        placeTokens();
     } else if (payload.type === "quiz_completed") {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
@@ -459,7 +586,6 @@ function handleMultiplayerAction(payload) {
         }
         updateGamePanel();
         placeTokens();
-        setTimeout(nextTurn, 2200);
     } else if (payload.type === "dziekanat_completed") {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
@@ -472,7 +598,6 @@ function handleMultiplayerAction(payload) {
         }
         updateGamePanel();
         placeTokens();
-        setTimeout(nextTurn, 1500);
     } else if (payload.type === "sync_game_state") {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
@@ -482,6 +607,16 @@ function handleMultiplayerAction(payload) {
         }
         updateGamePanel();
         placeTokens();
+    } else if (payload.type === "turn_changed") {
+        if (payload.gameState) {
+            gameState.players = payload.gameState.players;
+            gameState.turn = payload.gameState.turn;
+            gameState.gameOver = payload.gameState.gameOver;
+            gameState.rolled = payload.gameState.rolled;
+        }
+        updateGamePanel();
+        placeTokens();
+        showMsg(gameState.turn === myPlayerId ? 'Twoja tura – rzuć kostką!' : 'Tura gracza ' + gameState.players[gameState.turn].name + '...');
     } else if (payload.type === "turn_skipped") {
         if (payload.gameState) {
             gameState.players = payload.gameState.players;
@@ -494,7 +629,6 @@ function handleMultiplayerAction(payload) {
         }
         updateGamePanel();
         placeTokens();
-        setTimeout(nextTurn, 1800);
     } else if (payload.type === "victory") {
         var winner = gameState.players[payload.winnerId];
         triggerVictory(winner);
@@ -1103,6 +1237,7 @@ function initMultiplayerGame() {
         ],
         turn: 0, rolled: false, gameOver: false,
     };
+    gamePhase = "awaiting_roll";
     
     placeTokens();
     updateGamePanel();
@@ -1118,6 +1253,9 @@ function initMultiplayerGame() {
     } else {
         document.getElementById('dice-btn').disabled = true;
         showMsg('Gra rozpoczęta! Kolejka gracza ' + opponentName + '...');
+    }
+    if (myPlayerId === 0) {
+        sendGameAction({ type: "game_init", gameState: gameState, phase: gamePhase });
     }
 }
 
@@ -1320,6 +1458,7 @@ function executeRoll(val) {
 
 function rollDice() {
     if (!gameState || gameState.rolled || gameState.gameOver) return;
+    if (isMultiplayer && gameState.turn !== myPlayerId) return;
     var player = gameState.players[gameState.turn];
     
     // Check if player is currently in practice or piwnica skip status
@@ -1327,6 +1466,7 @@ function rollDice() {
         player.skipTurnsLeft--;
         showMsg('⏳ ' + player.name + ' odbywa praktyki/przerwę! Pozostało tur do opuszczenia: ' + player.skipTurnsLeft);
         gameState.rolled = true;
+        gamePhase = "turn_resolution";
         updateGamePanel();
         if (isMultiplayer) {
             sendGameAction({
@@ -1380,7 +1520,7 @@ function handlePassStart(player, onFinished) {
                     updateGamePanel();
                 }
             }
-            if (isMultiplayer) {
+            if (isMultiplayer && player.id === myPlayerId) {
                 sendGameAction({ type: "sync_game_state", gameState: gameState });
             }
             onFinished();
@@ -1395,6 +1535,7 @@ function promptStartBonus(player, onFinished) {
         document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
         document.getElementById('start-modal').style.display = 'flex';
         startModalCallback = onFinished;
+        saveGameCheckpoint("awaiting_start_bonus");
     } else {
         if (isMultiplayer) {
             showMsg("⏳ Oczekiwanie na wybór bonusu przez gracza: " + player.name + "...");
@@ -1435,7 +1576,8 @@ function claimStartBonus(type) {
     updateGamePanel();
     
     if (isMultiplayer) {
-        sendGameAction({ type: "claim_start_bonus", bonusType: type });
+        gamePhase = "resolving_field";
+        sendGameAction({ type: "claim_start_bonus", bonusType: type, gameState: gameState, phase: gamePhase });
     }
     
     if (startModalCallback) {
@@ -1486,6 +1628,7 @@ function executeChanceCard(cardIndex) {
 }
 
 function triggerFieldArrival(player) {
+    gamePhase = "resolving_field";
     resolveOccupancy(player);
     
     var type = getCellType(player.pos);
@@ -1634,8 +1777,20 @@ function triggerQuiz(player, count) {
         total: count,
         answered: 0,
         correct: 0,
-        questions: shuffled.slice(0, count)
+        questions: shuffled.slice(0, count),
+        hiddenAnswers: []
     };
+    gamePhase = "awaiting_quiz";
+    if (isMultiplayer && player.id === myPlayerId) {
+        saveGameCheckpoint(gamePhase, { quiz: {
+            playerId: player.id,
+            total: quizContext.total,
+            answered: quizContext.answered,
+            correct: quizContext.correct,
+            questions: quizContext.questions,
+            hiddenAnswers: quizContext.hiddenAnswers
+        } });
+    }
     
     if (isMultiplayer) {
         if (player.id === myPlayerId) {
@@ -1666,6 +1821,13 @@ function showQuizQuestion() {
         btn.innerHTML = `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">${String.fromCharCode(65 + index)}:</span> ${ans}`;
         btn.onclick = function() { selectQuizAnswer(index); };
         answersContainer.appendChild(btn);
+    });
+    (quizContext.hiddenAnswers || []).forEach(function(index) {
+        var hiddenButton = answersContainer.children[index];
+        if (hiddenButton) {
+            hiddenButton.style.opacity = '0.3';
+            hiddenButton.style.pointerEvents = 'none';
+        }
     });
     
     var hintBtn = document.getElementById('quiz-hint-btn');
@@ -1702,6 +1864,7 @@ function useQuiz1Hint() {
     });
     wrongIndices.sort(function() { return 0.5 - Math.random(); });
     var toHide = wrongIndices.slice(0, 2);
+    quizContext.hiddenAnswers = toHide;
     
     var buttons = document.getElementById('quiz-answers-container').children;
     for (var i = 0; i < buttons.length; i++) {
@@ -1712,6 +1875,16 @@ function useQuiz1Hint() {
     }
     document.getElementById('quiz-hint-btn').style.display = 'none';
     showMsg("💡 Użyto podpowiedzi! Ukryto 2 błędne odpowiedzi.");
+    if (isMultiplayer && player.id === myPlayerId) {
+        saveGameCheckpoint(gamePhase, { quiz: {
+            playerId: player.id,
+            total: quizContext.total,
+            answered: quizContext.answered,
+            correct: quizContext.correct,
+            questions: quizContext.questions,
+            hiddenAnswers: quizContext.hiddenAnswers
+        } });
+    }
 }
 
 function selectQuizAnswer(selectedIndex) {
@@ -1737,6 +1910,17 @@ function selectQuizAnswer(selectedIndex) {
     }
     
     quizContext.answered++;
+    quizContext.hiddenAnswers = [];
+    if (isMultiplayer && quizContext.player.id === myPlayerId && quizContext.answered < quizContext.total) {
+        saveGameCheckpoint(gamePhase, { quiz: {
+            playerId: quizContext.player.id,
+            total: quizContext.total,
+            answered: quizContext.answered,
+            correct: quizContext.correct,
+            questions: quizContext.questions,
+            hiddenAnswers: quizContext.hiddenAnswers
+        } });
+    }
     
     setTimeout(function() {
         if (quizContext.answered < quizContext.total) {
@@ -1790,6 +1974,7 @@ function resolveQuizRewards() {
     }
     quizContext = null;
     updateGamePanel();
+    gamePhase = "turn_resolution";
     
     if (isMultiplayer) {
          if (player.id === myPlayerId) {
@@ -1830,6 +2015,7 @@ function runBotQuiz() {
 function triggerDziekanat(player) {
     if (isMultiplayer) {
         if (player.id === myPlayerId) {
+            saveGameCheckpoint("awaiting_dziekanat");
             var floor = getFloor(player.pos);
             var obronaBtn = document.getElementById('dk-btn-obrona');
             if (floor === 1 && player.crystals >= 15) {
@@ -1872,6 +2058,7 @@ function triggerDziekanat(player) {
 function closeDziekanatModal() {
     document.getElementById('dziekanat-modal').style.display = 'none';
     if (isMultiplayer) {
+        gamePhase = "turn_resolution";
         sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: "Gracz wyszedł z dziekanatu." });
         setTimeout(nextTurn, 1500);
     } else {
@@ -1924,6 +2111,7 @@ function applyDziekanat(action) {
     updateGamePanel();
     
     if (isMultiplayer) {
+        gamePhase = "turn_resolution";
         sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
         setTimeout(nextTurn, 1500);
     } else {
@@ -1974,6 +2162,8 @@ function triggerVictory(winner) {
     document.getElementById('dice-btn').disabled = true;
     
     winner.pos = 'k25';
+    gamePhase = "finished";
+    if (isMultiplayer) saveGameCheckpoint(gamePhase);
     placeTokens();
     
     var degreeText = "LICENCJAT";
@@ -2005,9 +2195,14 @@ function triggerVictory(winner) {
 
 function nextTurn() {
     if (gameState.gameOver) return;
+    if (isMultiplayer && gameState.turn !== myPlayerId) return;
     gameState.turn   = (gameState.turn + 1) % 2;
     gameState.rolled = false;
+    gamePhase = "awaiting_roll";
     updateGamePanel();
+    if (isMultiplayer) {
+        sendGameAction({ type: "turn_changed", gameState: gameState });
+    }
     var current = gameState.players[gameState.turn];
     
     if (isMultiplayer) {
@@ -2149,6 +2344,11 @@ function placeTokens() {
 function updateGamePanel() {
     if (!gameState) return;
     var p1 = gameState.players[0], p2 = gameState.players[1];
+    var diceButton = document.getElementById('dice-btn');
+    if (diceButton) {
+        diceButton.disabled = gameState.gameOver || gameState.rolled ||
+            (isMultiplayer ? gameState.turn !== myPlayerId : gameState.turn !== 0);
+    }
 
     [p1, p2].forEach(function(player, index) {
         var badge = document.querySelector('#gp-p' + (index + 1) + ' .pp-dot');

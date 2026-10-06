@@ -6,12 +6,34 @@ from sqlalchemy.orm import Session, aliased
 
 from database import get_db
 from dependencies import get_current_user
-from models import Friendship, FriendshipStatus, GameInvitation, GameInvitationStatus, User
+from models import Friendship, FriendshipStatus, GameInvitation, GameInvitationStatus, GameSession, User
 from schemas import GameInvitationCreate
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["game_invitations"])
+
+
+@router.get("/game-sessions/resumable")
+def get_resumable_game(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    sessions = (
+        db.query(GameInvitation, GameSession)
+        .join(GameSession, GameSession.invitation_id == GameInvitation.id)
+        .filter(
+            ((GameInvitation.inviter_id == current_user.id) | (GameInvitation.invitee_id == current_user.id)),
+            GameInvitation.status == GameInvitationStatus.ACCEPTED,
+            GameSession.status == "active",
+        )
+        .order_by(GameSession.updated_at.desc())
+        .all()
+    )
+    for invitation, session in sessions:
+        if not session.state.get("gameOver") and session.phase != "finished":
+            return {"invitation_id": invitation.id}
+    return {"invitation_id": None}
 
 
 @router.post("/game-invitations/send")

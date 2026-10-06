@@ -178,6 +178,15 @@ body::before{
     margin-bottom: 25px;
     line-height: 1.6;
 }
+.hero-actions{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+}
+.btn[hidden]{
+    display: none;
+}
 .btn{
     position: relative;
     display: inline-block;

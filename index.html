@@ -44,15 +44,26 @@
                 Rozpocznij przygodę na planszy pełnej wyzwań:<br>
                 Graj z znajomymi, rzucaj kostką i baw się dobrze!
             </p>
-            <a href="plansza/index.html" class="btn">
-                ZAGRAJ
-                <span class="side-left"></span>
-                <span class="side-right"></span>
-                <span class="corner corner-tl"></span>
-                <span class="corner corner-tr"></span>
-                <span class="corner corner-bl"></span>
-                <span class="corner corner-br"></span>
-            </a>
+            <div class="hero-actions">
+                <a href="plansza/index.html" class="btn">
+                    ZAGRAJ
+                    <span class="side-left"></span>
+                    <span class="side-right"></span>
+                    <span class="corner corner-tl"></span>
+                    <span class="corner corner-tr"></span>
+                    <span class="corner corner-bl"></span>
+                    <span class="corner corner-br"></span>
+                </a>
+                <a href="plansza/index.html" class="btn" id="resume-game-btn" hidden>
+                    WRÓĆ DO GRY
+                    <span class="side-left"></span>
+                    <span class="side-right"></span>
+                    <span class="corner corner-tl"></span>
+                    <span class="corner corner-tr"></span>
+                    <span class="corner corner-bl"></span>
+                    <span class="corner corner-br"></span>
+                </a>
+            </div>
         </div>
     </section>
   
@@ -105,6 +116,22 @@
                     // Ustaw inicjał użytkownika
                     const initial = userData.username ? userData.username[0].toUpperCase() : userData.email[0].toUpperCase();
                     document.getElementById('profile-icon').textContent = initial;
+
+                    try {
+                        const resumableResponse = await fetch(`${API_URL}/game-sessions/resumable`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        if (resumableResponse.ok) {
+                            const resumableGame = await resumableResponse.json();
+                            if (resumableGame.invitation_id) {
+                                const resumeButton = document.getElementById('resume-game-btn');
+                                resumeButton.href = `plansza/index.html?invite_accepted=${encodeURIComponent(resumableGame.invitation_id)}`;
+                                resumeButton.hidden = false;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Błąd sprawdzania zapisanej gry:', error);
+                    }
                 } else {
                     // Token nieważny - przekieruj do logowania
                     localStorage.removeItem('access_token');

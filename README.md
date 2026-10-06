@@ -36,19 +36,7 @@ Pobierz go z:
 
 Umieść plik `.env` w głównym katalogu projektu.
 
-**Zawartość pliku .env (dla zespołu):**
-```env
-DATABASE_USER=postgres.eogfleacrxibjeobbxjr
-DATABASE_PASSWORD=MenelBojowy2137?
-DATABASE_HOST=aws-1-eu-central-1.pooler.supabase.com
-DATABASE_PORT=5432
-DATABASE_NAME=postgres
-SECRET_KEY=twoj-sekret-klucz-zmien-to-na-produkcje
 
-# Opcjonalnie - dla wysyłania emaili (resetowanie hasła):
-# RESEND_API_KEY=re_twoj_klucz  
-# (bez tego kody będą w alertach)
-```
 
 ### 3. Zainstaluj i uruchom
 ```bash
@@ -371,9 +359,9 @@ Aplikacja jest wdrożona na Render.com:
 
 W dashboard Render dodaj te zmienne:
 ```
-DATABASE_USER=postgres.eogfleacrxibjeobbxjr
+DATABASE_USER=postgres.TWOJ_PROJECT_ID
 DATABASE_PASSWORD=...
-DATABASE_HOST=aws-1-eu-central-1.pooler.supabase.com
+DATABASE_HOST=TWOJ_HOST_SUPABASE
 DATABASE_PORT=5432
 DATABASE_NAME=postgres
 SECRET_KEY=...
