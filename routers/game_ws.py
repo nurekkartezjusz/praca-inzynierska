@@ -55,8 +55,9 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-def save_game_snapshot(db: Session, invitation_id: int, data: dict) -> GameSession:
+def save_game_snapshot(db: Session, invitation_id: int, data: dict) -> GameSession | None:
     state = data["gameState"]
+    expected_version = data.get("base_version")
     phase = data.get("phase") or {
         "game_init": "awaiting_roll",
         "turn_changed": "awaiting_roll",
@@ -75,6 +76,10 @@ def save_game_snapshot(db: Session, invitation_id: int, data: dict) -> GameSessi
             .with_for_update()
             .first()
         )
+        current_version = session.version if session is not None else 0
+        if type(expected_version) is not int or expected_version != current_version:
+            db.rollback()
+            return None
         if session is None:
             session = GameSession(
                 invitation_id=invitation_id,
@@ -103,6 +108,9 @@ def save_game_snapshot(db: Session, invitation_id: int, data: dict) -> GameSessi
             .with_for_update()
             .one()
         )
+        if type(expected_version) is not int or expected_version != session.version:
+            db.rollback()
+            return None
         session.state = state
         session.phase = phase
         session.resume_data = resume_data
@@ -288,6 +296,19 @@ async def websocket_game_endpoint(
             } and isinstance(data.get("gameState"), dict):
                 try:
                     saved_session = save_game_snapshot(db, room_id, data)
+                    if saved_session is None:
+                        current_session = db.query(GameSession).filter(
+                            GameSession.invitation_id == room_id
+                        ).first()
+                        if current_session is not None:
+                            await websocket.send_json({
+                                "type": "game_state_conflict",
+                                "state": current_session.state,
+                                "phase": current_session.phase,
+                                "resumeData": current_session.resume_data,
+                                "version": current_session.version,
+                            })
+                        continue
                     saved_version = saved_session.version
                     await websocket.send_json({
                         "type": "game_state_saved",

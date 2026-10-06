@@ -306,6 +306,8 @@ var pendingGameActions      = [];
 var wsReconnectTimer        = null;
 var wsReconnectAttempt      = 0;
 var gameSessionVersion      = 0;
+var pendingSnapshotActions  = [];
+var snapshotSaveInFlight    = false;
 var gamePhase               = "class_selection";
 var awaitingSavedSessionCheck = false;
 var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
@@ -407,10 +409,17 @@ function connectWebSocket(invitationId) {
                 sendGameAction({ type: "select_class", class: myClass });
             }
         } else if (data.type === "game_state") {
+            clearPendingSnapshotActions();
             gameSessionVersion = data.version || 0;
             restoreGameSession(data);
         } else if (data.type === "game_state_saved") {
             gameSessionVersion = data.version || gameSessionVersion;
+            snapshotSaveInFlight = false;
+            sendNextSnapshotAction();
+        } else if (data.type === "game_state_conflict") {
+            clearPendingSnapshotActions();
+            gameSessionVersion = data.version || 0;
+            restoreGameSession(data);
         } else if (data.type === "player_joined") {
             console.log("Przeciwnik dołączył: " + data.username);
             if (Array.isArray(data.players)) {
@@ -443,6 +452,7 @@ function connectWebSocket(invitationId) {
         if (ws !== socket) return;
         console.log("Rozłączono z serwerem gier. Kod: " + event.code + ", czysto: " + event.wasClean);
         ws = null;
+        clearPendingSnapshotActions();
         scheduleGameReconnect(invitationId);
     };
     
@@ -467,14 +477,21 @@ function sendGameAction(payload) {
         username: myUsername || localStorage.getItem('user_username') || 'Bez nazwy'
     });
     if (action.gameState && !action.phase) action.phase = gamePhase;
-    var serialized = JSON.stringify(action);
 
     if (ws && ws.readyState === WebSocket.OPEN) {
+        if (isSnapshotGameAction(action.type) && action.gameState) {
+            action.base_version = gameSessionVersion + pendingSnapshotActions.length + (snapshotSaveInFlight ? 1 : 0);
+            pendingSnapshotActions.push(JSON.parse(JSON.stringify(action)));
+            sendNextSnapshotAction();
+            return true;
+        }
+        var serialized = JSON.stringify(action);
         ws.send(serialized);
         return true;
     }
 
     if (!multiplayerInvitationId) return false;
+    var serialized = JSON.stringify(action);
     if (action.type !== "select_class") {
         showMsg("❌ Brak połączenia z grą. Poczekaj na ponowne połączenie i ponów akcję.");
         return false;
@@ -486,6 +503,31 @@ function sendGameAction(payload) {
     pendingGameActions.push(serialized);
     if (!ws) scheduleGameReconnect(multiplayerInvitationId);
     return false;
+}
+
+function isSnapshotGameAction(type) {
+    return [
+        "game_init",
+        "game_checkpoint",
+        "claim_start_bonus",
+        "sync_game_state",
+        "quiz_completed",
+        "dziekanat_completed",
+        "turn_skipped",
+        "turn_changed"
+    ].includes(type);
+}
+
+function sendNextSnapshotAction() {
+    if (snapshotSaveInFlight || !pendingSnapshotActions.length || !ws || ws.readyState !== WebSocket.OPEN) return;
+    var action = pendingSnapshotActions.shift();
+    snapshotSaveInFlight = true;
+    ws.send(JSON.stringify(action));
+}
+
+function clearPendingSnapshotActions() {
+    pendingSnapshotActions = [];
+    snapshotSaveInFlight = false;
 }
 
 function saveGameCheckpoint(phase, resumeData) {
