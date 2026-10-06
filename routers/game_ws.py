@@ -158,6 +158,11 @@ async def websocket_game_endpoint(
         opponent_user = db.query(User).filter(User.id == opponent_id).first()
         opponent_username = opponent_user.username if opponent_user else "Przeciwnik"
         role = "inviter" if user.id == invitation.inviter_id else "invitee"
+        saved_session = (
+            db.query(GameSession)
+            .filter(GameSession.invitation_id == invitation_id)
+            .first()
+        )
 
         # Wysłanie powitalnej paczki systemowej do podłączającego się gracza
         await websocket.send_json({
@@ -166,14 +171,10 @@ async def websocket_game_endpoint(
             "role": role,
             "username": user.username,
             "opponent_username": opponent_username,
-            "game_type": invitation.game_type
+            "game_type": invitation.game_type,
+            "has_saved_session": saved_session is not None,
         })
 
-        saved_session = (
-            db.query(GameSession)
-            .filter(GameSession.invitation_id == invitation_id)
-            .first()
-        )
         if saved_session:
             await websocket.send_json({
                 "type": "game_state",

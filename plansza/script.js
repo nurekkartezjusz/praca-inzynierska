@@ -372,6 +372,13 @@ function connectWebSocket(invitationId) {
             }
             opponentName = data.opponent_username;
             console.log("Twoja rola: " + data.role + ", Oponent: " + opponentName);
+            if (data.has_saved_session) {
+                document.body.classList.remove('confirmation-open');
+                var resumeOverlay = document.querySelector('.overlay');
+                var resumeClassPopup = document.querySelector('.class-popup');
+                if (resumeOverlay) resumeOverlay.style.display = 'none';
+                if (resumeClassPopup) resumeClassPopup.style.display = 'none';
+            }
             // Wyślij naszą klasę, jeśli została już wybrana (np. na wypadek gdyby oponent połączył się później)
             if (myClass) {
                 sendGameAction({ type: "select_class", class: myClass });
@@ -460,6 +467,9 @@ function saveGameCheckpoint(phase, resumeData) {
 function restoreGameSession(saved) {
     gameState = saved.state;
     gamePhase = saved.phase || "awaiting_roll";
+    myClass = gameState.players[myPlayerId].klass;
+    opponentClass = gameState.players[1 - myPlayerId].klass;
+    opponentName = gameState.players[1 - myPlayerId].name;
     quizContext = null;
 
     document.body.classList.remove('confirmation-open');
@@ -657,6 +667,7 @@ function showClassSelectionPopup() {
 document.addEventListener("DOMContentLoaded", function() {
   var urlParams = new URLSearchParams(window.location.search);
   var inviteAcceptedId = urlParams.get('invite_accepted');
+    var isResume = urlParams.get('resume') === '1';
   if (inviteAcceptedId) {
     connectWebSocket(inviteAcceptedId);
     
@@ -666,10 +677,17 @@ document.addEventListener("DOMContentLoaded", function() {
     var mainWindow = document.querySelector('.main-window');
 
     if (choicePopup) choicePopup.style.display = 'none';
-    if (classPopup) classPopup.style.display = 'block';
-    if (overlay) overlay.style.display = 'flex';
     if (mainWindow) mainWindow.style.display = 'none';
-    document.body.classList.add('confirmation-open');
+        if (isResume) {
+            if (classPopup) classPopup.style.display = 'none';
+            if (overlay) overlay.style.display = 'none';
+            document.body.classList.remove('confirmation-open');
+            showMsg('Wznawianie zapisanej gry...');
+        } else {
+            if (classPopup) classPopup.style.display = 'block';
+            if (overlay) overlay.style.display = 'flex';
+            document.body.classList.add('confirmation-open');
+        }
 
     window.history.replaceState({}, document.title, '/plansza/');
   }
@@ -679,7 +697,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var classPopup      = document.querySelector('.class-popup');
   var mainWindow      = document.querySelector('.main-window');
   var selectedClass   = null;
-  document.body.classList.add('confirmation-open');
+    if (!isResume) document.body.classList.add('confirmation-open');
 
   // Krok 1a: Wybór bota
   var botBtn = document.getElementById('bot-choice-btn');

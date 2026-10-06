@@ -125,7 +125,7 @@
                             const resumableGame = await resumableResponse.json();
                             if (resumableGame.invitation_id) {
                                 const resumeButton = document.getElementById('resume-game-btn');
-                                resumeButton.href = `plansza/index.html?invite_accepted=${encodeURIComponent(resumableGame.invitation_id)}`;
+                                resumeButton.href = `plansza/index.html?invite_accepted=${encodeURIComponent(resumableGame.invitation_id)}&resume=1`;
                                 resumeButton.hidden = false;
                             }
                         }
