@@ -1659,21 +1659,32 @@ function executeRoll(val) {
 function rollDice() {
     if (!gameState || gameState.rolled || gameState.gameOver) return;
     if (isMultiplayer && gameState.turn !== myPlayerId) return;
+    if (isMultiplayer && (!ws || ws.readyState !== WebSocket.OPEN)) {
+        showMsg("❌ Brak połączenia z grą. Poczekaj na ponowne połączenie i ponów akcję.");
+        return;
+    }
     var player = gameState.players[gameState.turn];
     
     // Check if player is currently in practice or piwnica skip status
     if (player.skipTurnsLeft > 0) {
+        var previousPhase = gamePhase;
         player.skipTurnsLeft--;
         showMsg('⏳ ' + player.name + ' odbywa praktyki/przerwę! Pozostało tur do opuszczenia: ' + player.skipTurnsLeft);
         gameState.rolled = true;
         gamePhase = "turn_resolution";
         updateGamePanel();
         if (isMultiplayer) {
-            sendGameAction({
+            if (!sendGameAction({
                 type: "turn_skipped",
                 gameState: gameState,
                 msg: '⏳ ' + player.name + ' opuszcza turę. Pozostało tur do opuszczenia: ' + player.skipTurnsLeft
-            });
+            })) {
+                player.skipTurnsLeft++;
+                gameState.rolled = false;
+                gamePhase = previousPhase;
+                updateGamePanel();
+                return;
+            }
         }
         scheduleNextTurn(1800);
         return;
@@ -1681,7 +1692,7 @@ function rollDice() {
     
     var val = Math.floor(Math.random() * 6) + 1;
     if (isMultiplayer) {
-        sendGameAction({ type: "roll_dice", value: val });
+        if (!sendGameAction({ type: "roll_dice", value: val })) return;
     }
     executeRoll(val);
 }

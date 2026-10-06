@@ -22,9 +22,11 @@ class GameRoom:
     def add(self, user_id: int, websocket: WebSocket):
         self.connections[user_id] = websocket
 
-    def remove(self, user_id: int, websocket: WebSocket):
+    def remove(self, user_id: int, websocket: WebSocket) -> bool:
         if self.connections.get(user_id) is websocket:
             del self.connections[user_id]
+            return True
+        return False
 
     async def broadcast(self, message: dict, exclude_user_id: int = None):
         for user_id, ws in list(self.connections.items()):
@@ -312,14 +314,14 @@ async def websocket_game_endpoint(
         if user:
             logger.info(f"Użytkownik {user.username} rozłączony z gry {invitation_id}")
             room = manager.get_or_create_room(room_id)
-            room.remove(user.id, websocket)
-            role = "inviter" if user.id == invitation.inviter_id else "invitee"
-            await room.broadcast({
-                "type": "player_left",
-                "username": user.username,
-                "role": role,
-                "player_id": player_id,
-            }, exclude_user_id=user.id)
+            if room.remove(user.id, websocket):
+                role = "inviter" if user.id == invitation.inviter_id else "invitee"
+                await room.broadcast({
+                    "type": "player_left",
+                    "username": user.username,
+                    "role": role,
+                    "player_id": player_id,
+                }, exclude_user_id=user.id)
             manager.remove_room_if_empty(room_id)
     except Exception as e:
         username_str = user.username if user else "nieznany"
