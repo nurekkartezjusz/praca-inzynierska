@@ -309,6 +309,7 @@ var gameSessionVersion      = 0;
 var gamePhase               = "class_selection";
 var awaitingSavedSessionCheck = false;
 var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
+var myUserId                = null;
 var roomPlayers             = [];
 var playerClasses           = {};
 var isRoomHost               = false;
@@ -378,7 +379,9 @@ function connectWebSocket(invitationId) {
             }
                 if (Number.isInteger(data.player_id)) myPlayerId = data.player_id;
             roomPlayers = Array.isArray(data.players) ? data.players : [];
-            isRoomHost = data.host_id === roomPlayers[myPlayerId]?.user_id;
+            myUserId = roomPlayers[myPlayerId]?.user_id || myUserId;
+            updateMyPlayerSlot();
+            isRoomHost = data.host_id === myUserId;
             myUsername = data.username || myUsername;
                 opponentName = data.opponent_username;
                 if (Array.isArray(data.players)) {
@@ -410,7 +413,10 @@ function connectWebSocket(invitationId) {
             gameSessionVersion = data.version || gameSessionVersion;
         } else if (data.type === "player_joined") {
             console.log("Przeciwnik dołączył: " + data.username);
-            if (Array.isArray(data.players)) roomPlayers = data.players;
+            if (Array.isArray(data.players)) {
+                roomPlayers = data.players;
+                updateMyPlayerSlot();
+            }
             renderLobby();
             // Ponieważ nowy gracz dołączył, na pewno nie zna jeszcze naszej klasy. Wyślijmy ją!
             if (myClass) {
@@ -553,7 +559,9 @@ function restoreGameSession(saved) {
 function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
     if (payload.type === "select_class") {
         if (!Number.isInteger(senderPlayerId) || senderPlayerId < 0) return;
-        playerClasses[senderPlayerId] = { klass: payload.class, name: payload.username || (roomPlayers[senderPlayerId] || {}).username };
+        var sender = roomPlayers.find(function(player) { return player.id === senderPlayerId; });
+        if (!sender) return;
+        playerClasses[sender.user_id] = { klass: payload.class, name: payload.username || sender.username };
         renderLobby();
     } else if (payload.type === "roll_dice") {
         if (!gameState || senderPlayerId !== gameState.turn || gameState.rolled ||
@@ -738,11 +746,18 @@ function refreshLobby() {
         return response.json();
     }).then(function(data) {
         roomPlayers = data.players || [];
+        updateMyPlayerSlot();
         renderLobby(data.pending || []);
         if (isRoomHost && roomPlayers.length >= 2 && (!ws || ws.readyState === WebSocket.CLOSED)) {
             connectWebSocket(multiplayerInvitationId);
         }
     }).catch(function(error) { console.warn(error.message); });
+}
+
+function updateMyPlayerSlot() {
+    if (myUserId === null) return;
+    var ownPlayer = roomPlayers.find(function(player) { return player.user_id === myUserId; });
+    if (ownPlayer) myPlayerId = ownPlayer.id;
 }
 
 function renderLobby(pendingPlayers) {
@@ -758,7 +773,7 @@ function renderLobby(pendingPlayers) {
         var item = document.createElement('li');
         var name = document.createElement('span');
         var status = document.createElement('span');
-        var picked = playerClasses[player.id];
+        var picked = playerClasses[player.user_id];
         name.textContent = (player.username || 'Gracz') + (player.user_id === (roomPlayers[0] || {}).user_id ? ' (gospodarz)' : '');
         status.textContent = picked ? 'Klasa: ' + picked.klass : 'Wybiera klasę';
         item.append(name, status);
@@ -769,12 +784,13 @@ function renderLobby(pendingPlayers) {
         item.textContent = player.username + ' - oczekuje';
         roster.appendChild(item);
     });
-    var allClassesChosen = roomPlayers.length >= 2 && roomPlayers.every(function(player) { return !!playerClasses[player.id]; });
+    var allClassesChosen = roomPlayers.length >= 2 && roomPlayers.every(function(player) { return !!playerClasses[player.user_id]; });
     summary.textContent = roomPlayers.length + '/4 graczy; potrzeba co najmniej 2 i wyboru klasy przez każdego.';
     startButton.style.display = isRoomHost ? '' : 'none';
     inviteButton.style.display = isRoomHost && roomPlayers.length + pendingPlayers.length < 4 ? '' : 'none';
-    classButton.textContent = playerClasses[myPlayerId] ? 'Zmieniono klasę: ' + playerClasses[myPlayerId].klass : 'Wybierz klasę';
-    classButton.disabled = !!playerClasses[myPlayerId];
+    var mySelection = playerClasses[myUserId];
+    classButton.textContent = mySelection ? 'Wybrana klasa: ' + mySelection.klass : 'Wybierz klasę';
+    classButton.disabled = !!mySelection;
     startButton.disabled = !allClassesChosen;
 }
 
@@ -894,7 +910,7 @@ document.addEventListener("DOMContentLoaded", function() {
       setConfirmationOpen(false);
       if (isMultiplayer) {
         myClass = selectedClass;
-                playerClasses[myPlayerId] = { klass: selectedClass, name: myUsername };
+                playerClasses[myUserId] = { klass: selectedClass, name: myUsername };
         sendGameAction({ type: "select_class", class: selectedClass });
                 showMsg("Klasa wybrana. Gospodarz rozpocznie grę, gdy wszyscy będą gotowi.");
         
@@ -1375,14 +1391,15 @@ var quizContext = null;
 
 function initMultiplayerGame() {
     if (!isRoomHost || roomPlayers.length < 2 || roomPlayers.length > 4 ||
-        roomPlayers.some(function(player) { return !playerClasses[player.id]; })) return;
+        roomPlayers.some(function(player) { return !playerClasses[player.user_id]; })) return;
     gameState = {
         players: roomPlayers.map(function(player, index) {
-            var klass = playerClasses[index].klass;
+            var selection = playerClasses[player.user_id];
+            var klass = selection.klass;
             var stats = STATYSTYKI[klass];
             return {
                 id: index,
-                name: player.username || playerClasses[index].name || 'Gracz ' + (index + 1),
+                name: player.username || selection.name || 'Gracz ' + (index + 1),
                 pos: 84,
                 klass: klass,
                 skipTurnsLeft: 0,

@@ -148,7 +148,7 @@ async def websocket_game_endpoint(
         accepted_invitations = db.query(GameInvitation).filter(
             or_(GameInvitation.id == room_id, GameInvitation.room_id == room_id),
             GameInvitation.status == GameInvitationStatus.ACCEPTED,
-        ).order_by(GameInvitation.id.asc()).all()
+        ).order_by(GameInvitation.updated_at.asc(), GameInvitation.id.asc()).all()
         player_user_ids = [room_invitation.inviter_id] + [item.invitee_id for item in accepted_invitations]
         if user.id not in player_user_ids:
             logger.warning(f"WebSocket odrzucony: użytkownik {user.username} nie ma praw do gry {invitation_id}")

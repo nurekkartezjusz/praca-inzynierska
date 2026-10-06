@@ -356,7 +356,7 @@ def get_game_room(
     ).filter(
         or_(GameInvitation.id == room_id, GameInvitation.room_id == room_id),
         GameInvitation.status.in_([GameInvitationStatus.PENDING, GameInvitationStatus.ACCEPTED]),
-    ).order_by(GameInvitation.id.asc()).all()
+    ).order_by(GameInvitation.updated_at.asc(), GameInvitation.id.asc()).all()
     is_host = current_user.id == room.inviter_id
     is_member = any(inv.invitee_id == current_user.id for inv, _ in invitations)
     if not is_host and not is_member:
