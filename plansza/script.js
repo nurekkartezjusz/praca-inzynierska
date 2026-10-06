@@ -719,7 +719,7 @@ function showLobby() {
     if (modal) modal.style.display = 'flex';
     renderLobby();
     if (lobbyPollTimer) clearInterval(lobbyPollTimer);
-    lobbyPollTimer = setInterval(refreshLobby, 5000);
+    lobbyPollTimer = setInterval(refreshLobby, 3000);
 }
 
 function hideLobby() {
@@ -739,6 +739,9 @@ function refreshLobby() {
     }).then(function(data) {
         roomPlayers = data.players || [];
         renderLobby(data.pending || []);
+        if (isRoomHost && roomPlayers.length >= 2 && (!ws || ws.readyState === WebSocket.CLOSED)) {
+            connectWebSocket(multiplayerInvitationId);
+        }
     }).catch(function(error) { console.warn(error.message); });
 }
 
@@ -1045,11 +1048,13 @@ function inviteFriend(username) {
             return;
         }
         pendingInvitationId = data.invitation_id;
-        opponentName = username;
-        document.getElementById('wait-name').textContent = username;
-        document.getElementById('wait-modal').classList.add('show');
-        setFriendBtnWaiting(username);
-        outgoingPollTimer = setInterval(pollOutgoing, 3000);
+        multiplayerInvitationId = data.room_id || data.invitation_id;
+        isMultiplayer = true;
+        isRoomHost = true;
+        roomPlayers = [{ id: 0, username: myUsername || 'Gospodarz' }];
+        awaitingSavedSessionCheck = false;
+        showLobby();
+        refreshLobby();
     })
     .catch(function(e) { alert('Błąd: ' + e.message); });
 }
@@ -1173,15 +1178,17 @@ function checkPendingOutgoing() {
     })
     .then(function(r) { return r.json(); })
     .then(function(list) {
-        var inv = list.find(function(i) { return i.game_type === 'wielka-studencka-batalla'; });
+        var inv = list.find(function(i) {
+            return i.game_type === 'wielka-studencka-batalla' && i.id === i.room_id;
+        }) || list.find(function(i) { return i.game_type === 'wielka-studencka-batalla'; });
         if (!inv) return;
-        // Przywróć stan oczekiwania
         pendingInvitationId = inv.id;
-        opponentName = inv.invitee_username;
-        document.getElementById('wait-name').textContent = inv.invitee_username;
-        document.getElementById('wait-modal').classList.add('show');
-        setFriendBtnWaiting(inv.invitee_username);
-        if (!outgoingPollTimer) outgoingPollTimer = setInterval(pollOutgoing, 3000);
+        multiplayerInvitationId = inv.room_id || inv.id;
+        isMultiplayer = true;
+        isRoomHost = true;
+        roomPlayers = [{ id: 0, username: myUsername || 'Gospodarz' }];
+        showLobby();
+        refreshLobby();
     })
     .catch(function() {});
 }
