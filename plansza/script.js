@@ -665,8 +665,7 @@ function closeChoicePopup() {
   returnToMainPage();
 }
 
-function showClassSelectionPopup() {
-    if (awaitingSavedSessionCheck) return;
+function displayClassSelectionPopup() {
   var overlay = document.querySelector('.overlay');
   var mainWindow = document.querySelector('.main-window');
   var classPopup = document.querySelector('.class-popup');
@@ -674,6 +673,36 @@ function showClassSelectionPopup() {
   if (overlay) overlay.style.display = 'flex';
   if (mainWindow) mainWindow.style.display = 'none';
   if (classPopup) classPopup.style.display = 'block';
+}
+
+function showClassSelectionPopup() {
+    if (awaitingSavedSessionCheck) return;
+    if (!isMultiplayer || !multiplayerInvitationId) {
+        displayClassSelectionPopup();
+        return;
+    }
+
+    var token = localStorage.getItem('access_token');
+    fetch(API_URL + '/game-sessions/resumable?invitation_id=' + encodeURIComponent(multiplayerInvitationId), {
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(response) {
+        if (!response.ok) throw new Error('Nie udało się sprawdzić zapisanej gry');
+        return response.json();
+    })
+    .then(function(data) {
+        if (gameState) return;
+        if (String(data.invitation_id) === String(multiplayerInvitationId)) {
+            document.body.classList.remove('confirmation-open');
+            showMsg('Wznawianie zapisanej gry...');
+            return;
+        }
+        displayClassSelectionPopup();
+    })
+    .catch(function(error) {
+        console.error('Błąd sprawdzania zapisanej gry:', error);
+        if (!gameState) displayClassSelectionPopup();
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function() {

@@ -16,6 +16,7 @@ router = APIRouter(tags=["game_invitations"])
 
 @router.get("/game-sessions/resumable")
 def get_resumable_game(
+    invitation_id: int | None = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -28,8 +29,10 @@ def get_resumable_game(
             GameSession.status == "active",
         )
         .order_by(GameSession.updated_at.desc())
-        .all()
     )
+    if invitation_id is not None:
+        sessions = sessions.filter(GameInvitation.id == invitation_id)
+    sessions = sessions.all()
     for invitation, session in sessions:
         if not session.state.get("gameOver") and session.phase != "finished":
             return {"invitation_id": invitation.id}
