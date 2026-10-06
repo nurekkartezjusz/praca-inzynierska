@@ -216,12 +216,19 @@ async def websocket_game_endpoint(
                 "turn_skipped",
                 "turn_changed",
             } and isinstance(data.get("gameState"), dict):
-                saved_session = save_game_snapshot(db, invitation_id, data)
-                saved_version = saved_session.version
-                await websocket.send_json({
-                    "type": "game_state_saved",
-                    "version": saved_version,
-                })
+                try:
+                    saved_session = save_game_snapshot(db, invitation_id, data)
+                    saved_version = saved_session.version
+                    await websocket.send_json({
+                        "type": "game_state_saved",
+                        "version": saved_version,
+                    })
+                except Exception:
+                    db.rollback()
+                    logger.exception(
+                        "Nie udało się zapisać snapshotu gry %s; przekazuję akcję dalej",
+                        invitation_id,
+                    )
             # Przesyłamy każdą wiadomość z payloadem do drugiego gracza
             await room.broadcast({
                 "type": "game_action",
