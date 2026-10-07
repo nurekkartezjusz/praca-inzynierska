@@ -177,6 +177,19 @@ function renderAvatar(avatarState, container) {
 
 var currentUserAvatar = null;
 
+function parseAvatarState(avatar) {
+    if (!avatar) return null;
+    try {
+        var avatarState = typeof avatar === 'string' ? JSON.parse(avatar) : avatar;
+        return avatarState && typeof avatarState === 'object' && !Array.isArray(avatarState)
+            ? avatarState
+            : null;
+    } catch (error) {
+        console.warn("Nie udało się odczytać konfiguracji awatara:", error);
+        return null;
+    }
+}
+
 function renderAvatarLayers(container, avatarState) {
     ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"].forEach(part => {
         if (!container.querySelector("." + part)) {
@@ -218,7 +231,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const userData = await safeJsonParse(response);
             if (!userData.avatar) return;
 
-            const avatarState = JSON.parse(userData.avatar);
+            const avatarState = parseAvatarState(userData.avatar);
+            if (!avatarState) return;
             currentUserAvatar = avatarState;
 
             const containers = document.querySelectorAll('.avatar-container');
@@ -560,6 +574,13 @@ function restoreGameSession(saved) {
         }
         if (savedPlayer) myPlayerId = savedPlayer.id;
     }
+    gameState.players.forEach(function(player) {
+        if (player.avatar) return;
+        var roomPlayer = roomPlayers.find(function(roomPlayer) {
+            return roomPlayer.user_id === player.user_id;
+        });
+        if (roomPlayer) player.avatar = parseAvatarState(roomPlayer.avatar);
+    });
     gamePhase = saved.phase || "awaiting_roll";
     if (gamePhase === "awaiting_roll") gameState.rolled = false;
     gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
@@ -1489,6 +1510,7 @@ function initMultiplayerGame() {
             return {
                 id: index,
                 user_id: player.user_id,
+                avatar: parseAvatarState(player.avatar),
                 name: player.username || selection.name || 'Gracz ' + (index + 1),
                 pos: 84,
                 klass: klass,
@@ -2589,8 +2611,9 @@ function placeTokens() {
 
         var isCurrentUser = isMultiplayer ? p.id === myPlayerId : p.id === 0;
         if (isCurrentUser) token.classList.add('player-token-current');
-        if (isCurrentUser && currentUserAvatar) {
-            renderAvatarLayers(token, currentUserAvatar);
+        var avatarState = p.avatar || (isCurrentUser ? currentUserAvatar : null);
+        if (avatarState) {
+            renderAvatarLayers(token, avatarState);
         } else if (!isMultiplayer && p.id === 1) {
             var img = document.createElement('img');
             img.src = 'img/komputer.png';
@@ -2618,9 +2641,12 @@ function updateGamePanel() {
         var isCurrentUser = isMultiplayer ? player.id === myPlayerId : player.id === 0;
         if (!badge) return;
 
-        if (isCurrentUser && currentUserAvatar) {
+        var avatarState = player.avatar || (isCurrentUser ? currentUserAvatar : null);
+        if (avatarState) {
             if (!badge.classList.contains('avatar-container')) {
-                renderAvatarLayers(badge, currentUserAvatar);
+                renderAvatarLayers(badge, avatarState);
+            } else {
+                renderAvatar(avatarState, badge);
             }
             badge.style.background = 'transparent';
         } else {

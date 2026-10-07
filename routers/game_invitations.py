@@ -363,10 +363,22 @@ def get_game_room(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Nie należysz do tego pokoju")
 
     host = db.query(User).filter(User.id == room.inviter_id).first()
-    players = [{"id": 0, "user_id": room.inviter_id, "username": host.username, "status": "accepted"}]
+    players = [{
+        "id": 0,
+        "user_id": room.inviter_id,
+        "username": host.username,
+        "avatar": host.avatar,
+        "status": "accepted",
+    }]
     for invitation_row, user in invitations:
         if invitation_row.status == GameInvitationStatus.ACCEPTED:
-            players.append({"id": len(players), "user_id": user.id, "username": user.username, "status": "accepted"})
+            players.append({
+                "id": len(players),
+                "user_id": user.id,
+                "username": user.username,
+                "avatar": user.avatar,
+                "status": "accepted",
+            })
 
     pending = [
         {"user_id": user.id, "username": user.username, "status": "pending"}

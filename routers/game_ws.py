@@ -205,7 +205,12 @@ async def websocket_game_endpoint(
         player_rows = db.query(User).filter(User.id.in_(player_user_ids)).all()
         user_by_id = {player.id: player for player in player_rows}
         players = [
-            {"id": index, "user_id": user_id, "username": user_by_id[user_id].username}
+            {
+                "id": index,
+                "user_id": user_id,
+                "username": user_by_id[user_id].username,
+                "avatar": user_by_id[user_id].avatar,
+            }
             for index, user_id in enumerate(player_user_ids)
         ]
         saved_session = (
