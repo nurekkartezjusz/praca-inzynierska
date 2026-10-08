@@ -225,9 +225,9 @@ button:hover,.going-back:hover{
     text-decoration: none;
     color: #000;
 }
-img.stat-img{
-    width: 25px;
-    height: 25px;
+.stat-img{
+    width: 25px !important;
+    height: 25px !important;
 }
 @media (max-width: 1400px){
     .book{ 
