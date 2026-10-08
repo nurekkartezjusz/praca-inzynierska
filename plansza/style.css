@@ -626,10 +626,10 @@ body {
 .player-token-2 { left: 2px;  top: 2px;  }
 .player-token-3 { right: 2px; bottom: 2px; }
 .player-token-4 { right: 2px; top: 2px; }
-.player-token-1 { background-color: #e74c3c !important; }
-.player-token-2 { background-color: #4488d6 !important; }
-.player-token-3 { background-color: #31a36b !important; }
-.player-token-4 { background-color: #e5ac28 !important; }
+.player-token-1 { background-color: rgba(231, 76, 60, 0.25) !important; }
+.player-token-2 { background-color: rgba(68, 136, 214, 0.25) !important; }
+.player-token-3 { background-color: rgba(49, 163, 107, 0.25) !important; }
+.player-token-4 { background-color: rgba(229, 172, 40, 0.25) !important; }
 .player-token { border-radius: 50%; }
 
 /* ==========================================
@@ -702,12 +702,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    width: 200px;
 }
 .pp-name {
     color: #fff;
     font-size: 11px;
     font-weight: bold;
     text-shadow: 1px 1px 0 #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .pp-stat {
     color: #fff;
@@ -795,6 +798,8 @@ body {
     padding-top: 10px;
     border-top: 1px solid rgba(255,255,255,0.25);
     min-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .fp-modal {

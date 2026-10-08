@@ -1350,107 +1350,122 @@ function escapeHtml(str) {
 
 var EASY_QUESTIONS = [
     {
-        q: "Ile to jest 2 + 2 * 2?",
-        a: ["8", "6", "4", "16"],
+        q: "Kiedy zostały założone WSB?",
+        a: ["1992 roku", "1994 roku", "1996 roku", "1998 roku"],
         c: 1
     },
     {
-        q: "Co oznacza skrót WSB?",
-        a: ["Warszawska Szkoła Biznesu", "Wyższa Szkoła Bankowa", "Wielka Studencka Batalia", "Samorząd Studencki"],
-        c: 1
-    },
-    {
-        q: "Który skrót klawiszowy służy do kopiowania tekstu?",
-        a: ["Ctrl + C", "Ctrl + V", "Ctrl + X", "Ctrl + Z"],
-        c: 0
-    },
-    {
-        q: "Co jest głównym zadaniem pamięci RAM?",
-        a: ["Przechowywanie plików na dysku", "Pamięć robocza procesora", "Wyświetlanie obrazu", "Zasilanie podzespołów"],
-        c: 1
-    },
-    {
-        q: "Który dokument potwierdza status studenta?",
-        a: ["Dowód osobisty", "Prawo jazdy", "Legitymacja studencka", "Karta biblioteczna"],
+        q: "Gdzie zostało założone pierwsze WSB?",
+        a: ["W Warszawie", "W Krakowie", "W Poznaniu", "W Katowicach"],
         c: 2
     },
     {
-        q: "Który semestr kończy standardowe 3-letnie studia licencjackie?",
-        a: ["5. semestr", "6. semestr", "7. semestr", "8. semestr"],
-        c: 1
-    },
-    {
-        q: "W jakim pliku najczęściej zapisuje się kod JavaScript?",
-        a: ["style.css", "index.html", "script.js", "main.py"],
-        c: 2
-    },
-    {
-        q: "Jakie pismo składamy, ubiegając się o pracę?",
-        a: ["CV", "Paragon", "Podanie o urlop", "Mandat"],
+        q: "Jakie są dostępne formy studiów?",
+        a: ["Stacjonarne i niestacjonarne", "Tylko stacjonarne", "Tylko niestacjonarne", "Online i zaoczne"],
         c: 0
     },
     {
-        q: "Kto przewodniczy komisji obrony pracy dyplomowej?",
-        a: ["Przewodniczący komisji", "Starosta roku", "Dziekan (zawsze)", "Prezydent miasta"],
+        q: "Co to jest BAM?",
+        a: ["Program wymiany międzynarodowej", "Coroczne badania satysfakcji studentów i absolwentów", "Program stypendialny", "System rejestracji zajęć"],
+        c: 1
+    },
+    {
+        q: "Ile trwają studia licencjackie?",
+        a: ["2 lata", "3 lata", "3,5 roku", "4 lata"],
+        c: 1
+    },
+    {
+        q: "Ile trwają studia inżynierskie?",
+        a: ["3 lata", "3,5 roku", "4 lata", "5 lat"],
+        c: 1
+    },
+    {
+        q: "Co oznacza skrót VIS?",
+        a: ["Very Important Student", "Virtual Internet Studies", "Very Important School", "Virtual Information System"],
         c: 0
     },
     {
-        q: "Ile bitów składa się na jeden bajt (Byte)?",
-        a: ["4 bity", "8 bitów", "16 bitów", "32 bity"],
+        q: "Co oznacza skrót UKW?",
+        a: ["Uniwersytet Kierunków WSB", "Uniwersytet Każdego Wieku", "Uniwersytet Kształcenia Wirtualnego", "Uniwersytet Kompetencji Wiedzy"],
         c: 1
+    },
+    {
+        q: "Co to jest program Erasmus+?",
+        a: ["Program umożliwiający wyjazd na semestr lub dwa do uczelni partnerskiej za granicą", "Program przyznający automatyczne stypendia", "Program umożliwiający zmianę kierunku studiów", "Program przeznaczony wyłącznie dla absolwentów"],
+        c: 0
+    },
+    {
+        q: "Kto może skorzystać z programu Erasmus+?",
+        a: ["Tylko studenci pierwszego roku", "Studenci, którzy ukończyli pierwszy rok studiów", "Tylko absolwenci", "Wyłącznie doktoranci"],
+        c: 1
+    },
+    {
+        q: "Co to są studia MBA?",
+        a: ["Studia dla studentów pierwszego roku", "Studia dla menedżerów z minimum 2-letnim doświadczeniem na stanowisku kierowniczym", "Studia dla osób bez doświadczenia zawodowego", "Studia przeznaczone wyłącznie dla doktorantów"],
+        c: 1
+    },
+    {
+        q: "Co to są studia EMBA?",
+        a: ["Studia dla menedżerów z minimum 5-letnim doświadczeniem na stanowisku kierowniczym", "Studia dla studentów pierwszego roku", "Studia dla osób bez doświadczenia zawodowego", "Studia przeznaczone dla absolwentów szkół średnich"],
+        c: 0
     }
 ];
 
 var HARD_QUESTIONS = [
     {
-        q: "Który algorytm sortowania ma najgorszą złożoność czasową O(n^2)?",
-        a: ["Quick Sort", "Merge Sort", "Bubble Sort", "Heap Sort"],
-        c: 2
-    },
-    {
-        q: "Który protokół sieciowy działa w warstwie aplikacji modelu OSI?",
-        a: ["TCP", "IP", "HTTP", "UDP"],
-        c: 2
-    },
-    {
-        q: "Co to jest polimorfizm w programowaniu obiektowym?",
-        a: ["Wielopostaciowość metod", "Ukrywanie pól", "Dziedziczenie wielokrotne", "Tworzenie struktur danych"],
+        q: "Kto był założycielem WSB?",
+        a: ["Centrum Rozwoju Szkół Wyższych Merito", "Fundacja Rozwoju Edukacji", "Centrum Akademickiego Rozwoju", "Stowarzyszenie Szkół Wyższych"],
         c: 0
     },
     {
-        q: "Czym jest 'Query' w kontekście baz danych SQL?",
-        a: ["Zapytaniem do bazy", "Strukturą tabeli", "Kluczem głównym", "Dodatkowym indeksem"],
-        c: 0
-    },
-    {
-        q: "Który z tych kierunków nie kończy się tytułem inżyniera?",
-        a: ["Informatyka", "Zarządzanie i Inżynieria Produkcji", "Filologia Angielska", "Logistyka (inżynierska)"],
+        q: "Ile kierunków można studiować na WSB?",
+        a: ["118 kierunków", "128 kierunków", "138 kierunków", "148 kierunków"],
         c: 2
     },
     {
-        q: "Jaka baza danych przechowuje dane w formacie klucz-wartość?",
-        a: ["PostgreSQL", "SQLite", "Redis", "MySQL"],
+        q: "Ile lat istnieje WSB w 2026 roku?",
+        a: ["27 lat", "29 lat", "31 lat", "33 lata"],
         c: 2
     },
     {
-        q: "Która metoda protokołu HTTP jest uważana za idempotentną?",
-        a: ["POST", "GET", "PATCH", "CONNECT"],
+        q: "W ilu miastach znajduje się uczelnia WSB?",
+        a: ["7 miastach", "9 miastach", "11 miastach", "13 miastach"],
+        c: 2
+    },
+    {
+        q: "W jaki sposób możesz realizować studia?",
+        a: ["Tylko tradycyjnie i online", "Tradycyjnie, online, hybrydowo, w hybrydzie Smart, hybrydowo popołudniowo, hybrydowo popołudniowo-weekendowo oraz Hi Flex", "Tylko stacjonarnie i niestacjonarnie", "Tylko online, hybrydowo i weekendowo"],
         c: 1
     },
     {
-        q: "Co robi polecenie systemów kontroli wersji: git merge?",
-        a: ["Tworzy nowe repozytorium", "Pobiera najnowsze zmiany z serwera", "Scala wybraną gałąź z obecną gałęzią", "Cofa ostatni commit"],
+        q: "Z jakich platform korzystamy na co dzień na uczelni?",
+        a: ["Moodle, MeritoGo i Microsoft Teams", "Moodle, EduPortal i CampusNet", "MeritoGo, StudyHub i EduSpace", "Microsoft Teams, StudentBox i LearnPoint"],
+        c: 0
+    },
+    {
+        q: "Co oznacza skrót IACBE?",
+        a: ["International Academic Council for Business Education", "International Accreditation Council for Business Education", "International Association of Colleges for Business Education", "International Accreditation Center for Business Education"],
+        c: 1
+    },
+    {
+        q: "Do ilu krajów można wyjechać w ramach programu Erasmus+?",
+        a: ["35 krajów", "40 krajów", "45 krajów", "50 krajów"],
         c: 2
     },
     {
-        q: "Kto jest głównym twórcą języka Python?",
-        a: ["Guido van Rossum", "Dennis Ritchie", "Bjarne Stroustrup", "James Gosling"],
-        c: 0
+        q: "Do ilu uczelni partnerskich można wyjechać w ramach programu Erasmus+?",
+        a: ["186 uczelni", "196 uczelni", "206 uczelni", "216 uczelni"],
+        c: 2
     },
     {
-        q: "Z ilu bitów składa się adres IPv4?",
-        a: ["32 bity", "64 bity", "128 bitów", "16 bitów"],
-        c: 0
+        q: "Ilu studentów korzysta z programu Erasmus+ każdego roku?",
+        a: ["Około 300 studentów", "Około 400 studentów", "Około 500 studentów", "Około 600 studentów"],
+        c: 2
+    },
+    {
+        q: "Co oznacza skrót CBiK?",
+        a: ["Centrum Badań i Kształcenia", "Komórka zajmująca się grantami, komercjalizacją i wpływem społeczno-gospodarczym", "Centrum Biznesu i Kariery", "Centrum Badań i Komunikacji"],
+        c: 1
     }
 ];
 

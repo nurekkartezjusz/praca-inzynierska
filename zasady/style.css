@@ -225,6 +225,10 @@ button:hover,.going-back:hover{
     text-decoration: none;
     color: #000;
 }
+.stat-img{
+    width: 25px;
+    height: 25px;
+}
 @media (max-width: 1400px){
     .book{ 
         transform: scale(0.95); 
