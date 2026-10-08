@@ -225,7 +225,7 @@ button:hover,.going-back:hover{
     text-decoration: none;
     color: #000;
 }
-.stat-img{
+img.stat-img{
     width: 25px;
     height: 25px;
 }
