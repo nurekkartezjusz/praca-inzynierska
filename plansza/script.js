@@ -381,6 +381,12 @@ function connectWebSocket(invitationId) {
         if (ws !== socket) return;
         var data = JSON.parse(event.data);
         if (data.type === 'system') {
+            console.log('System message received:', {
+                has_saved_session: data.has_saved_session,
+                awaitingSavedSessionCheck: awaitingSavedSessionCheck,
+                player_id: data.player_id,
+                role: data.role
+            });
             myPlayerId = Number.isInteger(data.player_id) ? data.player_id : (data.role === 'inviter' ? 0 : 1);
             roomPlayers = Array.isArray(data.players) ? data.players : [];
             myUserId = roomPlayers[myPlayerId]?.user_id || myUserId;
@@ -391,6 +397,7 @@ function connectWebSocket(invitationId) {
             var firstOpponent = roomPlayers.find(function(player) { return player.id !== myPlayerId; });
             if (firstOpponent) opponentName = firstOpponent.username;
             if (data.has_saved_session) {
+                console.log('Has saved session, showing lobby');
                 hideLobby();
                 awaitingSavedSessionCheck = false;
                 document.body.classList.remove('confirmation-open');
@@ -399,8 +406,11 @@ function connectWebSocket(invitationId) {
                 if (resumeOverlay) resumeOverlay.style.display = 'none';
                 if (resumeClassPopup) resumeClassPopup.style.display = 'none';
             } else if (awaitingSavedSessionCheck) {
+                console.log('No saved session and awaiting check is true, showing class popup');
                 awaitingSavedSessionCheck = false;
                 displayClassSelectionPopup();
+            } else {
+                console.log('Neither condition met - not showing popup or lobby');
             }
             renderLobby();
             if (myClass) sendGameAction({ type: 'select_class', class: myClass });
@@ -495,13 +505,20 @@ function closeChoicePopup() {
 }
 
 function displayClassSelectionPopup() {
+  console.log('displayClassSelectionPopup called');
   var overlay = document.querySelector('.overlay');
   var mainWindow = document.querySelector('.main-window');
   var classPopup = document.querySelector('.class-popup');
+  console.log('Elements found:', {
+    overlay: !!overlay,
+    mainWindow: !!mainWindow,
+    classPopup: !!classPopup
+  });
   document.body.classList.add('confirmation-open');
   if (overlay) overlay.style.display = 'flex';
   if (mainWindow) mainWindow.style.display = 'none';
   if (classPopup) classPopup.style.display = 'block';
+  console.log('displayClassSelectionPopup finished, classPopup display:', classPopup?.style.display);
 }
 
 function showClassSelectionPopup() {
