@@ -355,6 +355,7 @@ function connectWebSocket(invitationId) {
         return;
     }
     
+    console.log('connectWebSocket called with invitationId=', invitationId);
     isBotGame = false;
     isMultiplayer = true;
     multiplayerInvitationId = invitationId;
@@ -365,10 +366,12 @@ function connectWebSocket(invitationId) {
 
     var protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     var url = protocol + '://' + window.location.host + '/api/ws/game/' + invitationId + '?token=' + encodeURIComponent(token);
+    console.log('connectWebSocket: Creating WebSocket connection to', url);
     var socket = new WebSocket(url);
     ws = socket;
 
     socket.onopen = function() {
+        console.log('WebSocket opened');
         if (ws !== socket) return;
         wsReconnectAttempt = 0;
         if (myClass) sendGameAction({ type: 'select_class', class: myClass });
@@ -378,6 +381,7 @@ function connectWebSocket(invitationId) {
     };
 
     socket.onmessage = function(event) {
+        console.log('socket.onmessage received:', event.data);
         if (ws !== socket) return;
         var data = JSON.parse(event.data);
         if (data.type === 'system') {
