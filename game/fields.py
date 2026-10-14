@@ -16,7 +16,7 @@ from game.questions import get_question, pick_questions
 
 QUIZ_QUESTIONS_PER_CELL = {"sala": 1, "aula": 2}
 HINT_HIDDEN_ANSWERS = 2
-CRYSTALS_FOR_DEFENCE = 15
+CRYSTALS_FOR_DEFENCE = 30
 
 
 def _card_gain(stat: str, amount: int):
@@ -78,14 +78,21 @@ def resolve_field(state, phase, resume, action, player, rng) -> Result:
             return Result(state, AWAITING_LIBRARY, events)
         return Result(state, TURN_RESOLUTION, events)
     if cell == "praktyki":
-        player["crystals"] += 1
-        if player["hasShortenCard"]:
-            player["skipTurnsLeft"] = 1
-            player["hasShortenCard"] = False
-        elif player["klass"] == "sportowiec":
-            player["skipTurnsLeft"] = 2
+        if player["practicesCompleted"] < 2:
+            player["practicesCompleted"] = player.get("practicesCompleted", 0) + 1
+            player["crystals"] += 1
+            if player["hasShortenCard"]:
+                player["skipTurnsLeft"] = 1
+                player["hasShortenCard"] = False
+            elif player["klass"] == "sportowiec":
+                player["skipTurnsLeft"] = 2
+            else:
+                player["skipTurnsLeft"] = 3
         else:
-            player["skipTurnsLeft"] = 3
+            # Po 2 praktykach - pole staje się zwykłą salą (pytanie)
+            questions = pick_questions(player["klass"], floor, QUIZ_QUESTIONS_PER_CELL["sala"], rng)
+            quiz = {"questions": [q.id for q in questions], "answered": 0, "correct": 0, "hidden": []}
+            return Result(state, AWAITING_QUIZ, events, {"quiz": quiz})
     elif cell == "strefarelaksu":
         player["luck"] += 1
     elif cell == "stolowka":

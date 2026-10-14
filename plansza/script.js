@@ -1678,7 +1678,7 @@ function useQuiz1Hint() {
 
 function openDziekanatModal(player) {
     var obronaBtn = document.getElementById('dk-btn-obrona');
-    obronaBtn.style.display = getFloor(player.pos) === 1 && player.crystals >= 15 ? 'block' : 'none';
+    obronaBtn.style.display = getFloor(player.pos) === 1 && player.crystals >= 30 ? 'block' : 'none';
 
     document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
     document.getElementById('dk-btn-hp').disabled = player.coins < 2;
