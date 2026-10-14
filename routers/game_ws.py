@@ -164,7 +164,7 @@ async def websocket_game_endpoint(
         )
 
         # Wysłanie powitalnej paczki systemowej do podłączającego się gracza
-        await websocket.send_json({
+        system_message = {
             "type": "system",
             "message": f"Połączono z pokojem gry {invitation_id}",
             "role": role,
@@ -176,7 +176,9 @@ async def websocket_game_endpoint(
             "player_id": player_id,
             "players": players,
             "host_id": room_invitation.inviter_id,
-        })
+        }
+        logger.info(f"Wysyłam system message do {user.username}: {system_message}")
+        await websocket.send_json(system_message)
 
         if saved_session:
             await websocket.send_json(service.state_message(saved_session))
