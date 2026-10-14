@@ -43,6 +43,7 @@ def new_game(players: list[dict]) -> Result:
             "hasShortenCard": False,
             "boughtCrystalThisFloor": False,
             "hints": 0,
+            "practicesCompleted": 0,
         })
     state = {"players": state_players, "turn": 0, "turnNumber": 0, "rolled": False, "gameOver": False}
     return Result(state, AWAITING_ROLL)

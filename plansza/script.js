@@ -1121,6 +1121,13 @@ function getFloor(pos) {
     return 1;
 }
 
+function getCrystalGoal(pos) {
+    var floor = getFloor(pos);
+    if (floor === 3) return 5;   // Pięćo 3: 5 kryształków
+    if (floor === 2) return 10;  // Pięćo 2: 10 kryształków
+    return 15;                     // Pięćo 1: 15 kryształków
+}
+
 var SZANSA_KARTY = [
     function(p) { p.hp += 1; return { msg: p.name + ': "Stypendium naukowe!" → +1 HP', p: p }; },
     function(p) { p.hp = Math.max(1, p.hp - 1); return { msg: p.name + ': "Oblałeś kolokwium!" → -1 HP', p: p }; },
@@ -1495,20 +1502,28 @@ function triggerFieldArrival(player) {
         showMsg("🚽 " + player.name + " w łazience: Pusta kabina! Chwila oddechu, nic się nie dzieje.");
         scheduleNextTurn(1500);
     } else if (type === 'praktyki') {
-        player.crystals += 1;
-        if (player.hasShortenCard) {
-            player.skipTurnsLeft = 1;
-            player.hasShortenCard = false;
-            showMsg("📋 " + player.name + " realizuje praktyki! Masz kartę skróconych praktyk → tracisz tylko 1 turę i otrzymujesz +1 kryształek! 💎");
-        } else if (player.klass === 'sportowiec') {
-            player.skipTurnsLeft = 2;
-            showMsg("🏃 " + player.name + " realizuje praktyki! Jako Sportowiec kończysz je szybciej → tracisz 2 tury i otrzymujesz +1 kryształek! 💎");
+        // Praktyki możliwe tylko do 2 razy
+        if (player.practicesCompleted < 2) {
+            player.practicesCompleted++;
+            player.crystals += 1;
+            if (player.hasShortenCard) {
+                player.skipTurnsLeft = 1;
+                player.hasShortenCard = false;
+                showMsg("📋 " + player.name + " realizuje praktyki (" + player.practicesCompleted + "/2)! Masz kartę skróconych praktyk → tracisz tylko 1 turę i otrzymujesz +1 kryształek! 💎");
+            } else if (player.klass === 'sportowiec') {
+                player.skipTurnsLeft = 2;
+                showMsg("🏃 " + player.name + " realizuje praktyki (" + player.practicesCompleted + "/2)! Jako Sportowiec kończysz je szybciej → tracisz 2 tury i otrzymujesz +1 kryształek! 💎");
+            } else {
+                player.skipTurnsLeft = 3;
+                showMsg("💼 " + player.name + " realizuje praktyki (" + player.practicesCompleted + "/2)! Tracisz 3 tury i otrzymujesz +1 kryształek! 💎");
+            }
+            updateGamePanel();
+            scheduleNextTurn(2200);
         } else {
-            player.skipTurnsLeft = 3;
-            showMsg("💼 " + player.name + " realizuje praktyki! Tracisz 3 tury i otrzymujesz +1 kryształek! 💎");
+            // Po 2 praktykach - pole staje się zwykłą salą (pytanie)
+            showMsg("📚 " + player.name + " odwiedza pole praktyk, ale już zaliczył praktyki 2 razy! Zwykła sala - pytanie!");
+            triggerQuiz(player, 1);
         }
-        updateGamePanel();
-        scheduleNextTurn(2200);
     } else if (type === 'biblioteka') {
         player.wisdom += 1;
         player.hints += 1;
@@ -1939,7 +1954,7 @@ function renderStatBar(id, player, prev) {
         '<span class="s-hp'  + hpFlash  + '">' + hearts              + hpDelta  + '</span>' +
         '<span class="s-wis' + wisFlash + '">' + '🧠 ' + player.wisdom + wisDelta + '</span>' +
         '<span class="s-luk' + lukFlash + '">' + '⭐ '  + player.luck   + lukDelta + '</span>' +
-        '<span class="s-cry' + cryFlash + '">' + '💎 Kryształy: ' + player.crystals + ' / 15' + cryDelta + '</span>' +
+        '<span class="s-cry' + cryFlash + '">' + '💎 Kryształy: ' + player.crystals + ' / ' + getCrystalGoal(player.pos) + cryDelta + '</span>' +
         '<span class="s-coi' + coiFlash + '">' + '🪙 Monety: ' + player.coins + coiDelta + prepaidInd + shortenInd + hintsInd + '</span>';
 }
 
