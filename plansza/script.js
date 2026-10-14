@@ -176,12 +176,7 @@ function renderAvatar(avatarState, container) {
 }
 
 var currentUserAvatar = null;
-displayClassSelectionPopup called
-script.js:516 Elements found: {overlay: true, mainWindow: true, classPopup: true}
-script.js:525 displayClassSelectionPopup finished, classPopup display: block
-script.js:358 connectWebSocket called with invitationId= 152
-script.js:369 connectWebSocket: Creating WebSocket connection to wss://wielka-studencka-batalia.onrender.com/api/ws/game/152?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZ25pZXN6a2FoZWpkdWswM0BnbWFpbC5jb20iLCJleHAiOjE3OTE5NjQzNTN9.hBm3sTzf5skmoFqOif7rhKe7DR3ES_64QfdtTgtxs84
-script.js:374 WebSocket opened
+
 function parseAvatarState(avatar) {
     if (!avatar) return null;
     try {
