@@ -10,7 +10,7 @@ from database import get_db
 from auth import decode_token
 from game import bot, engine, rules, service
 from game.common import IllegalAction
-from models import GameInvitation, GameInvitationStatus, User
+from models import GameInvitation, GameInvitationStatus, User, GameSession
 
 logger = logging.getLogger(__name__)
 
