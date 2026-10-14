@@ -792,7 +792,7 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('inc-modal').classList.remove('show');
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
-        awaitingSavedSessionCheck = true;
+        awaitingSavedSessionCheck = false;
         connectWebSocket(data.room_id || pendingIncomingId);
         keepGameRoomInUrl(data.room_id || pendingIncomingId);
         pendingIncomingId = null;
