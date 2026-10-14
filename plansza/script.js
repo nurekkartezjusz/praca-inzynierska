@@ -655,7 +655,9 @@ document.addEventListener("DOMContentLoaded", function() {
   var inviteAcceptedId = urlParams.get('invite_accepted');
     var isResume = urlParams.get('resume') === '1';
   if (inviteAcceptedId) {
+        console.log('DOMContentLoaded: Invite accepted detected, inviteAcceptedId=', inviteAcceptedId);
         awaitingSavedSessionCheck = true;
+        console.log('DOMContentLoaded: Set awaitingSavedSessionCheck=true, calling connectWebSocket');
     connectWebSocket(inviteAcceptedId);
     
     var choicePopup = document.querySelector('.choice-popup');

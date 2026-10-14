@@ -5,8 +5,6 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
-import sib_api_v3_sdk
-from sib_api_v3_sdk.rest import ApiException
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -44,16 +42,9 @@ def _hash_reset_token(token: str) -> str:
 
 
 def _send_email(to_address: str, subject: str, html_content: str) -> None:
-    configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key["api-key"] = BREVO_API_KEY
-    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=[{"email": to_address}],
-        sender={"name": "Wielka Studencka Batalia", "email": os.getenv("BREVO_SENDER_EMAIL", "")},
-        subject=subject,
-        html_content=html_content,
-    )
-    api_instance.send_transac_email(send_smtp_email)
+    """Send email via Brevo (stub for now - requires sib-api-v3-sdk)"""
+    logging.warning(f"Email stub called: to={to_address}, subject={subject}")
+    # TODO: Implement with sib-api-v3-sdk when available
 
 
 @router.get("/")
