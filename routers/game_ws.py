@@ -109,36 +109,47 @@ async def websocket_game_endpoint(
     role = None
     player_id = None
     try:
+        logger.info(f"Krok 1: Szukam użytkownika z emailem {email}")
         user = db.query(User).filter(User.email == email).first()
         if not user:
             logger.warning(f"WebSocket odrzucony: użytkownik o emailu {email} nie znaleziony")
             await websocket.close(code=1008)
             return
+        logger.info(f"Krok 2: Znaleziono użytkownika {user.username} (ID: {user.id})")
 
+        logger.info(f"Krok 3: Szukam zaproszenia {invitation_id}")
         invitation = db.query(GameInvitation).filter(GameInvitation.id == invitation_id).first()
         if not invitation:
             logger.warning(f"WebSocket odrzucony: zaproszenie {invitation_id} nie znalezione")
             await websocket.close(code=1008)
             return
+        logger.info(f"Krok 4: Znaleziono zaproszenie, room_id będzie: {invitation.room_id or invitation.id}")
 
         room_id = invitation.room_id or invitation.id
+        logger.info(f"Krok 5: Szukam zaproszenia pokoju {room_id}")
         room_invitation = db.query(GameInvitation).filter(GameInvitation.id == room_id).first()
         if room_invitation is None:
+            logger.error(f"Błąd: room_invitation None dla room_id={room_id}")
             await websocket.close(code=1008)
             return
+        logger.info(f"Krok 6: Szukam zaakceptowanych zaproszeń dla pokoju {room_id}")
         accepted_invitations = db.query(GameInvitation).filter(
             or_(GameInvitation.id == room_id, GameInvitation.room_id == room_id),
             GameInvitation.status == GameInvitationStatus.ACCEPTED,
         ).order_by(GameInvitation.updated_at.asc(), GameInvitation.id.asc()).all()
+        logger.info(f"Krok 7: Znaleziono {len(accepted_invitations)} zaakceptowanych zaproszeń")
         player_user_ids = [room_invitation.inviter_id] + [item.invitee_id for item in accepted_invitations]
+        logger.info(f"Krok 8: User IDs w pokoju: {player_user_ids}, user.id={user.id}")
         if user.id not in player_user_ids:
             logger.warning(f"WebSocket odrzucony: użytkownik {user.username} nie ma praw do gry {invitation_id}")
             await websocket.close(code=1008)
             return
+        logger.info(f"Krok 9: Użytkownik ma prawo dostępu!")
 
         # Zaakceptowanie połączenia
-        logger.info(f"Akceptuję WebSocket dla użytkownika {user.username} w grze {invitation_id}")
+        logger.info(f"Krok 10: Akceptuję WebSocket dla użytkownika {user.username} w grze {invitation_id}")
         await websocket.accept()
+        logger.info(f"Krok 11: WebSocket zaakceptowany!")
 
         room = manager.get_or_create_room(room_id)
         room.add(user.id, websocket)
