@@ -466,11 +466,13 @@ function scheduleGameReconnect(invitationId) {
 }
 
 function sendGameAction(payload) {
+    console.log(`sendGameAction called:`, payload);
     var action = Object.assign({}, payload, {
         username: myUsername || localStorage.getItem('user_username') || 'Bez nazwy'
     });
 
     if (ws && ws.readyState === WebSocket.OPEN) {
+        console.log(`Sending action via WebSocket:`, action);
         ws.send(JSON.stringify(action));
         return true;
     }
@@ -766,6 +768,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (isMultiplayer) {
         myClass = selectedClass;
                 playerClasses[myUserId] = { klass: selectedClass, name: myUsername };
+        console.log(`selectClass clicked: sending select_class for user ${myUserId}, class=${selectedClass}`);
         sendGameAction({ type: "select_class", class: selectedClass });
                 showMsg("Klasa wybrana. Gospodarz rozpocznie grę, gdy wszyscy będą gotowi.");
         
