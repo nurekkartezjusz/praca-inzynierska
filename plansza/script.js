@@ -400,7 +400,7 @@ function connectWebSocket(invitationId) {
                 if (resumeClassPopup) resumeClassPopup.style.display = 'none';
             } else if (awaitingSavedSessionCheck) {
                 awaitingSavedSessionCheck = false;
-                showLobby();
+                displayClassSelectionPopup();
             }
             renderLobby();
             if (myClass) sendGameAction({ type: 'select_class', class: myClass });
@@ -792,11 +792,10 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('inc-modal').classList.remove('show');
         clearInterval(incomingPollTimer);
         opponentName = data.inviter || 'Znajomy';
-        awaitingSavedSessionCheck = false;
+        awaitingSavedSessionCheck = true;
         connectWebSocket(data.room_id || pendingIncomingId);
         keepGameRoomInUrl(data.room_id || pendingIncomingId);
         pendingIncomingId = null;
-        showClassSelectionPopup();
         incomingPollTimer = setInterval(checkIncoming, 5000);  // ← WZNÓW POLLING
     })
       .catch(function(e) { alert('Błąd: ' + e.message); });
