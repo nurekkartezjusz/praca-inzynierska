@@ -1124,8 +1124,8 @@ function getFloor(pos) {
 function getCrystalGoal(pos) {
     var floor = getFloor(pos);
     if (floor === 3) return 5;   // Pięćo 3: 5 kryształków
-    if (floor === 2) return 10;  // Pięćo 2: 10 kryształków
-    return 15;                     // Pięćo 1: 15 kryształków
+    if (floor === 2) return 15;  // Pięćo 2: 15 kryształków
+    return 30;                     // Pięćo 1: 30 kryształków
 }
 
 var SZANSA_KARTY = [

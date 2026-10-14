@@ -317,7 +317,7 @@ function mpSyncPhase(resume, allowAuto) {
             break;
         case 'finished':
             var winner = gameState.players.find(function(player) { 
-                return getFloor(player.pos) === 1 && player.crystals >= 15 && player.practicesCompleted >= 2; 
+                return getFloor(player.pos) === 1 && player.crystals >= 30 && player.practicesCompleted >= 2; 
             });
             if (winner) triggerVictory(winner);
             break;
