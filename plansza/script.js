@@ -314,14 +314,13 @@ var opponentName        = 'Bot';
 
 // Zmienne i połączenia dla trybu multiplayer
 var isMultiplayer          = false;
+var isBotGame              = false;
 var multiplayerInvitationId = null;
 var ws                      = null;
 var pendingGameActions      = [];
 var wsReconnectTimer        = null;
 var wsReconnectAttempt      = 0;
 var gameSessionVersion      = 0;
-var pendingSnapshotActions  = [];
-var snapshotSaveInFlight    = false;
 var gamePhase               = "class_selection";
 var awaitingSavedSessionCheck = false;
 var myPlayerId              = 0; // 0 = zapraszający, 1 = zaproszony
@@ -356,55 +355,41 @@ function connectWebSocket(invitationId) {
         return;
     }
     
+    isBotGame = false;
     isMultiplayer = true;
     multiplayerInvitationId = invitationId;
     if (wsReconnectTimer) {
         clearTimeout(wsReconnectTimer);
         wsReconnectTimer = null;
     }
-    
-    var wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    var wsUrl = wsProtocol + '://' + window.location.host + '/api/ws/game/' + invitationId + '?token=' + token;
-    
-    var socket = new WebSocket(wsUrl);
+
+    var protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    var url = protocol + '://' + window.location.host + '/api/ws/game/' + invitationId + '?token=' + encodeURIComponent(token);
+    var socket = new WebSocket(url);
     ws = socket;
-    
+
     socket.onopen = function() {
         if (ws !== socket) return;
         wsReconnectAttempt = 0;
-        console.log("Połączono z serwerem gier multiplayer!");
-        // Jeśli już wybraliśmy klasę przed połączeniem lub przy ponownym połączeniu, wyślijmy ją
-        if (myClass) {
-            sendGameAction({ type: "select_class", class: myClass });
-        }
+        if (myClass) sendGameAction({ type: 'select_class', class: myClass });
         while (pendingGameActions.length && socket.readyState === WebSocket.OPEN) {
             socket.send(pendingGameActions.shift());
         }
     };
-    
+
     socket.onmessage = function(event) {
         if (ws !== socket) return;
         var data = JSON.parse(event.data);
-        console.log("Multiplayer odebrano:", data);
-        
-        if (data.type === "system") {
-            if (data.role === "inviter") {
-                myPlayerId = 0;
-            } else {
-                myPlayerId = 1;
-            }
-                if (Number.isInteger(data.player_id)) myPlayerId = data.player_id;
+        if (data.type === 'system') {
+            myPlayerId = Number.isInteger(data.player_id) ? data.player_id : (data.role === 'inviter' ? 0 : 1);
             roomPlayers = Array.isArray(data.players) ? data.players : [];
             myUserId = roomPlayers[myPlayerId]?.user_id || myUserId;
             updateMyPlayerSlot();
             isRoomHost = data.host_id === myUserId;
             myUsername = data.username || myUsername;
-                opponentName = data.opponent_username;
-                if (Array.isArray(data.players)) {
-                    var firstOpponent = data.players.find(function(player) { return player.id !== myPlayerId; });
-                    if (firstOpponent) opponentName = firstOpponent.username;
-                }
-            console.log("Twoja rola: " + data.role + ", Oponent: " + opponentName);
+            opponentName = data.opponent_username || 'Gracz';
+            var firstOpponent = roomPlayers.find(function(player) { return player.id !== myPlayerId; });
+            if (firstOpponent) opponentName = firstOpponent.username;
             if (data.has_saved_session) {
                 hideLobby();
                 awaitingSavedSessionCheck = false;
@@ -418,64 +403,40 @@ function connectWebSocket(invitationId) {
                 showLobby();
             }
             renderLobby();
-            // Wyślij naszą klasę, jeśli została już wybrana (np. na wypadek gdyby oponent połączył się później)
-            if (myClass) {
-                sendGameAction({ type: "select_class", class: myClass });
-            }
-        } else if (data.type === "game_state") {
-            clearPendingSnapshotActions();
-            gameSessionVersion = data.version || 0;
-            restoreGameSession(data);
-        } else if (data.type === "game_state_saved") {
-            gameSessionVersion = data.version || gameSessionVersion;
-            snapshotSaveInFlight = false;
-            sendNextSnapshotAction();
-        } else if (data.type === "game_state_rejected") {
-            gameSessionVersion = Number.isInteger(data.version) ? data.version : gameSessionVersion;
-            snapshotSaveInFlight = false;
-            sendNextSnapshotAction();
-        } else if (data.type === "game_state_conflict") {
-            clearPendingSnapshotActions();
-            gameSessionVersion = data.version || 0;
-            restoreGameSession(data);
-        } else if (data.type === "player_joined") {
-            console.log("Przeciwnik dołączył: " + data.username);
+            if (myClass) sendGameAction({ type: 'select_class', class: myClass });
+        } else if (data.type === 'game_state') {
+            mpEnqueueState(data);
+        } else if (data.type === 'player_joined') {
             if (Array.isArray(data.players)) {
                 roomPlayers = data.players;
                 updateMyPlayerSlot();
             }
             renderLobby();
-            // Ponieważ nowy gracz dołączył, na pewno nie zna jeszcze naszej klasy. Wyślijmy ją!
-            if (myClass) {
-                sendGameAction({ type: "select_class", class: myClass });
-            }
-        } else if (data.type === "player_left") {
-            console.log("Przeciwnik wyszedł: " + data.username);
-            showMsg("⚠️ Przeciwnik " + data.username + " rozłączył się!");
-        } else if (data.type === "game_action") {
-            var payload = data.payload;
-            if (Number.isInteger(data.version)) gameSessionVersion = data.version;
-            handleMultiplayerAction(payload, data.sender_role, data.sender_player_id);
-        } else if (data.type === "error") {
-            var lobbySummary = document.getElementById('lobby-summary');
-            if (lobbySummary && document.getElementById('lobby-modal').style.display !== 'none') {
-                lobbySummary.textContent = data.message || 'Nie udało się wykonać akcji w lobby.';
+            if (myClass) sendGameAction({ type: 'select_class', class: myClass });
+        } else if (data.type === 'player_left') {
+            showMsg('⚠️ Przeciwnik ' + data.username + ' rozłączył się!');
+        } else if (data.type === 'game_action') {
+            handleLobbyAction(data.payload, data.sender_player_id);
+        } else if (data.type === 'error') {
+            var summary = document.getElementById('lobby-summary');
+            if (summary && document.getElementById('lobby-modal').style.display !== 'none') {
+                summary.textContent = data.message || 'Nie udało się wykonać akcji w lobby.';
             } else {
-                showMsg(data.message || 'Nie udało się wykonać akcji w lobby.');
+                showMsg(data.message || 'Nie udało się wykonać akcji.');
+                if (gameState) mpSyncPhase(mpLastResume, false);
             }
         }
     };
-    
+
     socket.onclose = function(event) {
         if (ws !== socket) return;
-        console.log("Rozłączono z serwerem gier. Kod: " + event.code + ", czysto: " + event.wasClean);
+        console.log('Rozłączono z serwerem gier. Kod: ' + event.code);
         ws = null;
-        clearPendingSnapshotActions();
         scheduleGameReconnect(invitationId);
     };
-    
-    socket.onerror = function(err) {
-        console.error("Błąd WebSocket:", err);
+
+    socket.onerror = function(error) {
+        console.error('Błąd WebSocket:', error);
     };
 }
 
@@ -494,21 +455,9 @@ function sendGameAction(payload) {
     var action = Object.assign({}, payload, {
         username: myUsername || localStorage.getItem('user_username') || 'Bez nazwy'
     });
-    if (action.type === "sync_game_state" && !action.msg) {
-        var currentMessage = document.getElementById('gp-msg');
-        if (currentMessage) action.msg = currentMessage.textContent;
-    }
-    if (action.gameState && !action.phase) action.phase = gamePhase;
 
     if (ws && ws.readyState === WebSocket.OPEN) {
-        if (isSnapshotGameAction(action.type) && action.gameState) {
-            action.base_version = gameSessionVersion + pendingSnapshotActions.length + (snapshotSaveInFlight ? 1 : 0);
-            pendingSnapshotActions.push(JSON.parse(JSON.stringify(action)));
-            sendNextSnapshotAction();
-            return true;
-        }
-        var serialized = JSON.stringify(action);
-        ws.send(serialized);
+        ws.send(JSON.stringify(action));
         return true;
     }
 
@@ -527,251 +476,13 @@ function sendGameAction(payload) {
     return false;
 }
 
-function isSnapshotGameAction(type) {
-    return [
-        "game_init",
-        "game_checkpoint",
-        "claim_start_bonus",
-        "sync_game_state",
-        "quiz_completed",
-        "dziekanat_completed",
-        "turn_skipped",
-        "turn_changed"
-    ].includes(type);
-}
-
-function sendNextSnapshotAction() {
-    if (snapshotSaveInFlight || !pendingSnapshotActions.length || !ws || ws.readyState !== WebSocket.OPEN) return;
-    var action = pendingSnapshotActions.shift();
-    snapshotSaveInFlight = true;
-    ws.send(JSON.stringify(action));
-}
-
-function clearPendingSnapshotActions() {
-    pendingSnapshotActions = [];
-    snapshotSaveInFlight = false;
-}
-
-function saveGameCheckpoint(phase, resumeData) {
-    if (!isMultiplayer || !gameState) return;
-    gamePhase = phase;
-    sendGameAction({
-        type: "game_checkpoint",
-        gameState: gameState,
-        phase: phase,
-        resumeData: resumeData || null
-    });
-}
-
-function restoreGameSession(saved) {
-    isResumingGame = true;
-    gameState = saved.state;
-    if (!Number.isInteger(gameState.turnNumber)) gameState.turnNumber = 0;
-    if (myUserId !== null) {
-        var savedPlayer = gameState.players.find(function(player) { return player.user_id === myUserId; });
-        if (!savedPlayer && myUsername) {
-            savedPlayer = gameState.players.find(function(player) { return player.name === myUsername; });
-        }
-        if (savedPlayer) myPlayerId = savedPlayer.id;
-    }
-    gameState.players.forEach(function(player) {
-        if (player.avatar) return;
-        var roomPlayer = roomPlayers.find(function(roomPlayer) {
-            return roomPlayer.user_id === player.user_id;
-        });
-        if (roomPlayer) player.avatar = parseAvatarState(roomPlayer.avatar);
-    });
-    gamePhase = saved.phase || "awaiting_roll";
-    if (gamePhase === "awaiting_roll") gameState.rolled = false;
-    gameState.players[myPlayerId].name = myUsername || gameState.players[myPlayerId].name;
-    myClass = gameState.players[myPlayerId].klass;
-    var firstOpponent = gameState.players.find(function(player) { return player.id !== myPlayerId; });
-    opponentClass = firstOpponent ? firstOpponent.klass : null;
-    opponentName = firstOpponent ? firstOpponent.name : opponentName;
-    quizContext = null;
-
-    document.body.classList.remove('confirmation-open');
-    var overlay = document.querySelector('.overlay');
-    var classPopup = document.querySelector('.class-popup');
-    if (overlay) overlay.style.display = 'none';
-    if (classPopup) classPopup.style.display = 'none';
-    gameState.players.forEach(function(player, index) {
-        var panel = document.getElementById('gp-p' + (index + 1));
-        if (panel) panel.style.display = 'flex';
-    });
-    hideLobby();
-    document.getElementById('dice-panel').style.display = 'flex';
-    document.getElementById('quiz-modal').style.display = 'none';
-    document.getElementById('dziekanat-modal').style.display = 'none';
-    document.getElementById('start-modal').style.display = 'none';
-    updateGamePanel();
-    placeTokens();
-
-    var currentPlayer = gameState.players[gameState.turn];
-    if (gamePhase === "awaiting_quiz" && saved.resumeData && saved.resumeData.quiz) {
-        var quiz = saved.resumeData.quiz;
-        quizContext = {
-            player: gameState.players.find(function(player) { return player.id === quiz.playerId; }),
-            total: quiz.total,
-            answered: quiz.answered,
-            correct: quiz.correct,
-            questions: quiz.questions,
-            hiddenAnswers: quiz.hiddenAnswers || []
-        };
-        if (quizContext.answered >= quizContext.total) {
-            resolveQuizRewards();
-        } else {
-            showQuizQuestion();
-            showMsg('Wznawianie quizu...');
-        }
-    } else if (gamePhase === "awaiting_dziekanat") {
-        triggerDziekanat(currentPlayer);
-    } else if (gamePhase === "awaiting_start_bonus") {
-        var floor = getFloor(currentPlayer.pos);
-        var tuition = floor === 1 ? 3 : 1;
-        document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
-        document.getElementById('start-modal').style.display = 'flex';
-        startModalCallback = function() { triggerFieldArrival(currentPlayer); };
-    } else if (gamePhase === "awaiting_field_resolution") {
-        triggerFieldArrival(currentPlayer);
-    } else if (gamePhase === "turn_resolution" || gamePhase === "resolving_field") {
-        scheduleNextTurn(0);
-    } else if (gamePhase === "finished" && gameState.gameOver) {
-        var winner = gameState.players.find(function(player) { return player.pos === 'k25'; });
-        if (winner) triggerVictory(winner);
-    } else {
-        showMsg(gameState.turn === myPlayerId ? 'Wznowiono grę. Twoja tura – rzuć kostką!' : 'Wznowiono grę. Tura gracza ' + currentPlayer.name + '...');
-    }
-}
-
-function handleMultiplayerAction(payload, senderRole, senderPlayerId) {
-    if (payload.type === "select_class") {
-        if (!Number.isInteger(senderPlayerId) || senderPlayerId < 0) return;
-        var sender = roomPlayers.find(function(player) { return player.id === senderPlayerId; });
-        if (!sender) return;
-        playerClasses[sender.user_id] = { klass: payload.class, name: payload.username || sender.username };
-        renderLobby();
-    } else if (payload.type === "roll_dice") {
-        if (!gameState || senderPlayerId !== gameState.turn || gameState.rolled ||
-            !Number.isInteger(payload.value) || payload.value < 1 || payload.value > 6) {
-            console.warn("Odrzucono nieprawidłowy lub powtórzony rzut kością:", payload);
-            return;
-        }
-        executeRoll(payload.value);
-    } else if (payload.type === "claim_start_bonus") {
-        if (payload.gameState) {
-            gameState = payload.gameState;
-            gamePhase = payload.phase || "resolving_field";
-        } else {
-            var opponent = gameState.players[gameState.turn];
-            var type = payload.bonusType;
-            if (type === 'coin') {
-                opponent.coins += 1;
-                showMsg("🎉 " + opponent.name + " wybrał darmową monetę!");
-            } else if (type === 'hp') {
-                opponent.hp += 1;
-                showMsg("🎉 " + opponent.name + " wybrał dodatkowe zdrowie (+1 HP)!");
-            } else if (type === 'luck') {
-                opponent.luck += 1;
-                showMsg("🎉 " + opponent.name + " wybrał punkt szczęścia (+1 szczęścia)!");
-            }
-        }
-        if (payload.msg) showMsg(payload.msg);
-        updateGamePanel();
-        if (startModalCallback) {
-            var cb = startModalCallback;
-            startModalCallback = null;
-            cb();
-        }
-    } else if (payload.type === "draw_chance") {
-        executeChanceCard(payload.cardIndex);
-    } else if (payload.type === "game_init" || payload.type === "game_checkpoint") {
-        if (payload.type === "game_init" && isResumingGame) return;
-        if (payload.gameState) {
-            gameState = payload.gameState;
-            gamePhase = payload.phase || gamePhase;
-        }
-        if (payload.type === "game_init") {
-            showStartedGame();
-        }
-        updateGamePanel();
-        placeTokens();
-    } else if (payload.type === "quiz_completed") {
-        if (payload.gameState) {
-            gameState.players = payload.gameState.players;
-            gameState.turn = payload.gameState.turn;
-            gameState.turnNumber = payload.gameState.turnNumber || 0;
-            gameState.gameOver = payload.gameState.gameOver;
-            gameState.rolled = payload.gameState.rolled;
-        }
-        gamePhase = payload.phase || "turn_resolution";
-        if (payload.msg) {
-            showMsg(payload.msg);
-        }
-        updateGamePanel();
-        placeTokens();
-    } else if (payload.type === "dziekanat_completed") {
-        if (payload.gameState) {
-            gameState.players = payload.gameState.players;
-            gameState.turn = payload.gameState.turn;
-            gameState.turnNumber = payload.gameState.turnNumber || 0;
-            gameState.gameOver = payload.gameState.gameOver;
-            gameState.rolled = payload.gameState.rolled;
-        }
-        gamePhase = payload.phase || "turn_resolution";
-        if (payload.msg) {
-            showMsg(payload.msg);
-        }
-        updateGamePanel();
-        placeTokens();
-    } else if (payload.type === "sync_game_state") {
-        if (payload.gameState) {
-            gameState.players = payload.gameState.players;
-            gameState.turn = payload.gameState.turn;
-            gameState.turnNumber = payload.gameState.turnNumber || 0;
-            gameState.gameOver = payload.gameState.gameOver;
-            gameState.rolled = payload.gameState.rolled;
-        }
-        gamePhase = payload.phase || gamePhase;
-        if (payload.msg) showMsg(payload.msg);
-        updateGamePanel();
-        placeTokens();
-    } else if (payload.type === "turn_changed") {
-        if (payload.gameState) {
-            gameState.players = payload.gameState.players;
-            gameState.turn = payload.gameState.turn;
-            gameState.turnNumber = payload.gameState.turnNumber || 0;
-            gameState.gameOver = payload.gameState.gameOver;
-            gameState.rolled = payload.gameState.rolled;
-        }
-        gamePhase = payload.phase || "awaiting_roll";
-        updateGamePanel();
-        placeTokens();
-        var currentPlayer = gameState.players[gameState.turn];
-        if (gameState.turn === myPlayerId && currentPlayer.skipTurnsLeft > 0) {
-            showMsg('⏳ Twoja tura jest pominięta. Przechodzę automatycznie do następnej...');
-            setTimeout(rollDice, 0);
-        } else {
-            showMsg(gameState.turn === myPlayerId ? 'Twoja tura – rzuć kostką!' : 'Tura gracza ' + currentPlayer.name + '...');
-        }
-    } else if (payload.type === "turn_skipped") {
-        if (payload.gameState) {
-            gameState.players = payload.gameState.players;
-            gameState.turn = payload.gameState.turn;
-            gameState.turnNumber = payload.gameState.turnNumber || 0;
-            gameState.gameOver = payload.gameState.gameOver;
-            gameState.rolled = payload.gameState.rolled;
-        }
-        gamePhase = payload.phase || "turn_resolution";
-        if (payload.msg) {
-            showMsg(payload.msg);
-        }
-        updateGamePanel();
-        placeTokens();
-    } else if (payload.type === "victory") {
-        var winner = gameState.players[payload.winnerId];
-        triggerVictory(winner);
-    }
+function handleLobbyAction(payload, senderPlayerId) {
+    if (payload.type !== "select_class") return;
+    if (!Number.isInteger(senderPlayerId) || senderPlayerId < 0) return;
+    var sender = roomPlayers.find(function(player) { return player.id === senderPlayerId; });
+    if (!sender) return;
+    playerClasses[sender.user_id] = { klass: payload.class, name: payload.username || sender.username };
+    renderLobby();
 }
 
 function returnToMainPage() {
@@ -963,14 +674,21 @@ document.addEventListener("DOMContentLoaded", function() {
   if (botBtn) {
     botBtn.addEventListener('click', function() {
       opponentName = 'Bot';
+            isBotGame = true;
+            isMultiplayer = false;
+            multiplayerInvitationId = null;
+            hideLobby();
       showClassSelectionPopup();
     });
   }
 
   // Krok 1b: Wybór znajomego
   var friendBtn = document.getElementById('friend-choice-btn');
-  if (friendBtn) {
-    friendBtn.addEventListener('click', function() { openFriendPicker(); });
+    if (friendBtn) {
+        friendBtn.addEventListener('click', function() {
+            isBotGame = false;
+            openFriendPicker();
+        });
   }
 
   // Krok 2: Wybór klasy
@@ -1014,6 +732,14 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
       setConfirmationOpen(false);
+            if (isBotGame) {
+                document.body.classList.remove('confirmation-open');
+                if (overlay) overlay.style.display = 'none';
+                if (classPopup) classPopup.style.display = 'none';
+                myClass = selectedClass;
+                startBotGame(selectedClass);
+                return;
+            }
       if (isMultiplayer) {
         myClass = selectedClass;
                 playerClasses[myUserId] = { klass: selectedClass, name: myUsername };
@@ -1041,7 +767,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var lobby = document.getElementById('lobby-modal');
         if (lobby) lobby.style.display = 'flex';
         renderLobby();
-      } else {
+            } else {
         document.body.classList.remove('confirmation-open');
         if (overlay) overlay.style.display = 'none';
         initGame(selectedClass);
@@ -1348,127 +1074,6 @@ function escapeHtml(str) {
 // SILNIK GRY - WIELKA STUDENCKA BATALIA
 // ==========================================
 
-var EASY_QUESTIONS = [
-    {
-        q: "Kiedy zostały założone WSB?",
-        a: ["1992 roku", "1994 roku", "1996 roku", "1998 roku"],
-        c: 1
-    },
-    {
-        q: "Gdzie zostało założone pierwsze WSB?",
-        a: ["W Warszawie", "W Krakowie", "W Poznaniu", "W Katowicach"],
-        c: 2
-    },
-    {
-        q: "Jakie są dostępne formy studiów?",
-        a: ["Stacjonarne i niestacjonarne", "Tylko stacjonarne", "Tylko niestacjonarne", "Online i zaoczne"],
-        c: 0
-    },
-    {
-        q: "Co to jest BAM?",
-        a: ["Program wymiany międzynarodowej", "Coroczne badania satysfakcji studentów i absolwentów", "Program stypendialny", "System rejestracji zajęć"],
-        c: 1
-    },
-    {
-        q: "Ile trwają studia licencjackie?",
-        a: ["2 lata", "3 lata", "3,5 roku", "4 lata"],
-        c: 1
-    },
-    {
-        q: "Ile trwają studia inżynierskie?",
-        a: ["3 lata", "3,5 roku", "4 lata", "5 lat"],
-        c: 1
-    },
-    {
-        q: "Co oznacza skrót VIS?",
-        a: ["Very Important Student", "Virtual Internet Studies", "Very Important School", "Virtual Information System"],
-        c: 0
-    },
-    {
-        q: "Co oznacza skrót UKW?",
-        a: ["Uniwersytet Kierunków WSB", "Uniwersytet Każdego Wieku", "Uniwersytet Kształcenia Wirtualnego", "Uniwersytet Kompetencji Wiedzy"],
-        c: 1
-    },
-    {
-        q: "Co to jest program Erasmus+?",
-        a: ["Program umożliwiający wyjazd na semestr lub dwa do uczelni partnerskiej za granicą", "Program przyznający automatyczne stypendia", "Program umożliwiający zmianę kierunku studiów", "Program przeznaczony wyłącznie dla absolwentów"],
-        c: 0
-    },
-    {
-        q: "Kto może skorzystać z programu Erasmus+?",
-        a: ["Tylko studenci pierwszego roku", "Studenci, którzy ukończyli pierwszy rok studiów", "Tylko absolwenci", "Wyłącznie doktoranci"],
-        c: 1
-    },
-    {
-        q: "Co to są studia MBA?",
-        a: ["Studia dla studentów pierwszego roku", "Studia dla menedżerów z minimum 2-letnim doświadczeniem na stanowisku kierowniczym", "Studia dla osób bez doświadczenia zawodowego", "Studia przeznaczone wyłącznie dla doktorantów"],
-        c: 1
-    },
-    {
-        q: "Co to są studia EMBA?",
-        a: ["Studia dla menedżerów z minimum 5-letnim doświadczeniem na stanowisku kierowniczym", "Studia dla studentów pierwszego roku", "Studia dla osób bez doświadczenia zawodowego", "Studia przeznaczone dla absolwentów szkół średnich"],
-        c: 0
-    }
-];
-
-var HARD_QUESTIONS = [
-    {
-        q: "Kto był założycielem WSB?",
-        a: ["Centrum Rozwoju Szkół Wyższych Merito", "Fundacja Rozwoju Edukacji", "Centrum Akademickiego Rozwoju", "Stowarzyszenie Szkół Wyższych"],
-        c: 0
-    },
-    {
-        q: "Ile kierunków można studiować na WSB?",
-        a: ["118 kierunków", "128 kierunków", "138 kierunków", "148 kierunków"],
-        c: 2
-    },
-    {
-        q: "Ile lat istnieje WSB w 2026 roku?",
-        a: ["27 lat", "29 lat", "31 lat", "33 lata"],
-        c: 2
-    },
-    {
-        q: "W ilu miastach znajduje się uczelnia WSB?",
-        a: ["7 miastach", "9 miastach", "11 miastach", "13 miastach"],
-        c: 2
-    },
-    {
-        q: "W jaki sposób możesz realizować studia?",
-        a: ["Tylko tradycyjnie i online", "Tradycyjnie, online, hybrydowo, w hybrydzie Smart, hybrydowo popołudniowo, hybrydowo popołudniowo-weekendowo oraz Hi Flex", "Tylko stacjonarnie i niestacjonarnie", "Tylko online, hybrydowo i weekendowo"],
-        c: 1
-    },
-    {
-        q: "Z jakich platform korzystamy na co dzień na uczelni?",
-        a: ["Moodle, MeritoGo i Microsoft Teams", "Moodle, EduPortal i CampusNet", "MeritoGo, StudyHub i EduSpace", "Microsoft Teams, StudentBox i LearnPoint"],
-        c: 0
-    },
-    {
-        q: "Co oznacza skrót IACBE?",
-        a: ["International Academic Council for Business Education", "International Accreditation Council for Business Education", "International Association of Colleges for Business Education", "International Accreditation Center for Business Education"],
-        c: 1
-    },
-    {
-        q: "Do ilu krajów można wyjechać w ramach programu Erasmus+?",
-        a: ["35 krajów", "40 krajów", "45 krajów", "50 krajów"],
-        c: 2
-    },
-    {
-        q: "Do ilu uczelni partnerskich można wyjechać w ramach programu Erasmus+?",
-        a: ["186 uczelni", "196 uczelni", "206 uczelni", "216 uczelni"],
-        c: 2
-    },
-    {
-        q: "Ilu studentów korzysta z programu Erasmus+ każdego roku?",
-        a: ["Około 300 studentów", "Około 400 studentów", "Około 500 studentów", "Około 600 studentów"],
-        c: 2
-    },
-    {
-        q: "Co oznacza skrót CBiK?",
-        a: ["Centrum Badań i Kształcenia", "Komórka zajmująca się grantami, komercjalizacją i wpływem społeczno-gospodarczym", "Centrum Biznesu i Kariery", "Centrum Badań i Komunikacji"],
-        c: 1
-    }
-];
-
 function getCellType(pos) {
     var el = document.querySelector('.c' + pos);
     if (!el) return 'sala';
@@ -1509,7 +1114,6 @@ var STATYSTYKI = {
 };
 
 var gameState = null;
-var isResumingGame = false;
 var _prevStats = [null, null, null, null];
 var startModalCallback = null;
 var quizContext = null;
@@ -1517,70 +1121,12 @@ var quizContext = null;
 function initMultiplayerGame() {
     if (gameState || !isRoomHost || roomPlayers.length < 2 || roomPlayers.length > 4 ||
         roomPlayers.some(function(player) { return !playerClasses[player.user_id]; })) return;
-    gameState = {
-        players: roomPlayers.map(function(player, index) {
-            var selection = playerClasses[player.user_id];
-            var klass = selection.klass;
-            var stats = STATYSTYKI[klass];
-            return {
-                id: index,
-                user_id: player.user_id,
-                avatar: parseAvatarState(player.avatar),
-                name: player.username || selection.name || 'Gracz ' + (index + 1),
-                pos: 84,
-                klass: klass,
-                skipTurnsLeft: 0,
-                hp: stats.hp,
-                luck: stats.luck,
-                wisdom: stats.wisdom + (klass === 'madrala' ? 1 : 0),
-                crystals: 0,
-                coins: klass === 'leniuch' ? 3 : (klass === 'madrala' ? 0 : 1),
-                tempCzesnePaid: false,
-                hasShortenCard: false,
-                boughtCrystalThisFloor: false,
-                hints: 0
-            };
-        }),
-        turn: 0, turnNumber: 0, rolled: false, gameOver: false
-    };
-    isResumingGame = false;
-    gamePhase = "awaiting_roll";
-    _prevStats = [null, null, null, null];
-    sendGameAction({ type: "game_init", gameState: gameState, phase: gamePhase });
+    sendGameAction({ type: "game_init" });
     showMsg('Uruchamianie gry...');
 }
 
 function initGame(playerClass) {
-    var botKlasy = Object.keys(STATYSTYKI);
-    var botKlasa = botKlasy[Math.floor(Math.random() * botKlasy.length)];
-    var ps = STATYSTYKI[playerClass];
-    var bs = STATYSTYKI[botKlasa];
-    
-    // Starting coins: leniuch = 3, madrala = 0, sportowiec = 1
-    var playerStartCoins = playerClass === 'leniuch' ? 3 : (playerClass === 'madrala' ? 0 : 1);
-    var botStartCoins = botKlasa === 'leniuch' ? 3 : (botKlasa === 'madrala' ? 0 : 1);
-    
-    // Wisdom addition for mądrala (+1 w mądrość)
-    var playerWisdom = ps.wisdom;
-    var botWisdom = bs.wisdom;
-    if (playerClass === 'madrala') playerWisdom += 1;
-    if (botKlasa === 'madrala') botWisdom += 1;
-
-    gameState = {
-        players: [
-            { id: 0, name: 'Gracz', pos: 84, klass: playerClass, skipTurnsLeft: 0, hp: ps.hp, luck: ps.luck, wisdom: playerWisdom, crystals: 0, coins: playerStartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
-            { id: 1, name: opponentName, pos: 84, klass: botKlasa, skipTurnsLeft: 0, hp: bs.hp, luck: bs.luck, wisdom: botWisdom, crystals: 0, coins: botStartCoins, tempCzesnePaid: false, hasShortenCard: false, boughtCrystalThisFloor: false, hints: 0 },
-        ],
-        turn: 0, turnNumber: 0, rolled: false, gameOver: false,
-    };
-    placeTokens();
-    updateGamePanel();
-    _prevStats = [null, null];  // reset śledzenia zmian przy nowej grze
-    document.getElementById('gp-p1').style.display    = 'flex';
-    document.getElementById('gp-p2').style.display    = 'flex';
-    document.getElementById('dice-panel').style.display = 'flex';
-    document.getElementById('dice-btn').disabled = false;
-    showMsg('Gra rozpoczęta! Rozpoczynasz naukę na 2. piętrze WSB. Rzuć kostką!');
+    startBotGame(playerClass);
 }
 
 function advanceOneStep(player, pos) {
@@ -1667,6 +1213,14 @@ function animatePlayerMovement(player, path, onComplete) {
         var targetLeft = targetRect.left + cameraDeltaX;
         var targetTop = targetRect.top + cameraDeltaY;
 
+        if (typeof proxy.animate !== 'function') {
+            proxy.remove();
+            token.style.visibility = '';
+            isPlayerMoving = false;
+            onComplete();
+            return;
+        }
+
         var animation = proxy.animate([
             {
                 left: proxy.style.left,
@@ -1685,7 +1239,13 @@ function animatePlayerMovement(player, path, onComplete) {
             easing: 'ease-in-out'
         });
 
-        animation.onfinish = function() {
+        var animationCompleted = false;
+        var animationWatchdog = setTimeout(finishAnimationStep, stepDuration + 500);
+
+        function finishAnimationStep() {
+            if (animationCompleted) return;
+            animationCompleted = true;
+            clearTimeout(animationWatchdog);
             proxy.style.left = targetLeft + 'px';
             proxy.style.top = targetTop + 'px';
             proxy.style.width = targetRect.width + 'px';
@@ -1696,7 +1256,9 @@ function animatePlayerMovement(player, path, onComplete) {
                 boardMap.style.removeProperty('transition-timing-function');
             }
             animateStep(stepIndex + 1);
-        };
+        }
+
+        animation.onfinish = finishAnimationStep;
     }
 
     animateStep(0);
@@ -1737,58 +1299,46 @@ function executeRoll(val) {
         placeTokens();
         updateGamePanel();
 
-        if (passedStartCount > 0) {
-            handlePassStart(player, function() {
-                gamePhase = "awaiting_field_resolution";
-                if (player.id === myPlayerId) saveGameCheckpoint(gamePhase);
-                triggerFieldArrival(player);
-            });
-        } else {
+        function arriveOnField() {
+            if (getFloor(player.pos) !== currentFloor) player.boughtCrystalThisFloor = false;
             gamePhase = "awaiting_field_resolution";
-            if (player.id === myPlayerId) saveGameCheckpoint(gamePhase);
             triggerFieldArrival(player);
+        }
+        if (passedStartCount > 0) {
+            handlePassStart(player, arriveOnField);
+        } else {
+            arriveOnField();
         }
     });
 }
 
 function rollDice() {
     if (!gameState || gameState.rolled || gameState.gameOver) return;
-    if (isMultiplayer && gameState.turn !== myPlayerId) return;
-    if (isMultiplayer && (!ws || ws.readyState !== WebSocket.OPEN)) {
-        showMsg("❌ Brak połączenia z grą. Poczekaj na ponowne połączenie i ponów akcję.");
+    if (isBotGame) {
+        document.getElementById('dice-btn').disabled = true;
+        mpSend({ type: "roll" });
+        return;
+    }
+    if (isMultiplayer) {
+        if (gameState.turn !== myPlayerId) return;
+        document.getElementById('dice-btn').disabled = true;
+        mpSend({ type: "roll" });
         return;
     }
     var player = gameState.players[gameState.turn];
     
     // Check if player is currently in practice or piwnica skip status
     if (player.skipTurnsLeft > 0) {
-        var previousPhase = gamePhase;
         player.skipTurnsLeft--;
         showMsg('⏳ ' + player.name + ' odbywa praktyki/przerwę! Pozostało tur do opuszczenia: ' + player.skipTurnsLeft);
         gameState.rolled = true;
         gamePhase = "turn_resolution";
         updateGamePanel();
-        if (isMultiplayer) {
-            if (!sendGameAction({
-                type: "turn_skipped",
-                gameState: gameState,
-                msg: '⏳ ' + player.name + ' opuszcza turę. Pozostało tur do opuszczenia: ' + player.skipTurnsLeft
-            })) {
-                player.skipTurnsLeft++;
-                gameState.rolled = false;
-                gamePhase = previousPhase;
-                updateGamePanel();
-                return;
-            }
-        }
         scheduleNextTurn(1800);
         return;
     }
     
     var val = Math.floor(Math.random() * 6) + 1;
-    if (isMultiplayer) {
-        if (!sendGameAction({ type: "roll_dice", value: val })) return;
-    }
     executeRoll(val);
 }
 
@@ -1826,9 +1376,6 @@ function handlePassStart(player, onFinished) {
                     updateGamePanel();
                 }
             }
-            if (isMultiplayer && player.id === myPlayerId) {
-                sendGameAction({ type: "sync_game_state", gameState: gameState });
-            }
             onFinished();
         }
     }
@@ -1841,31 +1388,35 @@ function promptStartBonus(player, onFinished) {
         document.getElementById('start-tuition-msg').textContent = "Pomyślnie opłacono czesne w wysokości " + tuition + " 🪙.";
         document.getElementById('start-modal').style.display = 'flex';
         startModalCallback = onFinished;
-        saveGameCheckpoint("awaiting_start_bonus");
     } else {
-        if (isMultiplayer) {
-            showMsg("⏳ Oczekiwanie na wybór bonusu przez gracza: " + player.name + "...");
-            startModalCallback = onFinished;
+        var choices = ['coin', 'hp', 'luck'];
+        var b = choices[Math.floor(Math.random() * choices.length)];
+        if (b === 'coin') {
+            player.coins += 1;
+            showMsg("🤖 " + player.name + " wybrał darmową monetę jako bonus semestralny!");
+        } else if (b === 'hp') {
+            player.hp += 1;
+            showMsg("🤖 " + player.name + " wybrał punkt zdrowia (+1 HP) jako bonus semestralny!");
         } else {
-            var choices = ['coin', 'hp', 'luck'];
-            var b = choices[Math.floor(Math.random() * choices.length)];
-            if (b === 'coin') {
-                player.coins += 1;
-                showMsg("🤖 " + player.name + " wybrał darmową monetę jako bonus semestralny!");
-            } else if (b === 'hp') {
-                player.hp += 1;
-                showMsg("🤖 " + player.name + " wybrał punkt zdrowia (+1 HP) jako bonus semestralny!");
-            } else {
-                player.luck += 1;
-                showMsg("🤖 " + player.name + " wybrał punkt szczęścia (+1 szczęścia) jako bonus semestralny!");
-            }
-            updateGamePanel();
-            setTimeout(onFinished, 1200);
+            player.luck += 1;
+            showMsg("🤖 " + player.name + " wybrał punkt szczęścia (+1 szczęścia) jako bonus semestralny!");
         }
+        updateGamePanel();
+        setTimeout(onFinished, 1200);
     }
 }
 
 function claimStartBonus(type) {
+    if (isBotGame) {
+        document.getElementById('start-modal').style.display = 'none';
+        mpSend({ type: "claim_bonus", bonus: type });
+        return;
+    }
+    if (isMultiplayer) {
+        document.getElementById('start-modal').style.display = 'none';
+        mpSend({ type: "claim_bonus", bonus: type });
+        return;
+    }
     if (!gameState) return;
     var player = gameState.players[myPlayerId];
     if (type === 'coin') {
@@ -1880,17 +1431,6 @@ function claimStartBonus(type) {
     }
     document.getElementById('start-modal').style.display = 'none';
     updateGamePanel();
-    
-    if (isMultiplayer) {
-        gamePhase = "resolving_field";
-        sendGameAction({
-            type: "claim_start_bonus",
-            bonusType: type,
-            gameState: gameState,
-            phase: gamePhase,
-            msg: document.getElementById('gp-msg').textContent
-        });
-    }
     
     if (startModalCallback) {
         var cb = startModalCallback;
@@ -1911,9 +1451,6 @@ function executeChanceCard(cardIndex) {
         showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
         gameState.gameOver = true;
         document.getElementById('dice-btn').disabled = true;
-        if (isMultiplayer) {
-            sendGameAction({ type: "victory", winnerId: winner.id });
-        }
         return;
     }
     scheduleNextTurn(2000);
@@ -1931,9 +1468,6 @@ function triggerFieldArrival(player) {
         triggerDziekanat(player);
     } else if (type === 'lazienka') {
         showMsg("🚽 " + player.name + " w łazience: Pusta kabina! Chwila oddechu, nic się nie dzieje.");
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
         scheduleNextTurn(1500);
     } else if (type === 'praktyki') {
         player.crystals += 1;
@@ -1949,9 +1483,6 @@ function triggerFieldArrival(player) {
             showMsg("💼 " + player.name + " realizuje praktyki! Tracisz 3 tury i otrzymujesz +1 kryształek! 💎");
         }
         updateGamePanel();
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
         scheduleNextTurn(2200);
     } else if (type === 'biblioteka') {
         player.wisdom += 1;
@@ -1971,35 +1502,22 @@ function triggerFieldArrival(player) {
                 } else {
                     showMsg("📖 Biblioteka: Nie masz wystarczająco dużo monet (min. 2 🪙) na wymianę na kryształek!");
                 }
-                if (isMultiplayer) {
-                    sendGameAction({ type: "sync_game_state", gameState: gameState });
-                }
             } else {
-                if (!isMultiplayer) {
-                    if (player.coins >= 2 && player.crystals < 15) {
-                        player.coins -= 2;
-                        player.crystals += 1;
-                        showMsg("🤖 " + player.name + " wymienił 2 monety na 1 Kryształek w bibliotece!");
-                    }
+                if (player.coins >= 2 && player.crystals < 15) {
+                    player.coins -= 2;
+                    player.crystals += 1;
+                    showMsg("🤖 " + player.name + " wymienił 2 monety na 1 Kryształek w bibliotece!");
                 }
             }
         } else {
             showMsg("📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!");
-            if (isMultiplayer && player.id === myPlayerId) {
-                sendGameAction({ type: "sync_game_state", gameState: gameState });
-            }
         }
         updateGamePanel();
-        if (!isMultiplayer || player.id === myPlayerId) {
-            scheduleNextTurn(2000);
-        }
+        scheduleNextTurn(2000);
     } else if (type === 'strefarelaksu') {
         player.luck += 1;
         showMsg("⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!");
         updateGamePanel();
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
         scheduleNextTurn(1500);
     } else if (type === 'stolowka') {
         var floor = getFloor(player.pos);
@@ -2010,17 +1528,11 @@ function triggerFieldArrival(player) {
             showMsg("🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥");
         }
         updateGamePanel();
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
-            scheduleNextTurn(1500);
+        scheduleNextTurn(1500);
     } else if (type === 'piwnica') {
         player.skipTurnsLeft = 1;
         showMsg("🚬 " + player.name + " w piwnicy (przerwa na dworze): Tracisz 1 kolejkę!");
         updateGamePanel();
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
         scheduleNextTurn(1500);
     } else if (type === 'automaty') {
         if (player.coins >= 1) {
@@ -2032,75 +1544,23 @@ function triggerFieldArrival(player) {
             showMsg("🥤 " + player.name + " wchodzi na pole automatów, ale nie ma monet na zakup batona.");
         }
         updateGamePanel();
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
         scheduleNextTurn(2000);
     } else if (type === 'szansa') {
-        if (isMultiplayer) {
-            if (player.id === myPlayerId) {
-                var cardIndex = Math.floor(Math.random() * SZANSA_KARTY.length);
-                sendGameAction({ type: "draw_chance", cardIndex: cardIndex });
-                executeChanceCard(cardIndex);
-            }
-        } else {
-            var cardIndex = Math.floor(Math.random() * SZANSA_KARTY.length);
-            executeChanceCard(cardIndex);
-        }
+        var cardIndex = Math.floor(Math.random() * SZANSA_KARTY.length);
+        executeChanceCard(cardIndex);
     } else {
         showMsg(player.name + ' stoi na bezpiecznym polu.');
-        if (isMultiplayer && player.id === myPlayerId) {
-            sendGameAction({ type: "sync_game_state", gameState: gameState });
-        }
         scheduleNextTurn(1500);
     }
 }
 
-function triggerQuiz(player, count) {
-    var floor = getFloor(player.pos);
-    var isHard = (player.klass === 'leniuch') || (floor === 1);
-    var pool = isHard ? HARD_QUESTIONS : EASY_QUESTIONS;
-    var shuffled = pool.slice().sort(function() { return 0.5 - Math.random(); });
-    
-    quizContext = {
-        player: player,
-        total: count,
-        answered: 0,
-        correct: 0,
-        questions: shuffled.slice(0, count),
-        hiddenAnswers: []
-    };
-    gamePhase = "awaiting_quiz";
-    if (isMultiplayer && player.id === myPlayerId) {
-        saveGameCheckpoint(gamePhase, { quiz: {
-            playerId: player.id,
-            total: quizContext.total,
-            answered: quizContext.answered,
-            correct: quizContext.correct,
-            questions: quizContext.questions,
-            hiddenAnswers: quizContext.hiddenAnswers
-        } });
-    }
-    
-    if (isMultiplayer) {
-        if (player.id === myPlayerId) {
-            showQuizQuestion();
-        } else {
-            showMsg("⏳ Gracz " + player.name + " odpowiada na pytania naukowe...");
-        }
-    } else {
-        if (player.id === 0) {
-            showQuizQuestion();
-        } else {
-            runBotQuiz();
-        }
-    }
+function triggerQuiz() {
+    console.error('Quiz rozstrzyga serwer.');
 }
 
-function showQuizQuestion() {
-    var q = quizContext.questions[quizContext.answered];
+function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
     document.getElementById('quiz-question-text').innerHTML = 
-        `<strong>Pytanie ${quizContext.answered + 1} z ${quizContext.total}:</strong><br><br>${q.q}`;
+        `<strong>Pytanie ${number} z ${total}:</strong><br><br>${q.q}`;
     
     var answersContainer = document.getElementById('quiz-answers-container');
     answersContainer.innerHTML = '';
@@ -2109,10 +1569,10 @@ function showQuizQuestion() {
         var btn = document.createElement('button');
         btn.className = 'custom-modal-btn';
         btn.innerHTML = `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">${String.fromCharCode(65 + index)}:</span> ${ans}`;
-        btn.onclick = function() { selectQuizAnswer(index); };
+        btn.onclick = function() { onAnswer(index); };
         answersContainer.appendChild(btn);
     });
-    (quizContext.hiddenAnswers || []).forEach(function(index) {
+    (hiddenAnswers || []).forEach(function(index) {
         var hiddenButton = answersContainer.children[index];
         if (hiddenButton) {
             hiddenButton.style.opacity = '0.3';
@@ -2121,10 +1581,11 @@ function showQuizQuestion() {
     });
     
     var hintBtn = document.getElementById('quiz-hint-btn');
-    if (quizContext.player.hints > 0 || quizContext.player.coins >= 1) {
+    var alreadyHinted = !!(hiddenAnswers && hiddenAnswers.length);
+    if (!alreadyHinted && (player.hints > 0 || player.coins >= 1)) {
         hintBtn.style.display = 'block';
-        if (quizContext.player.hints > 0) {
-            hintBtn.innerHTML = `💡 Użyj darmowej podpowiedzi (Dostępne: ${quizContext.player.hints})`;
+        if (player.hints > 0) {
+            hintBtn.innerHTML = `💡 Użyj darmowej podpowiedzi (Dostępne: ${player.hints})`;
         } else {
             hintBtn.innerHTML = `🪙 Kup podpowiedź 50/50 (Koszt: 1 moneta)`;
         }
@@ -2136,6 +1597,14 @@ function showQuizQuestion() {
 }
 
 function useQuiz1Hint() {
+    if (isBotGame) {
+        mpSend({ type: "use_hint" });
+        return;
+    }
+    if (isMultiplayer) {
+        mpSend({ type: "use_hint" });
+        return;
+    }
     var player = quizContext.player;
     if (player.hints > 0) {
         player.hints--;
@@ -2165,285 +1634,39 @@ function useQuiz1Hint() {
     }
     document.getElementById('quiz-hint-btn').style.display = 'none';
     showMsg("💡 Użyto podpowiedzi! Ukryto 2 błędne odpowiedzi.");
-    if (isMultiplayer && player.id === myPlayerId) {
-        saveGameCheckpoint(gamePhase, { quiz: {
-            playerId: player.id,
-            total: quizContext.total,
-            answered: quizContext.answered,
-            correct: quizContext.correct,
-            questions: quizContext.questions,
-            hiddenAnswers: quizContext.hiddenAnswers
-        } });
-    }
 }
 
-function selectQuizAnswer(selectedIndex) {
-    var q = quizContext.questions[quizContext.answered];
-    var buttons = document.getElementById('quiz-answers-container').children;
-    
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].style.pointerEvents = 'none';
-        if (i === q.c) {
-            buttons[i].style.background = '#2ed573';
-            buttons[i].style.borderColor = '#2ed573';
-        } else if (i === selectedIndex) {
-            buttons[i].style.background = '#ff4757';
-            buttons[i].style.borderColor = '#ff4757';
-        }
-    }
-    
-    if (selectedIndex === q.c) {
-        quizContext.correct++;
-        showMsg("🎉 Poprawna odpowiedź!");
-    } else {
-        showMsg("❌ Błędna odpowiedź! Prawidłowa to: " + q.a[q.c]);
-    }
-    
-    quizContext.answered++;
-    quizContext.hiddenAnswers = [];
-    if (isMultiplayer && quizContext.player.id === myPlayerId && quizContext.answered < quizContext.total) {
-        saveGameCheckpoint(gamePhase, { quiz: {
-            playerId: quizContext.player.id,
-            total: quizContext.total,
-            answered: quizContext.answered,
-            correct: quizContext.correct,
-            questions: quizContext.questions,
-            hiddenAnswers: quizContext.hiddenAnswers
-        } });
-    }
-    
-    setTimeout(function() {
-        if (quizContext.answered < quizContext.total) {
-            showQuizQuestion();
-        } else {
-            document.getElementById('quiz-modal').style.display = 'none';
-            resolveQuizRewards();
-        }
-    }, 1200);
-}
+function openDziekanatModal(player) {
+    var obronaBtn = document.getElementById('dk-btn-obrona');
+    obronaBtn.style.display = getFloor(player.pos) === 1 && player.crystals >= 15 ? 'block' : 'none';
 
-function resolveQuizRewards() {
-    var player = quizContext.player;
-    var floor = getFloor(player.pos);
-    var score = quizContext.correct;
-    var total = quizContext.total;
-    
-    if (total === 1) {
-        if (score === 1) {
-            player.crystals += 1;
-            player.coins += 1;
-            showMsg(`🎉 Poprawna odpowiedź! Zdobywasz +1 Kryształek 💎 i +1 monetę 🪙!`);
-        } else {
-            showMsg(`❌ Pudło! Nie zdobywasz kryształka na sali.`);
-        }
-    } else if (total === 2) {
-        if (floor === 1) {
-            if (score === 2) {
-                player.crystals += 1;
-                player.coins += 2;
-                showMsg(`🎉 Pełen sukces (2/2) w Auli na ostatnim piętrze! Zdobywasz +1 Kryształek 💎 i +2 monety 🪙!`);
-            } else if (score === 1) {
-                player.coins += 1;
-                showMsg(`⚠️ Wynik 1/2. Brak kryształka (tylko pełen sukces ocala cię na parterze), ale zyskujesz +1 monetę 🪙.`);
-            } else {
-                showMsg(`❌ 0/2 w Auli! Brak nagród.`);
-            }
-        } else {
-            if (score === 2) {
-                player.crystals += 1;
-                player.coins += 2;
-                showMsg(`🎉 Doskonały wynik (2/2) w Auli! Otrzymujesz +1 Kryształek 💎 i +2 monety 🪙!`);
-            } else if (score === 1) {
-                player.crystals += 1;
-                player.coins += 1;
-                showMsg(`👍 Dobry wynik (1/2) w Auli! Otrzymujesz +1 Kryształek 💎 i +1 monetę 🪙!`);
-            } else {
-                showMsg(`❌ 0/2 w Auli! Brak nagród.`);
-            }
-        }
-    }
-    quizContext = null;
-    updateGamePanel();
-    gamePhase = "turn_resolution";
-    
-    if (isMultiplayer) {
-         if (player.id === myPlayerId) {
-             sendGameAction({ type: "quiz_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
-             scheduleNextTurn(2200);
-         }
-    } else {
-         scheduleNextTurn(2200);
-    }
-}
+    document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
+    document.getElementById('dk-btn-hp').disabled = player.coins < 2;
+    document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
+    document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
 
-function runBotQuiz() {
-    var bot = quizContext.player;
-    var count = quizContext.total;
-    var prob = 0.4 + (bot.wisdom * 0.08);
-    if (bot.klass === 'leniuch') prob -= 0.15;
-    if (bot.klass === 'madrala') prob += 0.15;
-    prob = Math.min(0.92, Math.max(0.2, prob));
-    
-    showMsg(`🤖 ${bot.name} odpowiada na pytania naukowe...`);
-    
-    var idx = 0;
-    function answerOneByOne() {
-        var correct = Math.random() < prob;
-        if (correct) {
-            quizContext.correct++;
-        }
-        idx++;
-        if (idx < count) {
-            setTimeout(answerOneByOne, 1000);
-        } else {
-            setTimeout(resolveQuizRewards, 1000);
-        }
-    }
-    setTimeout(answerOneByOne, 1000);
+    document.getElementById('dziekanat-modal').style.display = 'flex';
 }
 
 function triggerDziekanat(player) {
-    if (isMultiplayer) {
-        if (player.id === myPlayerId) {
-            saveGameCheckpoint("awaiting_dziekanat");
-            var floor = getFloor(player.pos);
-            var obronaBtn = document.getElementById('dk-btn-obrona');
-            if (floor === 1 && player.crystals >= 15) {
-                obronaBtn.style.display = 'block';
-            } else {
-                obronaBtn.style.display = 'none';
-            }
-            
-            document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
-            document.getElementById('dk-btn-hp').disabled = player.coins < 2;
-            document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
-            document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
-            
-            document.getElementById('dziekanat-modal').style.display = 'flex';
-        } else {
-            showMsg("⏳ Gracz " + player.name + " załatwia sprawy w Dziekanacie...");
-        }
-    } else {
-        if (player.id === 0) {
-            var floor = getFloor(player.pos);
-            var obronaBtn = document.getElementById('dk-btn-obrona');
-            if (floor === 1 && player.crystals >= 15) {
-                obronaBtn.style.display = 'block';
-            } else {
-                obronaBtn.style.display = 'none';
-            }
-            
-            document.getElementById('dk-btn-prepay').disabled = player.coins < 1 || player.tempCzesnePaid;
-            document.getElementById('dk-btn-hp').disabled = player.coins < 2;
-            document.getElementById('dk-btn-crystal').disabled = player.coins < 3 || player.boughtCrystalThisFloor;
-            document.getElementById('dk-btn-shorten').disabled = player.coins < 2 || player.hasShortenCard;
-            
-            document.getElementById('dziekanat-modal').style.display = 'flex';
-        } else {
-            runBotDziekanat(player);
-        }
-    }
+    if (player.id === 0) openDziekanatModal(player);
 }
 
 function closeDziekanatModal() {
     document.getElementById('dziekanat-modal').style.display = 'none';
-    if (isMultiplayer) {
-        gamePhase = "turn_resolution";
-        sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: "Gracz wyszedł z dziekanatu." });
-        scheduleNextTurn(1500);
+    if (isBotGame || isMultiplayer) {
+        mpSend({ type: "dziekanat", choice: "leave" });
     } else {
         scheduleNextTurn(500);
     }
 }
 
 function applyDziekanat(action) {
-    var activeId = isMultiplayer ? myPlayerId : 0;
-    var player = gameState.players[activeId];
-    var floor = getFloor(player.pos);
-    
-    if (action === 'prepay') {
-        if (player.coins >= 1 && !player.tempCzesnePaid) {
-            player.coins -= 1;
-            player.tempCzesnePaid = true;
-            showMsg("🎫 Zapłacono czesne z góry! Przy najbliższym minięciu startu nie tracisz monet.");
-        }
-    } else if (action === 'buy_hp') {
-        if (player.coins >= 2) {
-            player.coins -= 2;
-            player.hp += 1;
-            showMsg("♥ Dziekanat: Dokonano zakupu regeneracji sił (+1 HP)!");
-        }
-    } else if (action === 'buy_crystal') {
-        if (player.coins >= 3 && !player.boughtCrystalThisFloor) {
-            player.coins -= 3;
-            player.crystals += 1;
-            player.boughtCrystalThisFloor = true;
-            showMsg("💎 Dziekanat: Zakupiono 1 Kryształek za 3 monety!");
-        }
-    } else if (action === 'buy_shorten') {
-        if (player.coins >= 2 && !player.hasShortenCard) {
-            player.coins -= 2;
-            player.hasShortenCard = true;
-            showMsg("📋 Dziekanat: Zakupiono kartę skróconych praktyk!");
-        }
-    } else if (action === 'obrona') {
-        if (floor === 1 && player.crystals >= 15) {
-            document.getElementById('dziekanat-modal').style.display = 'none';
-            if (isMultiplayer) {
-                sendGameAction({ type: "victory", winnerId: activeId });
-            }
-            triggerVictory(player);
-            return;
-        }
-    }
-    
-    document.getElementById('dziekanat-modal').style.display = 'none';
-    updateGamePanel();
-    
-    if (isMultiplayer) {
-        gamePhase = "turn_resolution";
-        sendGameAction({ type: "dziekanat_completed", gameState: gameState, msg: document.getElementById('gp-msg').textContent });
-        scheduleNextTurn(1500);
-    } else {
-        scheduleNextTurn(1500);
-    }
-}
-
-function runBotDziekanat(bot) {
-    var floor = getFloor(bot.pos);
-    if (floor === 1 && bot.crystals >= 15) {
-        triggerVictory(bot);
+    if (isBotGame || isMultiplayer) {
+        document.getElementById('dziekanat-modal').style.display = 'none';
+        mpSend({ type: "dziekanat", choice: action });
         return;
     }
-    
-    var prepayChance = bot.coins >= 1 && !bot.tempCzesnePaid && Math.random() < 0.4;
-    var buyHpChance = bot.coins >= 2 && bot.hp < 4 && Math.random() < 0.5;
-    var buyCrystalChance = bot.coins >= 3 && !bot.boughtCrystalThisFloor && bot.crystals < 15 && Math.random() < 0.6;
-    var shortenChance = bot.coins >= 2 && !bot.hasShortenCard && Math.random() < 0.3;
-    
-    if (buyCrystalChance) {
-        bot.coins -= 3;
-        bot.crystals += 1;
-        bot.boughtCrystalThisFloor = true;
-        showMsg(`🏛️ Dziekanat: Bot ${bot.name} kupił 1 Kryształek 💎 za 3 monety!`);
-    } else if (buyHpChance) {
-        bot.coins -= 2;
-        bot.hp += 1;
-        showMsg(`🏛️ Dziekanat: Bot ${bot.name} wymienił 2 monety na +1 HP!`);
-    } else if (shortenChance) {
-        bot.coins -= 2;
-        bot.hasShortenCard = true;
-        showMsg(`🏛️ Dziekanat: Bot ${bot.name} kupił kartę skróconych praktyk za 2 monety!`);
-    } else if (prepayChance) {
-        bot.coins -= 1;
-        bot.tempCzesnePaid = true;
-        showMsg(`🏛️ Dziekanat: Bot ${bot.name} zapłacił czesne z góry za 1 monetę!`);
-    } else {
-        showMsg(`🏛️ Dziekanat: Bot ${bot.name} załatwił sprawy urzędowe i opuścił dziekanat.`);
-    }
-    
-    updateGamePanel();
-    scheduleNextTurn(2200);
 }
 
 function triggerVictory(winner) {
@@ -2453,15 +1676,9 @@ function triggerVictory(winner) {
     
     winner.pos = 'k25';
     gamePhase = "finished";
-    if (isMultiplayer && winner.id === myPlayerId) saveGameCheckpoint(gamePhase);
     placeTokens();
     
-    var degreeText = "LICENCJAT";
-    if (winner.klass === 'madrala') {
-        degreeText = "INŻYNIER";
-    } else if (winner.klass === 'sportowiec') {
-        degreeText = Math.random() < 0.5 ? "INŻYNIER" : "LICENCJAT";
-    }
+    var degreeText = winner.degree || (winner.klass === 'madrala' ? "INŻYNIER" : "LICENCJAT");
     
     if (winner.id === myPlayerId) {
         document.getElementById('diploma-student-name').textContent = winner.name.toUpperCase();
@@ -2493,33 +1710,19 @@ function nextTurn(expectedTurnNumber) {
     if (gameState.gameOver) return;
     var currentTurnNumber = Number.isInteger(gameState.turnNumber) ? gameState.turnNumber : 0;
     if (expectedTurnNumber !== undefined && expectedTurnNumber !== currentTurnNumber) return;
-    if (isMultiplayer && gameState.turn !== myPlayerId) return;
     gameState.turn   = (gameState.turn + 1) % gameState.players.length;
     gameState.turnNumber = currentTurnNumber + 1;
     gameState.rolled = false;
     gamePhase = "awaiting_roll";
     updateGamePanel();
-    if (isMultiplayer) {
-        sendGameAction({ type: "turn_changed", gameState: gameState });
-    }
     var current = gameState.players[gameState.turn];
     
-    if (isMultiplayer) {
-        if (gameState.turn === myPlayerId) {
-            document.getElementById('dice-btn').disabled = false;
-            showMsg('Twoja tura – rzuć kostką!');
-        } else {
-            document.getElementById('dice-btn').disabled = true;
-            showMsg('Tura gracza ' + current.name + '...');
-        }
+    if (current.id === 1) {
+        showMsg('Tura ' + current.name + '...');
+        setTimeout(rollDice, 1200);
     } else {
-        if (current.id === 1) {
-            showMsg('Tura ' + current.name + '...');
-            setTimeout(rollDice, 1200);
-        } else {
-            document.getElementById('dice-btn').disabled = false;
-            showMsg('Twoja tura – rzuć kostką!');
-        }
+        document.getElementById('dice-btn').disabled = false;
+        showMsg('Twoja tura – rzuć kostką!');
     }
 }
 

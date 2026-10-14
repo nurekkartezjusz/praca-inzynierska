@@ -1,11 +1,16 @@
+import asyncio
 import logging
+import random
+import secrets
+from types import SimpleNamespace
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from sqlalchemy import or_
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from database import get_db
 from auth import decode_token
-from models import GameInvitation, GameInvitationStatus, GameSession, User
+from game import bot, engine, rules, service
+from game.common import IllegalAction
+from models import GameInvitation, GameInvitationStatus, User
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +23,8 @@ class GameRoom:
         self.connections: dict[int, WebSocket] = {}
         # Mapuje user_id -> ostatnia akcja "select_class" (odtwarzana graczowi dołączającemu później)
         self.last_class_selection: dict[int, dict] = {}
+        # Akcje w jednym pokoju wykonują się po kolei
+        self.lock = asyncio.Lock()
 
     def add(self, user_id: int, websocket: WebSocket):
         self.connections[user_id] = websocket
@@ -54,97 +61,30 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-SNAPSHOT_TYPES = {
-    "game_init",
-    "game_checkpoint",
-    "claim_start_bonus",
-    "sync_game_state",
-    "quiz_completed",
-    "dziekanat_completed",
-    "turn_skipped",
-    "turn_changed",
-}
 
-
-def may_write_snapshot(session: GameSession | None, data: dict, player_id: int) -> bool:
-    # Zapis stanu (poza game_init) ma prawo wykonać tylko gracz, którego jest tura w zapisanej sesji.
-    if session is None or session.status == "finished":
-        return False
-    if data.get("phase") == "finished":
-        players = data["gameState"].get("players")
-        return (
-            isinstance(players, list)
-            and 0 <= player_id < len(players)
-            and isinstance(players[player_id], dict)
-            and players[player_id].get("pos") == "k25"
-        )
-    return session.state.get("turn") == player_id
-
-
-def save_game_snapshot(db: Session, invitation_id: int, data: dict) -> GameSession | None:
-    state = data["gameState"]
-    expected_version = data.get("base_version")
-    phase = data.get("phase") or {
-        "game_init": "awaiting_roll",
-        "turn_changed": "awaiting_roll",
-        "quiz_completed": "turn_resolution",
-        "dziekanat_completed": "turn_resolution",
-        "turn_skipped": "turn_resolution",
-        "sync_game_state": "turn_resolution",
-        "game_checkpoint": "turn_resolution",
-    }.get(data.get("type"), "turn_resolution")
-    resume_data = data.get("resumeData") or {}
-
-    try:
-        session = (
-            db.query(GameSession)
-            .filter(GameSession.invitation_id == invitation_id)
-            .with_for_update()
-            .first()
-        )
-        current_version = session.version if session is not None else 0
-        if type(expected_version) is not int or expected_version != current_version:
-            db.rollback()
-            return None
-        if session is None:
-            session = GameSession(
-                invitation_id=invitation_id,
-                state=state,
-                phase=phase,
-                resume_data=resume_data,
-                status="finished" if state.get("gameOver") else "active",
-                version=1,
-            )
-            db.add(session)
-            db.flush()
-        else:
-            session.state = state
-            session.phase = phase
-            session.resume_data = resume_data
-            session.status = "finished" if state.get("gameOver") else "active"
-            session.version += 1
-        db.commit()
-        db.refresh(session)
-        return session
-    except IntegrityError:
-        db.rollback()
-        session = (
-            db.query(GameSession)
-            .filter(GameSession.invitation_id == invitation_id)
-            .with_for_update()
-            .one()
-        )
-        if type(expected_version) is not int or expected_version != session.version:
-            db.rollback()
-            return None
-        session.state = state
-        session.phase = phase
-        session.resume_data = resume_data
-        session.status = "finished" if state.get("gameOver") else "active"
-        session.version += 1
-        db.commit()
-        db.refresh(session)
-        return session
+def prepare_game_start(
+    db: Session, room: GameRoom, room_id: int, user: User, host_id: int, player_user_ids: list[int]
+):
+    """Zwraca (sesja, utworzona_teraz, błąd); istniejącą sesję zwraca bez tworzenia nowej."""
+    if user.id != host_id:
+        return None, False, "Tylko gospodarz może uruchomić grę"
+    existing = service.get_session(db, room_id)
+    if existing is not None:
+        return existing, False, None
+    if not rules.MIN_PLAYERS <= len(player_user_ids) <= rules.MAX_PLAYERS:
+        return None, False, "Do rozpoczęcia potrzeba od 2 do 4 graczy"
+    if any(player_user_id not in room.last_class_selection for player_user_id in player_user_ids):
+        return None, False, "Każdy gracz musi wybrać klasę"
+    users = {row.id: row for row in db.query(User).filter(User.id.in_(player_user_ids)).all()}
+    players = [
+        {
+            "user_id": player_user_id,
+            "name": users[player_user_id].username,
+            "klass": room.last_class_selection[player_user_id]["class"],
+        }
+        for player_user_id in player_user_ids
+    ]
+    return service.start_game(db, room_id, players), True, None
 
 
 @router.websocket("/ws/game/{invitation_id}")
@@ -163,6 +103,10 @@ async def websocket_game_endpoint(
     # Pobranie bazy danych
     db = next(get_db())
     user = None
+    room = None
+    room_id = None
+    role = None
+    player_id = None
     try:
         user = db.query(User).filter(User.email == email).first()
         if not user:
@@ -235,13 +179,7 @@ async def websocket_game_endpoint(
         })
 
         if saved_session:
-            await websocket.send_json({
-                "type": "game_state",
-                "state": saved_session.state,
-                "phase": saved_session.phase,
-                "resumeData": saved_session.resume_data,
-                "version": saved_session.version,
-            })
+            await websocket.send_json(service.state_message(saved_session))
 
         # Restore first so a replayed class selection cannot initialize over a saved game.
         for other_id, action in room.last_class_selection.items():
@@ -266,7 +204,10 @@ async def websocket_game_endpoint(
         # Główna pętla odbierania wiadomości
         while True:
             data = await websocket.receive_json()
-            saved_version = None
+            if not isinstance(data, dict):
+                await websocket.send_json({"type": "error", "message": "Nieprawidłowa wiadomość"})
+                continue
+            message_type = data.get("type")
             accepted_invitations = db.query(GameInvitation).filter(
                 or_(GameInvitation.id == room_id, GameInvitation.room_id == room_id),
                 GameInvitation.status == GameInvitationStatus.ACCEPTED,
@@ -276,112 +217,138 @@ async def websocket_game_endpoint(
                 await websocket.close(code=1008)
                 break
             player_id = player_user_ids.index(user.id)
-            # Zapamiętaj wybór klasy, żeby móc go odtworzyć drugiemu graczowi po jego (późniejszym) połączeniu
-            if data.get("type") == "select_class":
-                if data.get("class") not in {"sportowiec", "leniuch", "madrala"}:
+
+            if message_type == "select_class":
+                if data.get("class") not in rules.CLASS_STATS:
                     await websocket.send_json({"type": "error", "message": "Nieprawidłowy wybór klasy"})
                     continue
+                # Zapamiętaj wybór, żeby odtworzyć go graczowi dołączającemu później
                 room.last_class_selection[user.id] = data
-            if data.get("type") == "game_init":
-                if user.id != room_invitation.inviter_id:
-                    await websocket.send_json({"type": "error", "message": "Tylko gospodarz może uruchomić grę"})
-                    continue
-                existing_session = db.query(GameSession).filter(
-                    GameSession.invitation_id == room_id
-                ).first()
-                if existing_session is not None:
-                    await websocket.send_json({
-                        "type": "game_state",
-                        "state": existing_session.state,
-                        "phase": existing_session.phase,
-                        "resumeData": existing_session.resume_data,
-                        "version": existing_session.version,
-                    })
-                    continue
-                if not 2 <= len(player_user_ids) <= 4:
-                    await websocket.send_json({"type": "error", "message": "Do rozpoczęcia potrzeba od 2 do 4 graczy"})
-                    continue
-                if any(player_user_id not in room.last_class_selection for player_user_id in player_user_ids):
-                    await websocket.send_json({"type": "error", "message": "Każdy gracz musi wybrać klasę"})
-                    continue
-                game_state = data.get("gameState")
-                game_players = game_state.get("players") if isinstance(game_state, dict) else None
-                if not isinstance(game_players, list) or len(game_players) != len(player_user_ids) or any(
-                    not isinstance(player, dict)
-                    or player.get("id") != index
-                    or player.get("user_id") != player_user_id
-                    or player.get("klass") != room.last_class_selection[player_user_id].get("class")
-                    for index, (player_user_id, player) in enumerate(zip(player_user_ids, game_players))
-                ):
-                    await websocket.send_json({"type": "error", "message": "Stan gry nie pasuje do składu pokoju"})
-                    continue
-            if data.get("type") in SNAPSHOT_TYPES and isinstance(data.get("gameState"), dict):
-                if data.get("type") != "game_init":
-                    current_session = db.query(GameSession).filter(
-                        GameSession.invitation_id == room_id
-                    ).populate_existing().first()
-                    if not may_write_snapshot(current_session, data, player_id):
-                        logger.warning(
-                            "Odrzucono snapshot %s od gracza %s w pokoju %s",
-                            data.get("type"), player_id, room_id,
-                        )
-                        await websocket.send_json({
-                            "type": "game_state_rejected",
-                            "version": current_session.version if current_session is not None else 0,
-                        })
-                        continue
-                try:
-                    saved_session = save_game_snapshot(db, room_id, data)
-                    if saved_session is None:
-                        current_session = db.query(GameSession).filter(
-                            GameSession.invitation_id == room_id
-                        ).first()
-                        if current_session is not None:
-                            await websocket.send_json({
-                                "type": "game_state_conflict",
-                                "state": current_session.state,
-                                "phase": current_session.phase,
-                                "resumeData": current_session.resume_data,
-                                "version": current_session.version,
-                            })
-                        continue
-                    saved_version = saved_session.version
-                    await websocket.send_json({
-                        "type": "game_state_saved",
-                        "version": saved_version,
-                    })
-                except Exception:
-                    db.rollback()
-                    logger.exception(
-                        "Nie udało się zapisać snapshotu gry %s; przekazuję akcję dalej",
-                        room_id,
+                await room.broadcast({
+                    "type": "game_action",
+                    "sender_id": user.id,
+                    "sender_username": user.username,
+                    "sender_role": role,
+                    "sender_player_id": player_id,
+                    "payload": data,
+                }, exclude_user_id=user.id)
+            elif message_type == "game_init":
+                async with room.lock:
+                    session, created, error = prepare_game_start(
+                        db, room, room_id, user, room_invitation.inviter_id, player_user_ids
                     )
-            # Przesyłamy każdą wiadomość z payloadem do drugiego gracza
-            await room.broadcast({
-                "type": "game_action",
-                "sender_id": user.id,
-                "sender_username": user.username,
-                "sender_role": role,
-                "sender_player_id": player_id,
-                "version": saved_version,
-                "payload": data
-            }, exclude_user_id=None if data.get("type") == "game_init" else user.id)
+                    if error:
+                        await websocket.send_json({"type": "error", "message": error})
+                    elif created:
+                        await room.broadcast(service.state_message(session))
+                    else:
+                        await websocket.send_json(service.state_message(session))
+            elif message_type in engine.ACTION_TYPES:
+                async with room.lock:
+                    try:
+                        session, events = service.apply_action(db, room_id, user.id, data)
+                    except IllegalAction as error:
+                        await websocket.send_json({"type": "error", "message": str(error)})
+                        continue
+                    await room.broadcast(service.state_message(session, events))
+            else:
+                await websocket.send_json({"type": "error", "message": "Nieznana akcja"})
 
     except WebSocketDisconnect:
         if user:
             logger.info(f"Użytkownik {user.username} rozłączony z gry {invitation_id}")
-            room = manager.get_or_create_room(room_id)
-            if room.remove(user.id, websocket):
-                role = "inviter" if user.id == invitation.inviter_id else "invitee"
-                await room.broadcast({
-                    "type": "player_left",
-                    "username": user.username,
-                    "role": role,
-                    "player_id": player_id,
-                }, exclude_user_id=user.id)
-            manager.remove_room_if_empty(room_id)
-    except Exception as e:
+    except Exception:
         username_str = user.username if user else "nieznany"
-        logger.error(f"Błąd WebSocket dla użytkownika {username_str} w grze {invitation_id}: {e}")
+        logger.exception(f"Błąd WebSocket dla użytkownika {username_str} w grze {invitation_id}")
     finally:
+        if room is not None and user is not None and room.remove(user.id, websocket):
+            await room.broadcast({
+                "type": "player_left",
+                "username": user.username,
+                "role": role,
+                "player_id": player_id,
+            }, exclude_user_id=user.id)
+            manager.remove_room_if_empty(room_id)
         db.close()
+
+
+@router.websocket("/ws/bot")
+async def websocket_bot_endpoint(websocket: WebSocket, token: str | None = Query(default=None)):
+    email = decode_token(token) if token else None
+    if token and not email:
+        await websocket.close(code=1008)
+        return
+
+    db = next(get_db()) if email else None
+    try:
+        user = db.query(User).filter(User.email == email).first() if db else None
+        if email and user is None:
+            await websocket.close(code=1008)
+            return
+        await websocket.accept()
+        start = await websocket.receive_json()
+        if (
+            not isinstance(start, dict)
+            or start.get("type") != "bot_init"
+            or start.get("class") not in rules.CLASS_STATS
+        ):
+            await websocket.send_json({"type": "error", "message": "Nieprawidłowe rozpoczęcie gry"})
+            await websocket.close(code=1008)
+            return
+
+        rng = random.Random(secrets.randbits(128))
+        bot_class = rng.choice(tuple(rules.CLASS_STATS))
+        initial = engine.new_game([
+            {
+                "user_id": user.id if user else None,
+                "name": user.username if user else (start.get("username") or "Gracz"),
+                "klass": start["class"],
+            },
+            {"user_id": None, "name": "Bot", "klass": bot_class},
+        ])
+        state = initial.state
+        phase = initial.phase
+        resume = initial.resume
+        version = 1
+        session = SimpleNamespace(
+            invitation_id=0,
+            state=state,
+            phase=phase,
+            resume_data=resume,
+            version=version,
+        )
+        await websocket.send_json(service.state_message(session))
+
+        while True:
+            action = await websocket.receive_json()
+            if not isinstance(action, dict) or action.get("type") not in engine.ACTION_TYPES:
+                await websocket.send_json({"type": "error", "message": "Nieznana akcja"})
+                continue
+            try:
+                result = engine.apply(state, phase, action, player_id=0, rng=rng, resume=resume)
+            except IllegalAction as error:
+                await websocket.send_json({"type": "error", "message": str(error)})
+                continue
+
+            state, phase, resume = result.state, result.phase, result.resume
+            events = list(result.events)
+            version += 1
+            if not state.get("gameOver") and state["turn"] == 1:
+                state, phase, resume, bot_events = bot.play_until_human_turn(
+                    state, phase, resume, bot_player_id=1, rng=rng
+                )
+                events.extend(bot_events)
+                version += len(bot_events)
+
+            session.state = state
+            session.phase = phase
+            session.resume_data = resume
+            session.version = version
+            await websocket.send_json(service.state_message(session, events))
+    except WebSocketDisconnect:
+        logger.info("Użytkownik %s rozłączył się z grą z botem", email or "gość")
+    except Exception:
+        logger.exception("Błąd WebSocket w grze z botem użytkownika %s", email or "gość")
+    finally:
+        if db:
+            db.close()

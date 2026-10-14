@@ -203,11 +203,16 @@ docker-compose down
 ├── alembic/
 │   ├── env.py           # Konfiguracja środowiska migracji
 │   └── versions/        # Wygenerowane pliki migracji
+├── game/
+│   ├── engine.py        # Serwerowy silnik, ruchy i fazy gry
+│   ├── bot.py           # Decyzje bota
+│   └── questions.json   # Pytania, warianty odpowiedzi i klucze; tu edytuj quiz
 ├── routers/
 │   ├── auth.py          # Endpointy: rejestracja, logowanie, reset hasła
 │   ├── profile.py       # Endpointy: /me, awatar, profil, usunięcie konta
 │   ├── friends.py       # Endpointy: znajomi i wyszukiwanie użytkowników
-│   └── game_invitations.py  # Endpointy: zaproszenia do gier
+│   ├── game_invitations.py  # Endpointy: zaproszenia do gier
+│   └── game_ws.py           # WebSocket gry multiplayer i gry z botem
 ├── index.html           # Strona główna
 ├── rejestracja/         # Strona rejestracji
 ├── logowanie/           # Strona logowania
