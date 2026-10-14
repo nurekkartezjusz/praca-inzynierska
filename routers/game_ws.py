@@ -93,6 +93,7 @@ async def websocket_game_endpoint(
     invitation_id: int,
     token: str = Query(...),
 ):
+    logger.info(f"WebSocket połączenie przychodzące: invitation_id={invitation_id}")
     # Dekodowanie tokenu
     email = decode_token(token)
     if not email:
@@ -136,6 +137,7 @@ async def websocket_game_endpoint(
             return
 
         # Zaakceptowanie połączenia
+        logger.info(f"Akceptuję WebSocket dla użytkownika {user.username} w grze {invitation_id}")
         await websocket.accept()
 
         room = manager.get_or_create_room(room_id)
