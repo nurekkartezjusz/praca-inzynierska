@@ -60,7 +60,7 @@ def advance_one_step(crystals: int, pos: int) -> int:
             return 0 if crystals >= 10 else 50
         return pos + 1
     if pos == 49:
-        return 0
+        return 0 if crystals >= 15 else 83  # Koniec gry jeśli >= 15 kryształków, inaczej cofnij do piętra 2
     return pos + 1
 
 
