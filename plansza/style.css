@@ -793,13 +793,14 @@ body {
     text-align: center;
     color: #fff;
     text-shadow: 1px 1px 0 #000;
-    font-size: 9px;
-    line-height: 1.6;
+    font-size: 18px;
+    line-height: 1;
     padding-top: 10px;
     border-top: 1px solid rgba(255,255,255,0.25);
     min-height: 18px;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: var(--font-third);
 }
 
 .fp-modal {

@@ -1946,9 +1946,9 @@ function renderStatBar(id, player, prev) {
     var cryDelta = (prev && prev.crystals !== player.crystals) ? getDelta(prev.crystals, player.crystals) : '';
     var coiDelta = (prev && prev.coins    !== player.coins)   ? getDelta(prev.coins,   player.coins)    : '';
 
-    var prepaidInd = player.tempCzesnePaid ? ' 🎫' : '';
-    var shortenInd = player.hasShortenCard ? ' 📋' : '';
-    var hintsInd = player.hints > 0 ? ' 💡' : '';
+    var prepaidInd = player.tempCzesnePaid ? ' <span title="Opłata czesnych">🎫</span>' : '';
+    var shortenInd = player.hasShortenCard ? ' <span title="Karta skrócenia praktyk">📋</span>' : '';
+    var hintsInd = player.hints > 0 ? ' <span title="Podpowiedź">💡</span>' : '';
 
     el.innerHTML =
         '<span class="s-hp'  + hpFlash  + '">' + hearts              + hpDelta  + '</span>' +

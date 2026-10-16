@@ -208,7 +208,7 @@ function mpDescribeField(cell, name, player) {
                 ? '🥪 Stołówka na parterze jest zamknięta! Brak bonusów.'
                 : '🥪 ' + name + ' w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥', 1200];
         case 'piwnica':
-            return ['🚬 ' + name + ' w piwnicy (przerwa na dworze): Tracisz 1 kolejkę!', 1200];
+            return ['🚬 Przerwa na dworze: Tracisz 1 kolejkę!', 1200];
         case 'automaty':
             return ['🥤 ' + name + ' na polu automatów.', 1200];
         case 'start':
