@@ -1182,6 +1182,10 @@ body {
     background: linear-gradient(180deg, #ff9f1a 0%, #ffc048 100%) !important;
     border-color: #ffd32a !important;
 }
+span.s-coi{
+    display: inline-flex;
+    white-space: nowrap;
+}
 
 /* Diploma Styles */
 .diploma-content {
