@@ -247,9 +247,13 @@ function mpApplyState(msg) {
         if (roomPlayer) player.avatar = parseAvatarState(roomPlayer.avatar);
     });
 
-    var me = gameState.players.find(function(player) { return player.user_id === myUserId; });
-    if (me) myPlayerId = me.id;
-    else if (isBotGame) myPlayerId = 0;
+    // W grze z botem człowiek zawsze ma miejsce 0; bot ma user_id === null, więc nie można dopasowywać po myUserId.
+    if (isBotGame) {
+        myPlayerId = 0;
+    } else {
+        var me = gameState.players.find(function(player) { return player.user_id === myUserId; });
+        if (me) myPlayerId = me.id;
+    }
 
     showStartedGame();
     mpSyncPhase(mpLastResume, true);

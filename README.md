@@ -380,14 +380,8 @@ RESEND_API_KEY=...
 - **Statyczne pliki:** Serwowane przez FastAPI StaticFiles
 - **CORS:** Skonfigurowany dla wszystkich originów (development)
 
-### ⚠️ BEZPIECZEŃSTWO
-
-**NIE COMMITUJ pliku `.env` na GitHub!**
-- `.env` zawiera hasła i jest w `.gitignore`
-- Zmienne produkcyjne dodaj bezpośrednio w Render Dashboard
-
 ---
 
-## 📄 Licencja
+## Licencja
 
 Projekt edukacyjny © 2026
