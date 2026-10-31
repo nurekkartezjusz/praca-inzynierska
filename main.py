@@ -47,7 +47,7 @@ app.include_router(game_ws.router, prefix=_API_PREFIX)
 _PUBLIC_ENTRIES = {
     "index.html", "css", "haslo", "img", "img_glowna", "js", "karty", "logowanie",
     "plansza", "regulamin", "rejestracja", "statystyki", "uczelnia", "wybor awatara",
-    "zasady", "znajomi",
+    "zasady", "znajomi", "favicon",
 }
 
 
