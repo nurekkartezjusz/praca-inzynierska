@@ -16,29 +16,28 @@
     <link rel="manifest" href="/favicon/site.webmanifest">
 </head>
 <body>
-    <div class="app">
-        <a href="../index.html" class="home-btn">Powrót</a>
-        <div class="calosc">
-            <div class="statystyki">
-                <h2>Statystyki</h2>
-                <div class="stat">
-                    <span>Rozegrane gry:</span>
-                    <span>12</span>
-                </div>
-                <div class="stat">
-                    <span>Wygrane gry:</span>
-                    <span>10</span>
-                </div>
-                <div class="stat">
-                    <span>Przegrane gry:</span>
-                    <span>2</span>
-                </div>
-                <div class="stat">
-                    <span>Doświadczenie:</span>
-                    <span>3450 XP</span>
+    <!-- Pasek nawigacyjny -->
+     <nav class="nav">
+            <div class="nav-left">
+                <a href="uczelnia/index.html">O UCZELNI</a>
+                <a href="statystyki/index.html">PROFIL</a>
+                <a href="znajomi/index.html">ZNAJOMI</a>
+            </div>
+            <div class="nav-right">
+                <img src="img_glowna/pl.png" alt="PL" class="lang-btn" data-lang="pl">
+                <img src="img_glowna/en.png" alt="EN" class="lang-btn" data-lang="en">
+                <img src="img_glowna/power-off.png" alt="logout" id="user-profile" class="profile" onclick="toggleMenu()" id="profile-icon">
+                <div id="profile-icon"></div>
+                <div id="profile-menu" class="menu">
+                    <div id="profile-email" class="menu-email"></div>
+                    <button onclick="logout()">Wyloguj</button>
                 </div>
             </div>
-            <div class="prawo">
+        </nav>
+    
+    <div class="app">
+        <div class="profile-card">
+            <div class="left-section">
                 <div class="nickname">
                     <h1 id="username">&nbsp;</h1>
                 </div>
@@ -52,7 +51,25 @@
                 </div>
                 <button class="zmien-wyglad-btn" onclick="window.location.href='../wybor awatara/index.html'">Zmień wygląd</button>
             </div>
-        </div>
+
+            <div class="right-section">
+                <h2>Statystyki gracza</h2>
+                <div class="stat">
+                    <span>Rozegrane gry:</span>
+                    <span id="games-played">0</span>
+                </div>
+                <div class="stat">
+                    <span>Wygrane gry:</span>
+                    <span id="games-won">0</span>
+                </div>
+                <div class="stat">
+                    <span>Przegrane gry:</span>
+                    <span id="games-lost">0</span>
+                </div>
+                <div class="stat">
+                    <span>Doświadczenie:</span>
+                    <span id="experience">0 XP</span>
+                </div>
         
         <!-- Edycja profilu -->
         <div class="edycja-profilu">
@@ -110,6 +127,10 @@
         </div>
     </div>
 
+
+    </div>
+
+    
     <!-- Modal potwierdzenia usunięcia konta -->
     <div id="delete-modal" class="modal" style="display: none;">
         <div class="modal-content">
