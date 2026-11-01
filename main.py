@@ -45,7 +45,7 @@ app.include_router(game_ws.router, prefix=_API_PREFIX)
 
 # Tylko te wpisy z katalogu projektu są publiczne (reszta to .env, kod, migracje itd.)
 _PUBLIC_ENTRIES = {
-    "index.html", "css", "haslo", "img", "img_glowna", "images", "js", "karty", "logowanie",
+    "index.html", "css", "haslo", "img", "images", "js", "karty", "logowanie",
     "plansza", "regulamin", "rejestracja", "statystyki", "uczelnia", "wybor awatara",
     "zasady", "znajomi", "favicon",
 }
