@@ -17,7 +17,9 @@
     box-sizing:border-box;
 }
 body{
-    background: var(--color-bg);
+    height: 100%;
+    background: url(../images/Illustrationmobile.png) center/cover no-repeat;
+    overflow-x: hidden;
     font-family: var(--font-primary);
     color: var(--color-text-main);
 }
@@ -25,75 +27,59 @@ html, body{
     overflow-x: hidden;
 }
 
-.topbar,.hero{
-    position: relative;
-    z-index: 1;
-}
-.topbar{
-    width: 100%;
-	padding: 30px clamp(15px, 5vw, 60px);
-    z-index: 10;
-}
-.nav{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.nav-left{
-    display: flex;
-    gap: clamp(12px, 2vw, 40px);
-    flex-wrap: nowrap;
-    padding-left: 40px;
-}
-.nav-left a{
-    font-size: clamp(11px, 2vw, 18px);
-    transition: transform 0.2s ease, opacity 0.2s ease;
-    cursor: pointer;
-    color: var(--color-text-main);
-    text-decoration: none;
-    transition: 0.2s;
-    white-space: nowrap;
-    display: inline-block;
-}
-.nav-left a:hover{
-    transform: translateY(-1px);
-    opacity: 0.8;
-}
-.nav-right{
-    display: flex;
-    gap: clamp(10px, 1.5vw, 20px);align-items: center;
-}
-
 .app{
     display:flex;
     flex-direction:column;
     align-items:center;
-    padding: 40px 20px;
+    justify-content:center;
+    width: 100%;
+    min-height: calc(100vh - 82px);
+    margin-top: -41px;
+    padding: 30px 20px;
 }
 .profile-card{
     background: rgba(200, 165, 255, 0.85);
     backdrop-filter: blur(8px);
     border: 4px solid #000000;
     box-shadow: 8px 8px 0px #000000;
-    padding: 30px;
-    width: 100%;
-    max-width: 850px;
+    padding: 48px;
+    width: min(90vw, 1000px);
+    max-width: 1000px;
     display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 30px;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 42px;
+    align-items: stretch;
 }
 .left-section{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:15px;
+    gap:16px;
+    max-width: 100%;
+    min-height: 100%;
 }
-
+.nickname h1{
+    font-size: 24px;
+    text-align: center;
+    text-shadow: 2px 2px 0 #000;
+    color:#fff;
+}
+.avatar-frame{
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
 .avatar{
-    width:300px;
-    height:300px;
-    background:var(--color-card);
-    box-shadow:var(--shadow-pixel-small);
+    width:100%;
+    height: 100%;
     position:relative;
     overflow:hidden;
 }
@@ -104,7 +90,6 @@ html, body{
     object-fit:contain;
     image-rendering:pixelated;
     image-rendering:crisp-edges;
-    transform: translateZ(0);
 }
 
 .right-section{
@@ -115,8 +100,9 @@ html, body{
 .statystyki, .edycja-profilu {
     background: #ffffff;
     border: 3px solid #000000;
-    padding: 20px;
+    padding: 22px 18px;
     box-shadow: 4px 4px 0px #000000;
+    color: #000000;
 }
 
 .statystyki h2, .edycja-profilu h2 {
@@ -130,10 +116,19 @@ html, body{
 .stat {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    padding: 10px 0;
+    border-bottom: 2px dashed  rgba(200, 165, 255, 0.85);;
     font-size: 11px;
 }
-
+.stat-value{
+    background: #EDE2FF;
+    border: 2px solid #000;
+    padding: 4px 8px;
+    box-shadow: 2px 2px 0px #000;
+    display: inline-block;
+    min-width: 24px;
+    text-align: center;
+}
 /* Styling przycisków akcji */
 .edit-options {
     display: flex;
@@ -141,10 +136,10 @@ html, body{
     gap: 10px;
 }
 
-.zmien-wyglad-btn, .edit-option-btn, .save-profile-btn, .cancel-btn {
+.edit-option-btn, .save-profile-btn, .cancel-btn {
     font-family: inherit;
     font-size: 10px;
-    padding: 10px;
+    padding: 12px;
     background: #c8a5ff;
     border: 3px solid #000000;
     box-shadow: 3px 3px 0px #000000;
@@ -152,7 +147,7 @@ html, body{
     width: 100%;
 }
 
-.zmien-wyglad-btn:hover, .edit-option-btn:hover, .save-profile-btn:hover {
+.edit-option-btn:hover, .save-profile-btn:hover {
     background: #b38aff;
 }
 
@@ -161,16 +156,21 @@ html, body{
     margin-top: 10px;
 }
 
-.delete-account-btn {
+.delete-account-btn, .zmien-wyglad-btn {
     font-family: inherit;
     font-size: 10px;
-    background: #ff7b7b;
     border: 2px solid #000;
     box-shadow: 3px 3px 0px #000;
     padding: 8px 16px;
     cursor: pointer;
 }
+.zmien-wyglad-btn {
+    background: #fff;
+}
 
+.delete-account-btn {
+   background: #ff7b7b;
+}
 .delete-account-btn:hover {
     background: #ff5252;
 }
@@ -238,8 +238,26 @@ strong{
 }
 @media (max-width: 768px){
     .app{
-        margin: 15px auto;
-        padding: 15px;
+        min-height: 0;
+        margin: 0 auto;
+        padding: 20px 15px;
+    }
+    .profile-card{
+        width: 100%;
+        padding: 20px;
+        grid-template-columns: 1fr;
+        transform: none;
+    }
+    .avatar-frame{
+        width: min(340px, 100%);
+        flex: 0 0 auto;
+        align-items: center;
+        min-height: 0;
+    }
+    .avatar{
+        width: min(300px, 100%);
+        height: auto;
+        aspect-ratio: 1;
     }
     .calosc{
         flex-direction: column-reverse;
@@ -255,10 +273,6 @@ strong{
     }
     .prawo{
         width: 100%;
-    }
-    .avatar{
-        width: 250px;
-        height: 250px;
     }
     .edycja-profilu{
         margin-top: 30px;
@@ -295,8 +309,7 @@ strong{
         font-size: 12px;
     }
     .avatar{
-        width: 200px;
-        height: 200px;
+        width: min(240px, 100%);
     }
     .edit-option-btn{
         font-size: 18px;
