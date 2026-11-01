@@ -79,8 +79,6 @@
         <!-- Edycja profilu -->
         <div class="edycja-profilu">
             <h2>Edycja profilu</h2>
-            <div class="error-message" id="profile-error" style="display: none;"></div>
-            <div class="success-message" id="profile-success" style="display: none;"></div>
             
             <!-- Wybór opcji -->
             <div class="edit-options" id="edit-options">
@@ -97,6 +95,8 @@
             
             <!-- Formularz edycji -->
             <form id="profile-form" onsubmit="updateProfile(event)" style="display: none;">
+                <div class="error-message" id="profile-error" style="display: none;"></div>
+                <div class="success-message" id="profile-success" style="display: none;"></div>
                 <div class="form-group" id="username-group" style="display: none;">
                     <label for="edit-username">Nowa nazwa użytkownika</label>
                     <input type="text" id="edit-username" placeholder="Wpisz nową nazwę użytkownika">
@@ -264,9 +264,7 @@
         // Pokaż sekcję edycji
         function showEditSection(mode) {
             currentEditMode = mode;
-            
-            // Ukryj opcje wyboru
-            document.getElementById('edit-options').style.display = 'none';
+            document.querySelector('.edycja-profilu').classList.add('is-editing');
             
             // Pokaż formularz
             document.getElementById('profile-form').style.display = 'block';
@@ -284,11 +282,11 @@
             
             // Pokaż odpowiednie pole
             if (mode === 'username') {
-                document.getElementById('username-group').style.display = 'block';
+                document.getElementById('username-group').style.display = 'flex';
             } else if (mode === 'email') {
-                document.getElementById('email-group').style.display = 'block';
+                document.getElementById('email-group').style.display = 'flex';
             } else if (mode === 'password') {
-                document.getElementById('password-group').style.display = 'block';
+                document.getElementById('password-group').style.display = 'flex';
             }
             
             // Ukryj komunikaty
@@ -299,9 +297,7 @@
         // Anuluj edycję
         function cancelEdit() {
             currentEditMode = null;
-            
-            // Pokaż opcje wyboru
-            document.getElementById('edit-options').style.display = 'flex';
+            document.querySelector('.edycja-profilu').classList.remove('is-editing');
             
             // Ukryj formularz
             document.getElementById('profile-form').style.display = 'none';
