@@ -17,7 +17,7 @@
 html,body{
     margin: 0;
     height: 100%;
-    background: url(../img_glowna/Illustrationmobile.png) center/cover no-repeat;
+    background: url(../images/Illustrationmobile.png) center/cover no-repeat;
     overflow-x: hidden;
 }
 body{
@@ -29,7 +29,7 @@ body::before{
     content: "";
     position: fixed;
     inset: 0;
-    background: url(../img_glowna/Illustration.png) center/cover no-repeat;
+    background: url(../images/Illustration.png) center/cover no-repeat;
     opacity: 1;
     transition: opacity 0.8s ease;
     z-index: 0;

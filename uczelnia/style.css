@@ -21,7 +21,7 @@ html,body{
 .background{
     position: fixed;
     inset: 0;
-    background: url(../img_glowna/Illustrationmobile.png) center/cover no-repeat;
+    background: url(../images/Illustrationmobile.png) center/cover no-repeat;
     filter: blur(3px);
     transform: scale(1.05);
     opacity: 0.9;
