@@ -164,6 +164,52 @@ button:active{
     font-family:var(--font-primary);
     font-size:11px;
 }
+@media (min-width:769px) and (max-width:960px){
+    body{
+        align-items:flex-start;
+        padding:28px 18px 36px;
+    }
+    .app{
+        width:min(100%, 760px);
+        padding:clamp(24px, 5vw, 36px);
+    }
+    .app h1{
+        margin:20px 0 24px;
+    }
+    .wyglad{
+        grid-template-columns:minmax(0, 1fr);
+        gap:28px;
+    }
+    .lewo{
+        width:100%;
+    }
+    .avatar{
+        width:min(280px, 100%);
+    }
+    .controls{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        grid-template-rows:none;
+        grid-auto-rows:minmax(64px, auto);
+        height:auto;
+        gap:10px;
+    }
+    .control{
+        display:grid;
+        grid-template-columns:minmax(0, 1fr) 34px 34px;
+        gap:6px;
+        padding:8px;
+    }
+    .control span{
+        font-size:clamp(8px, 1.4vw, 10px);
+        overflow-wrap:anywhere;
+    }
+    .control button{
+        width:34px;
+        height:36px;
+        padding:2px;
+        font-size:9px;
+    }
+}
 @media(max-width:768px){
     body{
         min-height:100vh;
