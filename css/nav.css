@@ -133,6 +133,12 @@
     box-shadow: var(--shadow-pixel-hover);
 }
 
+body.responsive-nav:not(.home-page){
+    height: auto !important;
+    min-height: 100vh;
+    background: #879bce url("../images/Illustrationmobile.png") center / cover fixed no-repeat !important;
+}
+
 /* Shared responsive navigation */
 .responsive-nav .nav-links{
     display: flex;

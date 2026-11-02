@@ -22,9 +22,7 @@ html,body{
     position: fixed;
     inset: 0;
     background: url(../images/Illustrationmobile.png) center/cover no-repeat;
-    filter: blur(3px);
-    transform: scale(1.05);
-    opacity: 0.9;
+    opacity: 1;
     z-index: -1;
 }
 .topbar .nav-left a{
@@ -61,7 +59,7 @@ html,body{
 .info-container{
     max-width: 900px;
     width: 100%;
-    background: rgba(213, 201, 231, 0.85);
+    background: rgba(200, 165, 255, 0.85);
     backdrop-filter: blur(8px);
     border: 3px solid #000000;
     box-shadow: var(--shadow-pixel);
