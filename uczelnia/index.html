@@ -16,14 +16,33 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
 </head>
-<body>
+<body class="responsive-nav">
     <header class="topbar">
         <nav class="nav">
-            <div class="nav-left">
-                <a href="/index.html">STRONA GŁÓWNA</a>
-                <a href="/uczelnia/index.html">O UCZELNI</a>
-                <a href="/statystyki/index.html">PROFIL</a>
-                <a href="/znajomi/index.html">ZNAJOMI</a>
+            <button class="nav-toggle" type="button" aria-label="Otwórz menu" aria-controls="mobile-navigation" aria-expanded="false" onclick="toggleNavigation()">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-left" id="mobile-navigation" aria-hidden="false">
+                <div class="nav-links">
+                    <a href="/index.html">STRONA GŁÓWNA</a>
+                    <a href="/uczelnia/index.html" aria-current="page">O UCZELNI</a>
+                    <a href="/statystyki/index.html">PROFIL</a>
+                    <a href="/znajomi/index.html">ZNAJOMI</a>
+                </div>
+                <div class="mobile-nav-footer">
+                    <div class="mobile-language-label">Język</div>
+                    <div class="mobile-languages">
+                        <button class="language-option" type="button" data-lang="pl" aria-label="Język polski">
+                            <img src="/images/pl.png" alt="" class="lang-btn"> Polski
+                        </button>
+                        <button class="language-option" type="button" data-lang="en" aria-label="Język angielski">
+                            <img src="/images/en.png" alt="" class="lang-btn"> English
+                        </button>
+                    </div>
+                    <button class="nav-logout" type="button" onclick="logout()">
+                        <img src="/images/power-off.png" alt=""> Wyloguj
+                    </button>
+                </div>
             </div>
             <div class="nav-right">
                 <img src="/images/pl.png" alt="PL" class="lang-btn" data-lang="pl">
@@ -36,6 +55,7 @@
                 </div>
             </div>
         </nav>
+        <button class="nav-backdrop" type="button" aria-label="Zamknij menu" onclick="toggleNavigation(false)"></button>
     </header>
     <div class="background"></div>
     <div class="info">
@@ -103,5 +123,36 @@
     <div class="actions">
         <button onclick="window.location.href='/'" class="menu-btn">Powrót</button>
     </div>
+    <script>
+        function toggleNavigation(forceOpen) {
+            const toggle = document.querySelector('.nav-toggle');
+            const menu = document.getElementById('mobile-navigation');
+            const backdrop = document.querySelector('.nav-backdrop');
+            const isOpen = forceOpen ?? toggle.getAttribute('aria-expanded') !== 'true';
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            toggle.setAttribute('aria-label', isOpen ? 'Zamknij menu' : 'Otwórz menu');
+            menu.setAttribute('aria-hidden', String(!isOpen));
+            menu.classList.toggle('is-open', isOpen);
+            backdrop.classList.toggle('is-open', isOpen);
+            document.body.classList.toggle('nav-open', isOpen);
+            if (isOpen) menu.querySelector('a').focus();
+            else if (menu.contains(document.activeElement)) toggle.focus();
+        }
+
+        document.querySelectorAll('#mobile-navigation .nav-links a').forEach(function(link) {
+            link.addEventListener('click', function() { toggleNavigation(false); });
+        });
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && document.querySelector('.nav-toggle').getAttribute('aria-expanded') === 'true') {
+                toggleNavigation(false);
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_email');
+            window.location.href = '/logowanie/';
+        }
+    </script>
 </body>
 </html>
