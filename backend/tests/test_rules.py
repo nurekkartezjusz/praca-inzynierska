@@ -7,11 +7,12 @@ from pathlib import Path
 from game import questions, rules
 
 ROOT = Path(__file__).resolve().parent.parent
+FRONTEND = ROOT.parent / "frontend"
 
 
 class BoardTests(unittest.TestCase):
     def test_board_matches_frontend_html(self):
-        html = (ROOT / "plansza" / "index.html").read_text(encoding="utf-8")
+        html = (FRONTEND / "plansza" / "index.html").read_text(encoding="utf-8")
         cells = re.findall(r'class="cell c(\d+) (\w+)"', html)
         self.assertEqual(len(cells), rules.BOARD_SIZE)
         for number, cell_type in cells:
@@ -59,7 +60,7 @@ class QuestionTests(unittest.TestCase):
         data = json.loads((ROOT / "game" / "questions.json").read_text(encoding="utf-8"))
         self.assertEqual(len(data["easy"]), 12)
         self.assertEqual(len(data["hard"]), 11)
-        script = (ROOT / "plansza" / "script.js").read_text(encoding="utf-8")
+        script = (FRONTEND / "plansza" / "script.js").read_text(encoding="utf-8")
         self.assertNotIn("var EASY_QUESTIONS", script)
         self.assertNotIn("var HARD_QUESTIONS", script)
 

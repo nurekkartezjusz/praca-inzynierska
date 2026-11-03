@@ -4,8 +4,8 @@ import os
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 
-# Załaduj zmienne z .env (zawsze z katalogu projektu)
-dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+# Załaduj zmienne z .env (z głównego katalogu repozytorium, obok backend/ i frontend/)
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
 load_dotenv(dotenv_path=dotenv_path)
 
 # PostgreSQL connection string

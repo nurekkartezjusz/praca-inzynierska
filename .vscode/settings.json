@@ -1,9 +1,0 @@
-{
-    "liveServer.settings.port": 5501,
-    "liveServer.settings.proxy": {
-        "enable": true,
-        "baseUri": "/api",
-        "proxyUri": "http://localhost:8000/api"
-    },
-    "python.terminal.useEnvFile": true
-}

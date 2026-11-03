@@ -46,9 +46,9 @@ Umieść plik `.env` w głównym katalogu projektu.
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 # Zainstaluj zależności
-pip install -r requirements.txt
-# Uruchom backend
-uvicorn main:app --reload
+pip install -r backend/requirements.txt
+# Uruchom backend (z głównego katalogu projektu)
+uvicorn main:app --reload --app-dir backend
 ```
 
 ### 4. Test
@@ -87,7 +87,7 @@ source .venv/bin/activate
 
 ### Krok 4: Zainstaluj zależności
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### Krok 5: Skonfiguruj połączenie z Supabase
@@ -110,9 +110,11 @@ BREVO_SENDER_EMAIL=...
 ```
 
 ### Krok 6: Uruchom backend
+Z głównego katalogu projektu (aktywne `.venv`):
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --app-dir backend
 ```
+(albo wejdź do `backend/` i uruchom `uvicorn main:app --reload`)
 
 Powinieneś zobaczyć:
 ```
@@ -135,7 +137,7 @@ Frontend jest serwowany przez ten sam serwer FastAPI, więc nie trzeba osobnego 
 **Docker również używa Supabase!** Wymaga pliku `.env`.
 
 ### Kiedy używać Dockera?
-Do codziennej pracy wystarczy `uvicorn main:app --reload` (szybszy start, auto-reload po zmianach w kodzie). Docker jest opcjonalny i przydaje się, gdy:
+Do codziennej pracy wystarczy `uvicorn main:app --reload --app-dir backend` (szybszy start, auto-reload po zmianach w kodzie). Docker jest opcjonalny i przydaje się, gdy:
 - nie masz lokalnie Pythona 3.12 i nie chcesz go instalować,
 - chcesz sprawdzić, czy aplikacja działa tak samo jak na produkcji (Render buduje ten sam `Dockerfile`),
 - chcesz odtworzyć błąd, który występuje tylko po wdrożeniu.
@@ -207,43 +209,64 @@ docker rm inzynierka-backend
 ## 📁 Struktura projektu
 
 ```
-├── main.py              # Tworzenie aplikacji, middleware, include_router
-├── dependencies.py      # Zależności FastAPI (get_current_user, get_db)
-├── database.py          # Konfiguracja połączenia z Supabase
-├── models.py            # Modele SQLAlchemy (User, Friendship, GameInvitation)
-├── schemas.py           # Schematy Pydantic
-├── auth.py              # JWT + hashowanie haseł
-├── requirements.txt     # Zależności Python
-├── Dockerfile           # Konfiguracja Docker
-├── alembic.ini          # Konfiguracja Alembic
-├── alembic/
-│   ├── env.py           # Konfiguracja środowiska migracji
-│   └── versions/        # Wygenerowane pliki migracji
-├── game/
-│   ├── engine.py        # Serwerowy silnik, ruchy i fazy gry
-│   ├── bot.py           # Decyzje bota
-│   └── questions.json   # Pytania, warianty odpowiedzi i klucze; tu edytuj quiz
-├── routers/
-│   ├── auth.py          # Endpointy: rejestracja, logowanie, reset hasła
-│   ├── profile.py       # Endpointy: /me, awatar, profil, usunięcie konta
-│   ├── friends.py       # Endpointy: znajomi i wyszukiwanie użytkowników
-│   ├── game_invitations.py  # Endpointy: zaproszenia do gier
-│   └── game_ws.py           # WebSocket gry multiplayer i gry z botem
-├── index.html           # Strona główna
-├── rejestracja/         # Strona rejestracji
-├── logowanie/           # Strona logowania
-├── haslo/               # Resetowanie hasła
-├── plansza/             # Dashboard użytkownika
-├── znajomi/             # System znajomych i zaproszeń do gier
-├── statystyki/          # Profil i statystyki użytkownika
-└── wybor awatara/       # Kreator awatara
+├── backend/                 # Całe API i logika serwera (Python / FastAPI)
+│   ├── main.py              # Tworzenie aplikacji, middleware, include_router, serwowanie frontend/
+│   ├── dependencies.py      # Zależności FastAPI (get_current_user, get_db)
+│   ├── database.py          # Konfiguracja połączenia z Supabase (czyta ../.env)
+│   ├── models.py            # Modele SQLAlchemy (User, Friendship, GameInvitation)
+│   ├── schemas.py           # Schematy Pydantic
+│   ├── security.py          # JWT + hashowanie haseł
+│   ├── requirements.txt     # Zależności Python
+│   ├── alembic.ini          # Konfiguracja Alembic
+│   ├── alembic/
+│   │   ├── env.py           # Konfiguracja środowiska migracji
+│   │   └── versions/        # Wygenerowane pliki migracji
+│   ├── game/
+│   │   ├── rules.py         # Plansza i stałe reguły gry
+│   │   ├── engine.py        # Serwerowy silnik, ruchy i fazy gry
+│   │   ├── fields.py        # Efekty pól planszy
+│   │   ├── service.py       # Sesje gier
+│   │   ├── bot.py           # Decyzje bota
+│   │   └── questions.json   # Pytania, warianty odpowiedzi i klucze; tu edytuj quiz
+│   ├── routers/
+│   │   ├── auth.py          # Endpointy: rejestracja, logowanie, reset hasła
+│   │   ├── profile.py       # Endpointy: /me, awatar, profil, usunięcie konta
+│   │   ├── friends.py       # Endpointy: znajomi i wyszukiwanie użytkowników
+│   │   ├── game_invitations.py  # Endpointy: zaproszenia do gier
+│   │   └── game_ws.py           # WebSocket gry multiplayer i gry z botem
+│   └── tests/               # Testy jednostkowe (unittest)
+├── frontend/                # Statyczny frontend (HTML/CSS/JS), serwowany przez backend
+│   ├── index.html           # Strona główna
+│   ├── css/, js/, images/, karty/, favicon/   # Zasoby wspólne
+│   ├── rejestracja/         # Strona rejestracji
+│   ├── logowanie/           # Strona logowania
+│   ├── haslo/               # Resetowanie hasła
+│   ├── plansza/             # Dashboard użytkownika i plansza gry
+│   ├── znajomi/             # System znajomych i zaproszeń do gier
+│   ├── statystyki/          # Profil i statystyki użytkownika
+│   ├── uczelnia/            # Strona uczelni
+│   ├── regulamin/           # Regulamin
+│   ├── zasady/              # Zasady gry
+│   └── wybor awatara/       # Kreator awatara
+├── Dockerfile               # Konfiguracja Docker
+└── .env                     # Sekrety (poza repozytorium)
+```
+
+Adresy URL odpowiadają zawartości `frontend/` (np. `frontend/plansza/` → `http://localhost:8000/plansza/`). Pliki z `backend/` i `.env` nie są publiczne.
+
+### Testy
+```bash
+cd backend
+python -m unittest discover -s tests
 ```
 
 ---
 
 ## 🗄️ Migracje bazy danych (Alembic)
 
-Alembic śledzi zmiany w `models.py` i aktualizuje rzeczywistą bazę danych w Supabase tak, żeby była zgodna z kodem.
+Alembic śledzi zmiany w `backend/models.py` i aktualizuje rzeczywistą bazę danych w Supabase tak, żeby była zgodna z kodem.
+
+> Wszystkie komendy Alembic uruchamiaj **z katalogu `backend/`** (`cd backend`), przy aktywnym `.venv`.
 
 ### Kiedy używać?
 
@@ -255,40 +278,40 @@ Zawsze gdy zmienisz coś w `models.py` — dodasz kolumnę, zmienisz typ danych,
 
 **2. Wygeneruj plik migracji** (Alembic porównuje modele z bazą i tworzy SQL):
 ```bash
-.venv\Scripts\python -m alembic revision --autogenerate -m "opis_zmiany"
+python -m alembic revision --autogenerate -m "opis_zmiany"
 ```
 Np.:
 ```bash
-.venv\Scripts\python -m alembic revision --autogenerate -m "dodaj_kolumne_avatar"
+python -m alembic revision --autogenerate -m "dodaj_kolumne_avatar"
 ```
 
-**3. Przejrzyj wygenerowany plik** w `alembic/versions/` — sprawdź czy SQL wygląda poprawnie.
+**3. Przejrzyj wygenerowany plik** w `backend/alembic/versions/` — sprawdź czy SQL wygląda poprawnie.
 
 **4. Zastosuj migrację na bazie:**
 ```bash
-.venv\Scripts\python -m alembic upgrade head
+python -m alembic upgrade head
 ```
 
 ### Cofanie migracji
 
 Cofnij ostatnią migrację (wykonuje funkcję `downgrade` z pliku migracji):
 ```bash
-.venv\Scripts\python -m alembic downgrade -1
+python -m alembic downgrade -1
 ```
 
-Cofnij do konkretnej wersji (ID z nazwy pliku w `alembic/versions/`):
+Cofnij do konkretnej wersji (ID z nazwy pliku w `backend/alembic/versions/`):
 ```bash
-.venv\Scripts\python -m alembic downgrade abc123def456
+python -m alembic downgrade abc123def456
 ```
 
 ### Inne przydatne komendy
 
 ```bash
 # Sprawdź aktualną wersję bazy
-.venv\Scripts\python -m alembic current
+python -m alembic current
 
 # Zobacz historię migracji
-.venv\Scripts\python -m alembic history
+python -m alembic history
 ```
 
 > **Uwaga:** Migracje zmieniają rzeczywistą bazę w Supabase. Zawsze sprawdź wygenerowany plik przed `upgrade head`.
@@ -336,7 +359,7 @@ taskkill /PID NUMER_PID /F
 .venv\Scripts\activate
 
 # Przeinstaluj zależności:
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### Błąd połączenia z bazą
