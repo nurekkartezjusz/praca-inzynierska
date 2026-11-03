@@ -7,7 +7,8 @@ from security import get_password_hash, verify_password
 from database import get_db
 from dependencies import get_current_user
 from models import User
-from schemas import AvatarUpdate, DeleteAccountRequest, ProfileUpdate, UserResponse
+from game import service as game_service
+from schemas import AvatarUpdate, DeleteAccountRequest, ProfileUpdate, UserResponse, UserStats
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,11 @@ router = APIRouter(tags=["profile"])
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/stats", response_model=UserStats)
+def get_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return game_service.get_user_stats(db, current_user.id)
 
 
 @router.post("/avatar")

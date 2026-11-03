@@ -94,6 +94,22 @@
                     <span>Przegrane gry:</span>
                     <span id="games-lost" class="stat-value">0</span>
                 </div>
+                <div class="stat">
+                    <span>Odsetek wygranych:</span>
+                    <span id="win-rate" class="stat-value">0%</span>
+                </div>
+                <div class="stat">
+                    <span>Tytuł inżyniera:</span>
+                    <span id="engineer-titles" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span>Tytuł licencjata:</span>
+                    <span id="bachelor-titles" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span>Najczęściej wybierana klasa:</span>
+                    <span id="favorite-class" class="stat-value">-</span>
+                </div>
            </div>       
         
         <!-- Edycja profilu -->
@@ -175,6 +191,7 @@
     </div>
 
     <script src="../js/toast.js"></script>
+    <script src="../js/profile-menu.js"></script>
     <script>
         const API_URL = '/api';
 
@@ -184,6 +201,29 @@
             koszulka: ["czarna", "czerwona", "niebieska", "zielona", "biala", "rozowa"],
             spodnie: ["czarne", "biale", "szare", "niebieskie"]
         };
+
+        // Pobierz statystyki gier; w razie błędu zostają wartości domyślne
+        const CLASS_NAMES = { sportowiec: 'Sportowiec', leniuch: 'Leniuch', madrala: 'Madrala' };
+
+        async function loadStats(token) {
+            try {
+                const response = await fetch(`${API_URL}/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) return;
+                const stats = await response.json();
+                const setText = (id, value) => { document.getElementById(id).textContent = value; };
+                setText('games-played', stats.games_played);
+                setText('games-won', stats.games_won);
+                setText('games-lost', stats.games_lost);
+                setText('win-rate', `${stats.win_rate}%`);
+                setText('engineer-titles', stats.engineer_titles);
+                setText('bachelor-titles', stats.bachelor_titles);
+                setText('favorite-class', CLASS_NAMES[stats.favorite_class] || '-');
+            } catch (error) {
+                console.error('Błąd pobierania statystyk:', error);
+            }
+        }
 
         // Renderuj awatar na podstawie state
         function renderAvatar(avatarState) {
@@ -244,6 +284,8 @@
                     
                     // Wyświetl nickname
                     document.getElementById('username').textContent = userData.username;
+
+                    loadStats(token);
                     
                     // Renderuj awatar
                     if (userData.avatar) {

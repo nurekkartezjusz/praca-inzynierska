@@ -48,6 +48,16 @@ class DeleteAccountRequest(BaseModel):
     password: str
 
 
+class UserStats(BaseModel):
+    games_played: int
+    games_won: int
+    games_lost: int
+    win_rate: int
+    engineer_titles: int
+    bachelor_titles: int
+    favorite_class: str | None = None
+
+
 class AvatarUpdate(BaseModel):
     avatar: str
 

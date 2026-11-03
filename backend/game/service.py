@@ -56,6 +56,55 @@ def start_game(db: Session, room_id: int, players: list[dict]) -> GameSession:
     return session
 
 
+def summarize_results(states: list[dict], user_id: int) -> dict:
+    """Liczy statystyki użytkownika ze stanów zakończonych gier.
+
+    Zwycięzca to gracz z ustawionym `degree` (nadawanym tylko przy obronie dyplomu).
+    Najczęściej wybierana klasa to ta z największą liczbą gier; remisy rozstrzyga
+    kolejność alfabetyczna.
+    """
+    played = won = engineer = bachelor = 0
+    class_counts: dict[str, int] = {}
+    for state in states:
+        player = next((p for p in state.get("players", []) if p.get("user_id") == user_id), None)
+        if player is None:
+            continue
+        played += 1
+        degree = player.get("degree")
+        klass = player.get("klass")
+        if degree:
+            won += 1
+            if degree == "INŻYNIER":
+                engineer += 1
+            elif degree == "LICENCJAT":
+                bachelor += 1
+        if klass:
+            class_counts[klass] = class_counts.get(klass, 0) + 1
+
+    favorite = max(sorted(class_counts), key=class_counts.get, default=None)
+    return {
+        "games_played": played,
+        "games_won": won,
+        "games_lost": played - won,
+        "win_rate": round(won * 100 / played) if played else 0,
+        "engineer_titles": engineer,
+        "bachelor_titles": bachelor,
+        "favorite_class": favorite,
+    }
+
+
+def get_user_stats(db: Session, user_id: int) -> dict:
+    finished = (
+        db.query(GameSession.state)
+        .filter(
+            GameSession.status == "finished",
+            GameSession.state["players"].contains([{"user_id": user_id}]),
+        )
+        .all()
+    )
+    return summarize_results([row[0] for row in finished], user_id)
+
+
 def apply_action(db: Session, room_id: int, user_id: int, action: dict) -> tuple[GameSession, list[dict]]:
     """Stosuje akcję gracza pod blokadą wiersza; rzuca IllegalAction, gdy jest niedozwolona."""
     session = get_session(db, room_id, for_update=True)
