@@ -1,39 +1,3 @@
-let currentGame = null;
-
-function openGame(gameType, gameTitle) {
-  const modal = document.getElementById('game-modal');
-  const iframe = document.getElementById('game-iframe');
-  const title = document.getElementById('game-title');
-  
-  // Ustaw tytuł
-  title.textContent = gameTitle;
-  
-  // Załaduj grę tylko jeśli to inna gra lub pierwszy raz
-  if (currentGame !== gameType) {
-    if (gameType === 'kolko') {
-      iframe.src = '../kolko-i-krzyzyk/index.html';
-      iframe.classList.remove('scale');
-    } else if (gameType === 'sudoku') {
-      iframe.src = '../sudoku/index.html';
-      iframe.classList.add('scale');
-    }
-    currentGame = gameType;
-  }
-  
-  // Pokaż modal
-  modal.classList.add('show');
-  
-  // Zamknij dropdown
-  document.getElementById('games-menu').classList.remove('show');
-}
-
-function closeGame() {
-  const modal = document.getElementById('game-modal');
-  
-  // Ukryj modal (NIE czyść iframe - zachowaj stan gry)
-  modal.classList.remove('show');
-}
-
 // Funkcja do przełączania pełnego ekranu dla całej planszy
 function toggleBoardFullscreen() {
   const elem = document.documentElement;
@@ -74,26 +38,9 @@ function updateFullscreenButton() {
   }
 }
 
-// Zamknij menu po kliknięciu poza nim
-document.addEventListener('click', function(e) {
-  const menu = document.getElementById('games-menu');
-  const gamesBtn = document.getElementById('mini-games-btn');
-  if (gamesBtn && !gamesBtn.contains(e.target) && menu.classList.contains('show')) {
-    menu.classList.remove('show');
-  }
-});
-
-// Zamknij modal po kliknięciu w tło
-document.getElementById('game-modal').addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeGame();
-  }
-});
-
 // Zamknij modal klawiszem ESC
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    closeGame();
     if (document.getElementById('wait-modal').classList.contains('show')) {
       cancelInvitation();
     }
@@ -109,19 +56,6 @@ document.addEventListener('keydown', function(e) {
 function toggleMenu(){
     document.getElementById('main-menu').classList.toggle('show');
 }
-
-//MENU STRZAŁKA
-function toggleGamesMenu(){
-    const submenu = document.getElementById('games-menu');
-    const arrow = document.querySelector('#mini-games-btn .arrow');
-    submenu.classList.toggle('show');
-    if (submenu.classList.contains('show')){
-        arrow.style.transform = 'rotate(90deg)';
-    } else {
-        arrow.style.transform = 'rotate(0deg)';
-    }
-}
-
 
 // KARTY WYBORU KLASY
 const colors = {

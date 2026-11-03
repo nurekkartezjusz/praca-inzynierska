@@ -4,5 +4,6 @@
         "enable": true,
         "baseUri": "/api",
         "proxyUri": "http://localhost:8000/api"
-    }
+    },
+    "python.terminal.useEnvFile": true
 }
