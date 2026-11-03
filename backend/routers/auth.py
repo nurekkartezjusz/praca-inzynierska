@@ -10,7 +10,7 @@ from sib_api_v3_sdk.rest import ApiException
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from auth import (
+from security import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_access_token,
     get_password_hash,

@@ -1,4 +1,4 @@
-"""Plansza i stałe reguły gry (port z plansza/script.js i plansza/index.html)."""
+"""Plansza i stałe reguły gry (port z frontend/plansza/script.js i frontend/plansza/index.html)."""
 
 # Typy pól według numeru komórki (.c0 ... .c101); pięter: 0-49, 50-83, 84-101.
 CELL_TYPES: tuple[str, ...] = tuple(

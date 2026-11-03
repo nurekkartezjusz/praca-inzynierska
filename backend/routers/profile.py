@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from auth import get_password_hash, verify_password
+from security import get_password_hash, verify_password
 from database import get_db
 from dependencies import get_current_user
 from models import User

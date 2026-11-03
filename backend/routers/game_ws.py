@@ -7,7 +7,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from database import get_db
-from auth import decode_token
+from security import decode_token
 from game import bot, engine, rules, service
 from game.common import IllegalAction
 from models import GameInvitation, GameInvitationStatus, User, GameSession

@@ -11,13 +11,17 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --upgrade pip
 
 # Kopiuj requirements.txt
-COPY requirements.txt .
+COPY backend/requirements.txt .
 
 # Zainstaluj zależności Pythona (w tym psycopg2-binary dla PostgreSQL/Supabase)
 RUN pip install -r requirements.txt
 
 # Kopiuj cały projekt (z wyłączeniami z .dockerignore)
-COPY . .
+COPY backend/ ./backend/
+COPY frontend/ ./frontend/
+
+# Backend uruchamiamy z jego katalogu (importy typu "from routers import ...")
+WORKDIR /app/backend
 
 # Expose port
 EXPOSE 8000
