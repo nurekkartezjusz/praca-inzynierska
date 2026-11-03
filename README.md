@@ -6,24 +6,28 @@ Aplikacja webowa z grami i systemem użytkowników.
 
 ## 📖 Spis treści
 
-1. [👥 Szybki start](#-szybki-start)
-2. [📦 Technologie](#-technologie)
-3. [🎮 Funkcje](#-funkcje)
-4. [🔒 Bezpieczeństwo](#-bezpieczeństwo)
-5. [📝 API Dokumentacja](#-api-dokumentacja)
-6. [🐛 Rozwiązywanie problemów](#-rozwiązywanie-problemów)
-7. [🔧 Deployment](#-deployment)
+1. [👥 Szybki start dla członków zespołu](#-szybki-start-dla-członków-zespołu)
+2. [🚀 Szybki start - Supabase](#-szybki-start---supabase-zalecane)
+3. [🐳 Szybki start - Docker](#-szybki-start---docker)
+4. [📦 Technologie](#-technologie)
+5. [📁 Struktura projektu](#-struktura-projektu)
+6. [🗄️ Migracje bazy danych](#️-migracje-bazy-danych-alembic)
+7. [🎮 Funkcje](#-funkcje)
+8. [🔒 Bezpieczeństwo](#-bezpieczeństwo)
+9. [📝 API Dokumentacja](#-api-dokumentacja)
+10. [🐛 Rozwiązywanie problemów](#-rozwiązywanie-problemów)
+11. [🔧 Deployment](#-deployment)
 
 ---
 
-## � Szybki start dla członków zespołu
+## 👥 Szybki start dla członków zespołu
 
 **Masz już dostęp do projektu? Ta sekcja jest dla Ciebie!**
 
 ### 1. Sklonuj repo
 ```bash
-git clone https://github.com/USER/inzynierka-basic.git
-cd inzynierka-basic
+git clone https://github.com/nurekkartezjusz/praca-inzynierska.git
+cd praca-inzynierska
 ```
 
 ### 2. Pobierz plik .env
@@ -36,25 +40,23 @@ Pobierz go z:
 
 Umieść plik `.env` w głównym katalogu projektu.
 
-
-
 ### 3. Zainstaluj i uruchom
 ```bash
 # Stwórz środowisko
 python -m venv .venv
 .venv\Scripts\activate  # Windows
+# Zainstaluj zależności
+pip install -r requirements.txt
 # Uruchom backend
 uvicorn main:app --reload
 ```
 
 ### 4. Test
-Otwórz `rejestracja/index.html` w przeglądarce i zarejestruj użytkownika.
+Otwórz http://localhost:8000/rejestracja/ w przeglądarce i zarejestruj użytkownika.
 
 ✅ **Gotowe!**
 
 ---
-
-## �🚀 Szybki start - Supabase (ZALECANE)
 
 ## 🚀 Szybki start - Supabase (ZALECANE)
 
@@ -67,8 +69,8 @@ Otwórz `rejestracja/index.html` w przeglądarce i zarejestruj użytkownika.
 
 ### Krok 2: Sklonuj projekt
 ```bash
-git clone https://github.com/USER/inzynierka-basic.git
-cd inzynierka-basic
+git clone https://github.com/nurekkartezjusz/praca-inzynierska.git
+cd praca-inzynierska
 ```
 
 ### Krok 3: Stwórz i aktywuj środowisko wirtualne
@@ -77,7 +79,7 @@ cd inzynierka-basic
 python -m venv .venv
 
 # Aktywuj (Windows):
-python -m venv .venv
+.venv\Scripts\activate
 
 # Aktywuj (Linux/Mac):
 source .venv/bin/activate
@@ -92,15 +94,9 @@ pip install -r requirements.txt
 
 **⚠️ WAŻNE:** Plik `.env` z hasłami NIE jest w repozytorium (bezpieczeństwo)!
 
-```bash
-# Skopiuj przykładowy plik:
-copy .env.example .env  # Windows
-# cp .env.example .env  # Linux/Mac
-```
+**Dla członków zespołu:** Pobierz plik `.env` z Teams/Discorda lub zapytaj o dane dostępowe i umieść go w głównym katalogu projektu.
 
-**Dla członków zespołu:** Pobierz plik `.env` z Teams/Discorda lub zapytaj o dane dostępowe.
-
-**Dla innych:** Edytuj `.env` i wpisz swoje dane z Supabase:
+**Dla innych:** Utwórz w głównym katalogu projektu plik `.env` i wpisz swoje dane z Supabase:
 ```env
 DATABASE_USER=postgres.TWOJ_PROJEKT_ID
 DATABASE_PASSWORD=TWOJE_HASLO
@@ -108,6 +104,9 @@ DATABASE_HOST=aws-1-eu-central-1.pooler.supabase.com
 DATABASE_PORT=5432
 DATABASE_NAME=postgres
 SECRET_KEY=wygeneruj-losowy-silny-klucz-32-znaki
+# Opcjonalnie - wysyłanie kodów resetu hasła przez Brevo:
+BREVO_API_KEY=...
+BREVO_SENDER_EMAIL=...
 ```
 
 ### Krok 6: Uruchom backend
@@ -120,9 +119,12 @@ Powinieneś zobaczyć:
 INFO:     Uvicorn running on http://127.0.0.1:8000
 ```
 
-### Krok 7: Otwórz frontend
-- **Opcja A (Live Server w VSCode):** Kliknij PPM na `rejestracja/index.html` → "Open with Live Server"
-- **Opcja B:** Otwórz plik `rejestracja/index.html` bezpośrednio w przeglądarce
+### Krok 7: Otwórz aplikację
+Frontend jest serwowany przez ten sam serwer FastAPI, więc nie trzeba osobnego serwera. Otwórz w przeglądarce:
+- **Aplikacja:** http://localhost:8000/
+- **Rejestracja:** http://localhost:8000/rejestracja/
+
+> Pliku `rejestracja/index.html` nie otwieraj bezpośrednio z dysku — frontend wysyła zapytania pod `/api`, które działają tylko przez serwer.
 
 ✅ **Gotowe!** Dane zapisują się w Supabase!
 
@@ -132,6 +134,14 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 
 **Docker również używa Supabase!** Wymaga pliku `.env`.
 
+### Kiedy używać Dockera?
+Do codziennej pracy wystarczy `uvicorn main:app --reload` (szybszy start, auto-reload po zmianach w kodzie). Docker jest opcjonalny i przydaje się, gdy:
+- nie masz lokalnie Pythona 3.12 i nie chcesz go instalować,
+- chcesz sprawdzić, czy aplikacja działa tak samo jak na produkcji (Render buduje ten sam `Dockerfile`),
+- chcesz odtworzyć błąd, który występuje tylko po wdrożeniu.
+
+Kontener nie przeładowuje się po zmianach w kodzie, więc przy developmencie nie jest wygodny.
+
 ### Wymagania
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - Plik `.env` z danymi Supabase (zobacz sekcję dla zespołu powyżej)
@@ -139,30 +149,36 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 ### Instalacja
 ```bash
 # 1. Sklonuj projekt
-git clone https://github.com/USER/inzynierka-basic.git
-cd inzynierka-basic
+git clone https://github.com/nurekkartezjusz/praca-inzynierska.git
+cd praca-inzynierska
 
-# 2. Upewnij się że masz plik .env
-# (pobierz od zespołu lub skopiuj z .env.example i uzupełnij)
+# 2. Upewnij się że masz plik .env (pobierz od zespołu)
 
-# 3. Uruchom
-docker-compose up
+# 3. Zbuduj obraz
+docker build -t inzynierka-backend .
+
+# 4. Uruchom kontener (plik .env nie trafia do obrazu, więc przekazujemy go przez --env-file)
+docker run --name inzynierka-backend --env-file .env -p 8000:8000 inzynierka-backend
 ```
 
 Czekaj aż zobaczysz:
 ```
-inzynierka-backend | INFO:     Uvicorn running on http://0.0.0.0:8000
+INFO:     Uvicorn running on http://0.0.0.0:8000
 ```
 
 ### Dostęp
-- **Frontend:** http://localhost:5500/rejestracja/
+Frontend i API są serwowane z jednego adresu przez FastAPI:
+- **Aplikacja:** http://localhost:8000/
 - **API Docs:** http://localhost:8000/docs
 
 ### Zatrzymanie
 ```bash
 # W terminalu: Ctrl+C
-# Lub:
-docker-compose down
+# Lub z innego terminala:
+docker stop inzynierka-backend
+
+# Usunięcie kontenera (np. przed ponownym uruchomieniem z tą samą nazwą):
+docker rm inzynierka-backend
 ```
 
 ---
@@ -293,7 +309,7 @@ Cofnij do konkretnej wersji (ID z nazwy pliku w `alembic/versions/`):
 
 - Hasła hashowane przy użyciu Argon2
 - JWT tokens do autentykacji
-- CORS skonfigurowany
+- CORS ograniczony do listy dozwolonych originów (localhost)
 - Walidacja danych wejściowych (Pydantic)
 - Zmienne środowiskowe dla wrażliwych danych (.env)
 
@@ -304,8 +320,6 @@ Po uruchomieniu serwera, dokumentacja API dostępna pod:
 - ReDoc: `http://localhost:8000/redoc`
 
 ---
-
-
 
 ## 🐛 Rozwiązywanie problemów
 
@@ -334,14 +348,6 @@ pip install -r requirements.txt
 - Backend musi być uruchomiony
 - Sprawdź konsolę przeglądarki (F12)
 - Sprawdź czy `API_URL` w plikach frontend jest ustawiony na `/api`
-
----
-
-## 📝 API Dokumentacja
-
-Po uruchomieniu backendu:
-- **Swagger UI:** http://localhost:8000/docs
-- **ReDoc:** http://localhost:8000/redoc
 
 ---
 
@@ -375,7 +381,7 @@ BREVO_SENDER_EMAIL=...
 - **Frontend i Backend:** Serwowane z jednej domeny przez FastAPI
 - **API:** Dostępne pod ścieżką `/api/*`
 - **Statyczne pliki:** Serwowane przez FastAPI StaticFiles
-- **CORS:** Skonfigurowany dla wszystkich originów (development)
+- **CORS:** Ograniczony do listy dozwolonych originów (localhost), patrz `main.py`
 
 ---
 
