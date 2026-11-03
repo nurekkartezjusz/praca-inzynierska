@@ -10,7 +10,7 @@ CELL_TYPES: tuple[str, ...] = tuple(
     sala aula szansa sala sala lazienka sala praktyki sala sala
     start sala lazienka stolowka sala dziekanat szansa aula automaty sala
     lazienka sala praktyki piwnica sala biblioteka sala aula sala aula
-    lazienka szansa sala dziekanat automaty sala aula lazienka biblioteka strefarelaksu
+    lazienka szansa sala dziekanat automaty praktyki aula lazienka biblioteka strefarelaksu
     sala aula piwnica szansa
     start sala sala aula dziekanat stolowka szansa automaty aula lazienka
     piwnica biblioteka sala praktyki sala aula lazienka szansa

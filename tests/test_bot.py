@@ -1,7 +1,7 @@
 import random
 import unittest
 
-from game import bot, engine
+from game import bot, engine, fields
 from game.common import AWAITING_DZIEKANAT, AWAITING_QUIZ, TURN_RESOLUTION
 
 
@@ -31,7 +31,7 @@ class BotTests(unittest.TestCase):
     def test_bot_uses_winning_dziekanat_action(self):
         game = self.make_game()
         player = game.state["players"][1]
-        player.update(pos=6, crystals=15)
+        player.update(pos=6, crystals=fields.CRYSTALS_FOR_DEFENCE)
         action = bot.choose_action(game.state, AWAITING_DZIEKANAT, {}, 1, random.Random(4))
         self.assertEqual(action, {"type": "dziekanat", "choice": "obrona"})
 

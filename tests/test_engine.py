@@ -92,8 +92,8 @@ class RollTests(unittest.TestCase):
         self.assertEqual(moved.events[-1]["type"], "relegated")
 
         game.state["players"][0].update(pos=48)
-        moved = self.roll(game, 3)
-        self.assertEqual(moved.state["players"][0]["pos"], 50)
+        moved = self.roll(game, 3)  # 48 -> 49 -> 83 -> 50: piętro 2, brak monet i kryształków
+        self.assertEqual(moved.state["players"][0]["pos"], 84)
 
     def test_skipped_turn_does_not_move(self):
         game = make_game()
@@ -106,7 +106,7 @@ class RollTests(unittest.TestCase):
 
     def test_crystal_purchase_flag_resets_only_when_floor_changes(self):
         game = make_game()
-        game.state["players"][0].update(pos=82, crystals=10, boughtCrystalThisFloor=True)
+        game.state["players"][0].update(pos=82, crystals=15, boughtCrystalThisFloor=True)
         descended = self.roll(game, 3)  # 82 -> 83 -> 0 -> 1: piętro 2 -> 1
         self.assertFalse(descended.state["players"][0]["boughtCrystalThisFloor"])
 

@@ -233,17 +233,26 @@ class DziekanatTests(unittest.TestCase):
 
     def test_defence_wins_only_on_ground_floor_with_enough_crystals(self):
         won = engine.apply(
-            resolve(player_at(6, crystals=15)).state, AWAITING_DZIEKANAT, {"type": "dziekanat", "choice": "obrona"}, 0
+            resolve(player_at(6, crystals=fields.CRYSTALS_FOR_DEFENCE)).state,
+            AWAITING_DZIEKANAT,
+            {"type": "dziekanat", "choice": "obrona"},
+            0,
         )
         self.assertEqual((won.phase, won.state["gameOver"], won.state["players"][0]["pos"]), (FINISHED, True, "k25"))
         self.assertEqual(won.events[-1], {"type": "victory", "winner_id": 0, "degree": "INŻYNIER"})
 
-        for state in (player_at(6, crystals=14), player_at(88, crystals=15)):
+        not_enough = fields.CRYSTALS_FOR_DEFENCE - 1
+        for state in (player_at(6, crystals=not_enough), player_at(88, crystals=fields.CRYSTALS_FOR_DEFENCE)):
             with self.assertRaises(IllegalAction):
                 engine.apply(state, AWAITING_DZIEKANAT, {"type": "dziekanat", "choice": "obrona"}, 0)
 
     def test_no_actions_after_victory(self):
-        won = engine.apply(player_at(6, crystals=15), AWAITING_DZIEKANAT, {"type": "dziekanat", "choice": "obrona"}, 0)
+        won = engine.apply(
+            player_at(6, crystals=fields.CRYSTALS_FOR_DEFENCE),
+            AWAITING_DZIEKANAT,
+            {"type": "dziekanat", "choice": "obrona"},
+            0,
+        )
         with self.assertRaises(IllegalAction):
             engine.apply(won.state, won.phase, {"type": "end_turn"}, 0)
 

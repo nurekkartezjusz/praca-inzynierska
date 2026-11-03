@@ -220,9 +220,7 @@ docker-compose down
 ├── plansza/             # Dashboard użytkownika
 ├── znajomi/             # System znajomych i zaproszeń do gier
 ├── statystyki/          # Profil i statystyki użytkownika
-├── wybor awatara/       # Kreator awatara
-├── kolko-i-krzyzyk/     # Gra kółko i krzyżyk
-└── sudoku/              # Gra Sudoku
+└── wybor awatara/       # Kreator awatara
 ```
 
 ---
@@ -282,15 +280,13 @@ Cofnij do konkretnej wersji (ID z nazwy pliku w `alembic/versions/`):
 ## 🎮 Funkcje
 
 - ✅ Rejestracja i logowanie użytkowników
-- ✅ Resetowanie hasła (6-cyfrowy kod przez email)
+- ✅ Resetowanie hasła (6-cyfrowy kod przez email, Brevo)
 - ✅ JWT autentykacja
 - ✅ Bezpieczne hashowanie haseł (Argon2)
 - ✅ System znajomych (dodawanie, akceptacja, odrzucanie)
-- ✅ Zaproszenia do gier (Wielka Studencka Batalla, Kółko i krzyżyk, Sudoku)
+- ✅ Zaproszenia do gier (Wielka Studencka Batalla)
 - ✅ Kreator awatara
 - ✅ Profil użytkownika i statystyki
-- ✅ Gra: Kółko i krzyżyk
-- ✅ Gra: Sudoku
 - 🔄 Wielka Studencka Batalla (w rozwoju)
 
 ## 🔒 Bezpieczeństwo
@@ -370,7 +366,8 @@ DATABASE_HOST=TWOJ_HOST_SUPABASE
 DATABASE_PORT=5432
 DATABASE_NAME=postgres
 SECRET_KEY=...
-RESEND_API_KEY=...
+BREVO_API_KEY=...
+BREVO_SENDER_EMAIL=...
 ```
 
 ### Podsumowanie architektury

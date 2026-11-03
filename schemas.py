@@ -91,7 +91,7 @@ class FriendResponse(BaseModel):
     friendship_id: int
 
 
-VALID_GAME_TYPES = Literal["wielka-studencka-batalla", "kolko-i-krzyzyk", "sudoku"]
+VALID_GAME_TYPES = Literal["wielka-studencka-batalla"]
 
 
 class GameInvitationCreate(BaseModel):

@@ -307,9 +307,7 @@ async function selectGame(game) {
     if (!currentInvitedUser) return;
     
     const gameNames = {
-        'wielka-studencka-batalla': 'Wielka Studencka Batalla',
-        'kolko-i-krzyzyk': 'Kółko i krzyżyk',
-        'sudoku': 'Sudoku'
+        'wielka-studencka-batalla': 'Wielka Studencka Batalla'
     };
     
     try {
@@ -409,9 +407,7 @@ async function loadGameInvitations() {
         }
 
         const gameNames = {
-            'wielka-studencka-batalla': 'Wielka Studencka Batalla',
-            'kolko-i-krzyzyk': 'Kółko i krzyżyk',
-            'sudoku': 'Sudoku'
+            'wielka-studencka-batalla': 'Wielka Studencka Batalla'
         };
 
         invitationsDiv.innerHTML = invitations.map(inv => {
@@ -475,9 +471,7 @@ async function acceptGameInvitation(invitationId, gameType) {
         
         // Przekieruj do odpowiedniej gry
          const gameUrls = {
-    'wielka-studencka-batalla': '/plansza/?invite_accepted=' + (data.room_id || invitationId),
-      'kolko-i-krzyzyk': '/kolko-i-krzyzyk/',
-      'sudoku': '/sudoku/'
+    'wielka-studencka-batalla': '/plansza/?invite_accepted=' + (data.room_id || invitationId)
     };
         
         setTimeout(() => {

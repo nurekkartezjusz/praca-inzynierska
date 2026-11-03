@@ -37,14 +37,17 @@ class MovementTests(unittest.TestCase):
         self.assertEqual(rules.compute_move(0, 82, 3), ([83, 50, 51], 1))
 
     def test_wrap_on_ground_floor_passes_start(self):
-        self.assertEqual(rules.compute_move(0, 48, 3), ([49, 0, 1], 1))
+        self.assertEqual(rules.compute_move(30, 48, 3), ([49, 0, 1], 1))
+
+    def test_ground_floor_end_without_enough_crystals_returns_to_middle_floor(self):
+        self.assertEqual(rules.compute_move(14, 48, 3), ([49, 83, 50], 1))
 
     def test_going_down_with_enough_crystals_does_not_pass_start(self):
         path, passed = rules.compute_move(5, 100, 3)
         self.assertEqual((path, passed), ([101, 50, 51], 0))
 
     def test_going_down_to_ground_floor(self):
-        path, passed = rules.compute_move(10, 82, 3)
+        path, passed = rules.compute_move(15, 82, 3)
         self.assertEqual((path, passed), ([83, 0, 1], 0))
 
     def test_tuition(self):
