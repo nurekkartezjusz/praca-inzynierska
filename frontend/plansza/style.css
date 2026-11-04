@@ -366,6 +366,89 @@ body {
     box-shadow: inset 2px 2px 0 #fff, 2px 2px 0 #000;
     color: #282c32;
 }
+.cell.k32, .cell.k35{
+    grid-column: span 2 !important;
+    grid-row: span 2 !important;
+    position: relative !important;
+    aspect-ratio: 2 / 3 !important;
+    width: 75% !important;
+    height: auto !important;
+    justify-self: center !important;
+    align-self: center !important;
+}
+.cell.k32 .card-layer,
+.cell.k35 .card-layer{
+    position: absolute !important;
+    inset: 0 !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    border-radius: 0px !important; /* Ostre rogi */
+}
+.cell.k32 .card-layer-1{
+    background-image: url('../karty/question-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    transform: rotate(-90deg) translate(-4px, 5px) rotate(-3deg) !important;
+    filter: brightness(0.3) !important;
+}
+.cell.k32 .card-layer-2{
+    background-image: url('../karty/question-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transform: rotate(-90deg) translate(3px, -3px) rotate(2deg) !important;
+    filter: brightness(0.45) !important;
+}
+.cell.k32 .card-layer-3{
+    background-image: url('../karty/question-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    transform: rotate(-90deg) translate(-2px, -2px) rotate(-1.5deg) !important;
+    filter: brightness(0.6) !important;
+}
+.cell.k32 .card-layer-4{
+    background-image: url('../karty/question-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    transform: rotate(-90deg) translate(2px, 3px) rotate(2.5deg) !important;
+    filter: brightness(0.8) !important;
+}
+.cell.k32 .card-top{
+    background-image: url('../karty/question-back.png') !important;
+    transform: rotate(-90deg) !important;
+    box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.4) !important;
+    filter: brightness(1) !important;
+}
+.cell.k35 .card-layer-1{
+    background-image: url('../karty/dice-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    transform: rotate(-90deg) translate(5px, -4px) rotate(3deg) !important;
+    filter: brightness(0.3) !important;
+}
+.cell.k35 .card-layer-2{
+    background-image: url('../karty/dice-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    transform: rotate(-90deg) translate(-3px, 4px) rotate(-2.5deg) !important;
+    filter: brightness(0.45) !important;
+}
+.cell.k35 .card-layer-3{
+    background-image: url('../karty/dice-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    transform: rotate(-90deg) translate(2px, -2px) rotate(1.5deg) !important;
+    filter: brightness(0.6) !important;
+}
+.cell.k35 .card-layer-4{
+    background-image: url('../karty/dice-back.png') !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    transform: rotate(-90deg) translate(-2px, -3px) rotate(-2deg) !important;
+    filter: brightness(0.8) !important;
+}
+.cell.k35 .card-top{
+    background-image: url('../karty/dice-back.png') !important;
+    transform: rotate(-90deg) !important;
+    box-shadow: 4px 6px 12px rgba(0, 0, 0, 0.4) !important;
+    filter: brightness(1) !important;
+}
+.cell.k33, .cell.k41, .cell.k42,
+.cell.k36, .cell.k44, .cell.k45{
+    display: none !important;
+}
 /* Menu górne */
 .actions{
     position:fixed;

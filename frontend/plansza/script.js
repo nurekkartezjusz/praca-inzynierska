@@ -1505,7 +1505,7 @@ function triggerFieldArrival(player) {
         scheduleNextTurn(1500);
     } else if (type === 'piwnica') {
         player.skipTurnsLeft = 1;
-        showMsg("🚬 " + player.name + " w piwnicy (przerwa na dworze): Tracisz 1 kolejkę!");
+        showMsg("🚬 " + player.name + " Na dworze: Tracisz 1 kolejkę!");
         updateGamePanel();
         scheduleNextTurn(1500);
     } else if (type === 'automaty') {
