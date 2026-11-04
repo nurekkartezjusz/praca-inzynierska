@@ -155,6 +155,11 @@ html,body{
     margin-bottom: 12px;
     font-weight: 600;
 }
+.section-content{
+    font-family: var(--font-secondary);
+    font-size: 15px;
+    margin-bottom: 12px;
+}
 .info-card ul{
     list-style: none;
     padding: 0;
