@@ -41,7 +41,7 @@ h1 span.znajomi{
 	font-family: var(--font-main);
 	padding:30px;
 	margin-bottom:30px;
-	background: var(--color-card);
+	background: rgba(200, 165, 255, 0.85);
 	color: var(--color-text-dark);
 	box-shadow: var(--shadow-pixel);
 }
