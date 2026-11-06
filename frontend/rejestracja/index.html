@@ -37,9 +37,11 @@
                     <span class="validation-icon" id="email-icon"></span>
                 </div>
                 <div class="field">
-                    <input type="password" id="password" class="password-input" autocomplete="new-password" required placeholder=" ">       
-                    <label for="password">Hasło (min. 6 znaków)</label>
-                    <img src="img/hide.png" alt="view" class="eye-icon">  
+                    <div class="input-box">
+                        <input type="password" id="password" class="password-input" autocomplete="new-password" required placeholder=" ">
+                        <label for="password">Hasło (min. 6 znaków)</label>
+                        <img src="img/hide.png" alt="view" class="eye-icon">
+                    </div>
 
                     <div class="password-strength" id="password-strength" style="display: none;">
                         <div class="strength-bar">
@@ -54,10 +56,12 @@
                     </ul>
                 </div>
                 <div class="field pass-again">
-                    <input type="password" id="password-repeat" class="password-input" autocomplete="off" required placeholder=" ">
-                    <label for="password-repeat">Powtórz hasło</label>
-                    <img src="img/hide.png" alt="view" class="eye-icon">
-                    <span class="validation-icon" id="password-repeat-icon"></span>
+                    <div class="input-box">
+                        <input type="password" id="password-repeat" class="password-input" autocomplete="off" required placeholder=" ">
+                        <label for="password-repeat">Powtórz hasło</label>
+                        <img src="img/hide.png" alt="view" class="eye-icon">
+                        <span class="validation-icon" id="password-repeat-icon"></span>
+                    </div>
                 </div>
                 <div class="checkbox-field">
                     <input type="checkbox" id="regulamin" required>
@@ -67,8 +71,7 @@
                     </label>
                 </div>
                 <div id="error-message" style="color: red; margin-bottom: 10px; display: none; font-family: 'Space Grotesk';"></div>
-                <div class="loader" id="loader" style="display: none;"></div>
-                <button class="btn-primary" id="register-btn">Zarejestruj się</button>
+                <button class="btn-primary" id="register-btn">Zarejestruj się<span class="loader" id="loader" style="display: none;"></span></button>
             </div>
             <div class="login card">
                 <h2>Masz konto? Zaloguj się</h2>

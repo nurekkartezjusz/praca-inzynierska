@@ -1,1 +1,15 @@
 @import url("../css/auth.css");
+
+.rejestr #register-btn {
+    position: relative;
+}
+
+.rejestr #register-btn:disabled {
+    color: transparent;
+}
+
+.rejestr #register-btn .loader {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+}
