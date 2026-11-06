@@ -96,6 +96,14 @@
     transform: translate(1px, 1px);
 }
 
+#request-token-btn {
+    background: #ff7b7b;
+}
+
+#request-token-btn:hover {
+    background: #ff5252;
+}
+
 .reset-password:focus-visible {
     outline: 3px solid #fff;
     outline-offset: 3px;

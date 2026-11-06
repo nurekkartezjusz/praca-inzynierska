@@ -289,6 +289,16 @@ body {
     transform: translate(1px, 1px);
 }
 
+.logowanie,
+.rejestracja {
+    background: #fff;
+}
+
+.logowanie:hover,
+.rejestracja:hover {
+    background: #eee;
+}
+
 .logowanie:focus-visible,
 .rejestracja:focus-visible,
 .btn-primary:focus-visible,
