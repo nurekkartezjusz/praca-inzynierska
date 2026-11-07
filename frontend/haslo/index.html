@@ -48,13 +48,13 @@
                         <input type="password" id="new-password" class="password-input" autocomplete="new-password" required placeholder=" ">
                         <img src="img/hide.png" alt="view" class="eye-icon">
                     </div>
-                    <div class="password-strength" id="password-strength" style="display: none;">
+                    <div class="password-strength" id="password-strength">
                         <div class="strength-bar">
                             <div class="strength-fill" id="strength-fill"></div>
                         </div>
                         <span class="strength-text" id="strength-text"></span>
                     </div>
-                    <ul class="password-requirements" id="password-requirements" style="display: none;">
+                    <ul class="password-requirements" id="password-requirements">
                         <li id="req-length">✗ Minimum 6 znaków</li>
                         <li id="req-letter">✗ Zawiera literę</li>
                         <li id="req-number">✗ Zawiera cyfrę</li>
@@ -102,13 +102,13 @@
             const requirementsDiv = document.getElementById('password-requirements');
 
             if (!password) {
-                strengthDiv.style.display = 'none';
-                requirementsDiv.style.display = 'none';
+                strengthDiv.classList.remove('is-visible');
+                requirementsDiv.classList.remove('is-visible');
                 return;
             }
 
-            strengthDiv.style.display = 'block';
-            requirementsDiv.style.display = 'block';
+            strengthDiv.classList.add('is-visible');
+            requirementsDiv.classList.add('is-visible');
 
             const requirements = getPasswordRequirements(password);
             document.getElementById('req-length').className = requirements.hasLength ? 'met' : '';

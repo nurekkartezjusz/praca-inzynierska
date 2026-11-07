@@ -1,5 +1,34 @@
 @import url("../css/auth.css");
 
+.rejestr .password-strength,
+.rejestr .password-requirements {
+    max-height: 0;
+    margin-top: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: max-height 240ms ease, margin-top 240ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.rejestr .password-strength.is-visible {
+    max-height: 48px;
+    margin-top: 8px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rejestr .password-requirements.is-visible {
+    max-height: 120px;
+    margin-top: 8px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rejestr .strength-text {
+    font-family: var(--font-third);
+    font-size: 20px;
+}
+
 .rejestr #register-btn {
     position: relative;
 }
@@ -12,4 +41,11 @@
     position: absolute;
     inset: 0;
     margin: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rejestr .password-strength,
+    .rejestr .password-requirements {
+        transition: none;
+    }
 }

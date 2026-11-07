@@ -43,13 +43,13 @@
                         <img src="img/hide.png" alt="view" class="eye-icon">
                     </div>
 
-                    <div class="password-strength" id="password-strength" style="display: none;">
+                    <div class="password-strength" id="password-strength">
                         <div class="strength-bar">
                             <div class="strength-fill" id="strength-fill"></div>
                         </div>
                         <span class="strength-text" id="strength-text"></span>
                     </div>
-                    <ul class="password-requirements" id="password-requirements" style="display: none;">
+                    <ul class="password-requirements" id="password-requirements">
                         <li id="req-length">✗ Minimum 6 znaków</li>
                         <li id="req-letter">✗ Zawiera literę</li>
                         <li id="req-number">✗ Zawiera cyfrę</li>
@@ -148,8 +148,8 @@
             const requirementsDiv = document.getElementById('password-requirements');
             
             if (password.length > 0) {
-                strengthDiv.style.display = 'block';
-                requirementsDiv.style.display = 'block';
+                strengthDiv.classList.add('is-visible');
+                requirementsDiv.classList.add('is-visible');
                 
                 // Sprawdź wymagania
                 const hasLength = password.length >= 6;
@@ -192,8 +192,8 @@
                     icon.className = 'validation-icon invalid';
                 }
             } else {
-                strengthDiv.style.display = 'none';
-                requirementsDiv.style.display = 'none';
+                strengthDiv.classList.remove('is-visible');
+                requirementsDiv.classList.remove('is-visible');
                 icon.className = 'validation-icon';
             }
             
