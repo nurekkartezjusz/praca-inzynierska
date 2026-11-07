@@ -64,6 +64,11 @@
     font-size: 14px;
 }
 
+.password-recovery .strength-text {
+    font-family: var(--font-third);
+    font-size: 20px;
+}
+
 .password-recovery .eye-icon {
     top: auto;
     right: 12px;
