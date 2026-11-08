@@ -24,6 +24,7 @@ html,body{
     background: url(../images/Illustrationmobile.png) center/cover no-repeat;
     opacity: 1;
     z-index: -1;
+    pointer-events: none;
 }
 .topbar .nav-left a{
     font-family: var(--font-main);

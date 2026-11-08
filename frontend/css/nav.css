@@ -139,8 +139,6 @@ body.responsive-nav:not(.home-page){
     background: #879bce url("../images/Illustrationmobile.png") center / cover fixed no-repeat !important;
 }
 
-
-
 .responsive-nav .nav-links{
     display: flex;
     align-items: center;

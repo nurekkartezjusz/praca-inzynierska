@@ -16,10 +16,17 @@
     padding: 0;
     box-sizing: border-box;
 }
-body{
-    background: var(--color-bg);
+body, html{
     font-family: var(--font-primary);
     color: var(--color-text);
+    height: 100%;
+}
+.background{
+    position: fixed;
+    inset: 0;
+    background: url(../images/Illustrationmobile.png) center/cover no-repeat;
+    z-index: -1;
+    pointer-events: none;
 }
 .container{
     display: flex;
@@ -43,15 +50,23 @@ body{
     gap: clamp(20px, 2vw, 40px);
 }
 .card{
-    background: var(--color-card);
+    background: rgba(200, 165, 255, 0.85);
     color: var(--color-text-dark);
     padding: clamp(30px, 3vw, 40px);
     box-shadow: var(--shadow-pixel);
+}
+.info-card{
+    background: #ffffff;
+    border: 2px solid #000;
+    box-shadow: var(--shadow-pixel);
+    padding: 20px;
+    margin-bottom: 15px;
 }
 .regulations h1{
     font-family: var(--font-third);
     font-size: clamp(1.5rem, 2vw, 2.5rem);
     margin-bottom: 20px;
+    text-align: center;
 }
 .regulations h2{
     font-family: var(--font-third);
@@ -70,17 +85,21 @@ ul{
 .going-back{
     text-align: center;
 }
-.going-back a{
+.going-back a {
     display: inline-block;
-    margin-top: clamp(10px, 2vw, 20px);
-    padding: clamp(8px, 1vw, 12px) clamp(14px, 2vw, 20px);
-    background: var(--color-button);
-    color: var(--color-text-dark);
-    text-decoration: none;
-    box-shadow: var(--shadow-pixel);
+    min-width: 180px;
+    padding: 12px 24px;
+    border: 3px solid #000;
+    box-shadow: 3px 3px 0 #000;
     font-family: var(--font-third);
+    font-size: 24px;
+    cursor: pointer;
+    background: #fff;
+    color: #000;
+    text-decoration: none;
 }
-.going-back a:hover{
+
+.going-back a:hover {
+    background: #f2f2f2;
     transform: translate(1px, 1px);
-    box-shadow: var(--shadow-pixel-hover);
 }
