@@ -192,26 +192,38 @@ body::before{
     .hero{
         height: auto;
         min-height: calc(100vh - 80px);
-        padding: 30px 30px;
-        justify-content: flex-start;
+        min-height: calc(100svh - 80px);
+        padding: 30px 20px;
+        justify-content: center;
     }
     .hero-content{
-        text-align: left;
+        text-align: center;
         width: 100%;
     }
     .hero h1{
-        font-size: clamp(30px, 5.8vw, 80px);
-        letter-spacing: 1px;
-        margin-bottom: 15px;
-        word-break: break-word;
+        font-size: clamp(30px, 8vw, 54px);
+        line-height: 1.25;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
     }
     .hero p{
-        font-size: 15px;
-        margin-bottom: 25px;
+        max-width: 34ch;
+        margin: 0 auto 25px;
+        font-size: clamp(16px, 4vw, 18px);
+        line-height: 1.7;
+    }
+    .hero p .keep-together{
+        white-space: nowrap;
+    }
+    .hero-actions{
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
     }
     .btn{
-        font-size: 12px;
-        padding: 12px 24px;
+        width: min(100%, 280px);
+        font-size: clamp(10px, 3.2vw, 13px);
+        padding: 16px 14px;
         display: inline-block;
         box-sizing: border-box;
     }
