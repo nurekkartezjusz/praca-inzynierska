@@ -461,7 +461,7 @@ body {
     width: 280px;
     height: 420px;
     display: none;
-    pointer-events: none;
+    pointer-events: auto;
     transform-style: preserve-3d;
     z-index: 2137123456;
 }
@@ -490,6 +490,7 @@ body {
 .question-card-test-front{
     background-image: url('../karty/question-front.png');
     transform: rotateY(180deg);
+    pointer-events: auto;
 }
 .question-card-content{
     position: absolute;
@@ -539,6 +540,11 @@ body {
 #quiz-card-answers-container button:disabled{
     opacity: 0.3;
     cursor: default;
+}
+#quiz-card-answers-container,
+#quiz-card-answers-container button,
+#quiz-hint-btn {
+    pointer-events: auto;
 }
 /* Menu górne */
 .actions{

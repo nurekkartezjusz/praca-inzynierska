@@ -1083,6 +1083,7 @@ var gameState = null;
 var _prevStats = [null, null, null, null];
 var startModalCallback = null;
 var quizContext = null;
+var quizCardVisible = false;
 
 function initMultiplayerGame() {
     if (gameState || !isRoomHost || roomPlayers.length < 2 || roomPlayers.length > 4 ||
@@ -1427,9 +1428,9 @@ function triggerFieldArrival(player) {
     var type = getCellType(player.pos);
     
     if (type === 'sala') {
-        triggerQuizAnimated(player, 1);
+        triggerQuiz(player, 1);
     } else if (type === 'aula') {
-        triggerQuizAnimated(player, 2);
+        triggerQuiz(player, 2);
     } else if (type === 'dziekanat') {
         triggerDziekanat(player);
     } else if (type === 'lazienka') {
@@ -1456,7 +1457,7 @@ function triggerFieldArrival(player) {
         } else {
             // Po 2 praktykach - pole staje się zwykłą salą (pytanie)
             showMsg("📚 " + player.name + " odwiedza pole praktyk, ale już zaliczył praktyki 2 razy! Zwykła sala - pytanie!");
-            triggerQuizAnimated(player, 1);
+            triggerQuiz(player, 1);
         }
     } else if (type === 'biblioteka') {
         player.wisdom += 1;
@@ -1584,19 +1585,18 @@ function triggerQuizAnimated(player, quizType) {
     }, 900);
 }
 
+
 function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
     document.getElementById('quiz-card-question-text').innerHTML =
         `<strong>Pytanie ${number} z ${total}:</strong><br><br>${q.q}`;
-    
     var answersContainer = document.getElementById('quiz-card-answers-container');
     answersContainer.innerHTML = '';
-    
     q.a.forEach(function(ans, index) {
         var btn = document.createElement('button');
         btn.className = 'custom-modal-btn';
         btn.innerHTML =
             `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">
-            ${String.fromCharCode(65 + index)}:
+                ${String.fromCharCode(65 + index)}:
             </span> ${ans}`;
         btn.onclick = function() {
             onAnswer(index);
@@ -1605,26 +1605,90 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
     });
     (hiddenAnswers || []).forEach(function(index) {
         var hiddenButton = answersContainer.children[index];
+
         if (hiddenButton) {
             hiddenButton.style.opacity = '0.3';
             hiddenButton.style.pointerEvents = 'none';
         }
     });
-    
     var hintBtn = document.getElementById('quiz-hint-btn');
     var alreadyHinted = !!(hiddenAnswers && hiddenAnswers.length);
-    if (!alreadyHinted && (player.hints > 0 || player.coins >= 1)) {
-        hintBtn.style.display = 'block';
-        if (player.hints > 0) {
-            hintBtn.innerHTML = `💡 Użyj darmowej podpowiedzi (Dostępne: ${player.hints})`;
+    if (hintBtn) {
+        if (!alreadyHinted && (player.hints > 0 || player.coins >= 1)) {
+            hintBtn.style.display = 'block';
+            if (player.hints > 0) {
+                hintBtn.innerHTML =
+                    `💡 Użyj darmowej podpowiedzi (Dostępne: ${player.hints})`;
+            } else {
+                hintBtn.innerHTML =
+                    `🪙 Kup podpowiedź 50/50 (Koszt: 1 moneta)`;
+            }
         } else {
-            hintBtn.innerHTML = `🪙 Kup podpowiedź 50/50 (Koszt: 1 moneta)`;
+            hintBtn.style.display = 'none';
         }
-    } else {
-        hintBtn.style.display = 'none';
     }
-    
-    document.getElementById('question-card-test').style.display = 'block';
+    document.getElementById('quiz-modal').style.display = 'none';
+    document.getElementById('question-card-test').style.display = 'none';
+    quizCardVisible = false;
+    var questionCard = document.getElementById('question-card-test');
+    questionCard.style.display = 'block';
+    if (!quizCardVisible) {
+        quizCardVisible = true;
+        animateQuizCard();
+    }
+}
+
+
+function animateQuizCard() {
+    const stack = document.querySelector('.k32 .card-top');
+    const flight = document.querySelector('.question-card-flight');
+    const inner = document.querySelector('.question-card-test-inner');
+    if (!stack || !flight || !inner) {
+        console.error('Nie znaleziono stosu lub karty quizowej.');
+        return false;
+    }
+    const rect = stack.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    const endX = window.innerWidth / 2;
+    const endY = window.innerHeight / 2;
+    const startScale = Math.min(0.65, rect.width / 280);
+    flight.getAnimations().forEach(animation => animation.cancel());
+    inner.getAnimations().forEach(animation => animation.cancel());
+    flight.style.left = startX + 'px';
+    flight.style.top = startY + 'px';
+    flight.style.display = 'block';
+    inner.style.transform = 'rotateY(0deg)';
+    void flight.offsetWidth;
+    const flightAnimation = flight.animate([
+        {
+            left: startX + 'px',
+            top: startY + 'px',
+            transform: `translate(-50%, -50%) rotate(-90deg) scale(${startScale})`
+        },
+        {
+            left: endX + 'px',
+            top: endY + 'px',
+            transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
+        }
+    ], {
+        duration: 650,
+        easing: 'cubic-bezier(.2, .8, .3, 1)',
+        fill: 'forwards'
+    });
+    const flipAnimation = inner.animate([
+        { transform: 'rotateY(0deg)' },
+        { transform: 'rotateY(180deg)' }
+    ], {
+        duration: 200,
+        delay: 650,
+        easing: 'ease-in',
+        fill: 'forwards'
+    });
+    return Promise.all([
+        flightAnimation.finished,
+        flipAnimation.finished
+    ]);
 }
 
 function useQuiz1Hint() {
@@ -1656,7 +1720,7 @@ function useQuiz1Hint() {
     var toHide = wrongIndices.slice(0, 2);
     quizContext.hiddenAnswers = toHide;
     
-    var buttons = document.getElementById('quiz-answers-container').children;
+    var buttons = document.getElementById('quiz-card-answers-container').children;
     for (var i = 0; i < buttons.length; i++) {
         if (toHide.includes(i)) {
             buttons[i].style.opacity = '0.3';
