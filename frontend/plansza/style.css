@@ -494,7 +494,7 @@ body {
 }
 .question-card-content{
     position: absolute;
-    inset: 13% 9%;
+    inset: 10% 9%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -502,7 +502,9 @@ body {
     color: white;
     overflow: hidden;
     gap: 14px;
-    height: 100%;
+    width: 82%;
+    height: 80%;
+    font-family: var(--font-secondary);
 }
 .question-card-content h2{
     font-size: 30px;
@@ -567,20 +569,23 @@ body {
     opacity: 0.4;
     cursor: default;
 }
-#quiz-hint-btn {
+#question-card-test #quiz-hint-btn {
     pointer-events: auto !important;
-    width: 100% !important;
-    padding: 12px !important;
-    border: 3px solid white !important;
-    border-radius: 8px !important;
-    background: linear-gradient(180deg, #ffc048 0%, #ff9f1a 100%) !important;
-    color: white !important;
-    font-size: 15px !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
     display: block !important;
+    width: 100% !important;
+    flex-shrink: 0;
+    box-sizing: border-box;
     margin-top: auto !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 0 !important;
+    padding: 10px !important;
+    border: 3px solid #402462 !important;
+    border-radius: 0 !important;
+    background: #ffc048 !important;
+    color: #402462 !important;
+    font-family: var(--font-secondary) !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
 }
 #quiz-card-answers-container,
 #quiz-card-answers-container button {
@@ -1330,6 +1335,29 @@ body {
 span.s-coi{
     display: inline-flex;
     white-space: nowrap;
+}
+
+#question-card-test #quiz-card-answers-container button{
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 75px !important;
+    height: auto !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    background: #94a4fe !important;
+    color: #402462 !important;
+    border: 3px solid #402462 !important;
+    border-radius: 0 !important;
+    font-family: var(--font-secondary) !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    overflow-wrap: anywhere !important;
+    display: block !important;
+    box-shadow: 3px 3px 0 #402462 !important;
 }
 
 /* Diploma Styles */

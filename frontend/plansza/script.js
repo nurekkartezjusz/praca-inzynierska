@@ -1593,9 +1593,9 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
     answersContainer.innerHTML = '';
     q.a.forEach(function(ans, index) {
         var btn = document.createElement('button');
-        btn.className = 'custom-modal-btn';
+        btn.className = '';
         btn.innerHTML =
-            `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">
+            `<span style="color:#402462; font-weight:bold; margin-right:8px;">
                 ${String.fromCharCode(65 + index)}:
             </span> ${ans}`;
         btn.onclick = function() {
