@@ -1276,7 +1276,7 @@ body {
     margin-bottom: 15px;
 }
 
-.custom-modal-btn {
+/* .custom-modal-btn {
     background: linear-gradient(180deg, #2f3542 0%, #1e222b 100%) !important;
     border: 2px solid #57606f !important;
     border-radius: 4px !important;
@@ -1303,7 +1303,7 @@ body {
 
 .custom-modal-btn:active {
     transform: translateY(1px) !important;
-}
+} */
 
 .hint-btn {
     background: linear-gradient(180deg, #ffc048 0%, #ff9f1a 100%) !important;

@@ -1624,7 +1624,7 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
                         opacity: 1
                     }
                 ], {
-                    duration: 900,
+                    duration: 300,
                     easing: 'ease-in',
                     fill: 'forwards'
                 });
