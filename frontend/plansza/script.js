@@ -1599,6 +1599,25 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
                 ${String.fromCharCode(65 + index)}:
             </span> ${ans}`;
         btn.onclick = function() {
+            if (btn.disabled) return;
+            answersContainer.querySelectorAll('button').forEach(function(button) {
+                button.disabled = true;
+            });
+            const card = document.getElementById('question-card-test');
+            const flight = document.querySelector('.question-card-flight');
+            const inner = document.querySelector('.question-card-test-inner');
+            if (flight) {
+                flight.getAnimations().forEach(animation => animation.cancel());
+                flight.style.display = 'none';
+                flight.style.transform = '';
+            }
+            if (inner) {
+                inner.getAnimations().forEach(animation => animation.cancel());
+                inner.style.transform = '';
+            }
+            if (card) {
+                card.style.display = 'none';
+            }
             onAnswer(index);
         };
         answersContainer.appendChild(btn);
