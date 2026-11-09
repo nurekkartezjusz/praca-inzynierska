@@ -1427,9 +1427,9 @@ function triggerFieldArrival(player) {
     var type = getCellType(player.pos);
     
     if (type === 'sala') {
-        triggerQuiz(player, 1);
+        triggerQuizAnimated(player, 1);
     } else if (type === 'aula') {
-        triggerQuiz(player, 2);
+        triggerQuizAnimated(player, 2);
     } else if (type === 'dziekanat') {
         triggerDziekanat(player);
     } else if (type === 'lazienka') {
@@ -1456,7 +1456,7 @@ function triggerFieldArrival(player) {
         } else {
             // Po 2 praktykach - pole staje się zwykłą salą (pytanie)
             showMsg("📚 " + player.name + " odwiedza pole praktyk, ale już zaliczył praktyki 2 razy! Zwykła sala - pytanie!");
-            triggerQuiz(player, 1);
+            triggerQuizAnimated(player, 1);
         }
     } else if (type === 'biblioteka') {
         player.wisdom += 1;
@@ -1530,6 +1530,58 @@ function triggerFieldArrival(player) {
 
 function triggerQuiz() {
     console.error('Quiz rozstrzyga serwer.');
+}
+
+function triggerQuizAnimated(player, quizType) {
+    const stack = document.querySelector('.k32 .card-top');
+    const flight = document.querySelector('.question-card-flight');
+    const inner = document.querySelector('.question-card-test-inner');
+    if (!stack || !flight || !inner) {
+        console.error('Nie znaleziono elementów animacji karty.');
+        triggerQuiz(player, quizType);
+        return;
+    }
+    const rect = stack.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    const endX = window.innerWidth / 2;
+    const endY = window.innerHeight / 2;
+    const startScale = Math.min(0.65, rect.width / 280);
+    flight.style.left = startX + 'px';
+    flight.style.top = startY + 'px';
+    flight.style.display = 'block';
+    flight.style.animation = 'none';
+    inner.style.animation = 'none';
+    void flight.offsetWidth;
+    flight.animate([
+        {
+            left: startX + 'px',
+            top: startY + 'px',
+            transform: `translate(-50%, -50%) rotate(-90deg) scale(${startScale})`
+        },
+        {
+            left: endX + 'px',
+            top: endY + 'px',
+            transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
+        }
+    ], {
+        duration: 650,
+        easing: 'cubic-bezier(.2, .8, .3, 1)',
+        fill: 'forwards'
+    });
+    inner.animate([
+        { transform: 'rotateY(0deg)' },
+        { transform: 'rotateY(180deg)' }
+    ], {
+        duration: 200,
+        delay: 650,
+        easing: 'ease-in',
+        fill: 'forwards'
+    });
+    setTimeout(function() {
+        flight.style.display = 'none';
+        triggerQuiz(player, quizType);
+    }, 900);
 }
 
 function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
