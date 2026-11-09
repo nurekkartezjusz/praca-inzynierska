@@ -1603,22 +1603,41 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
             answersContainer.querySelectorAll('button').forEach(function(button) {
                 button.disabled = true;
             });
-            const card = document.getElementById('question-card-test');
-            const flight = document.querySelector('.question-card-flight');
-            const inner = document.querySelector('.question-card-test-inner');
-            if (flight) {
-                flight.getAnimations().forEach(animation => animation.cancel());
-                flight.style.display = 'none';
-                flight.style.transform = '';
+            var flight = document.querySelector('.question-card-flight');
+            var card = document.getElementById('question-card-test');
+            if (!flight || !card) {
+                onAnswer(index);
+                return;
             }
-            if (inner) {
-                inner.getAnimations().forEach(animation => animation.cancel());
-                inner.style.transform = '';
+            var currentTransform = getComputedStyle(flight).transform;
+            if (currentTransform === 'none') {
+                currentTransform = 'translateY(0)';
             }
-            if (card) {
-                card.style.display = 'none';
-            }
-            onAnswer(index);
+            setTimeout(function() {
+                var animation = flight.animate([
+                    {
+                        transform: currentTransform,
+                        opacity: 1
+                    },
+                    {
+                        transform: currentTransform + ' translateY(120vh)',
+                        opacity: 1
+                    }
+                ], {
+                    duration: 900,
+                    easing: 'ease-in',
+                    fill: 'forwards'
+                });
+                animation.onfinish = function() {
+                    setTimeout(function() {
+                        card.style.display = 'none';
+                        flight.style.transform = '';
+                        flight.style.opacity = '';
+                        quizCardVisible = false;
+                        onAnswer(index);
+                    }, 100);
+                };
+            }, 300);
         };
         answersContainer.appendChild(btn);
     });
@@ -1631,19 +1650,21 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
         }
     });
     var hintBtn = document.getElementById('quiz-hint-btn');
-    var alreadyHinted = !!(hiddenAnswers && hiddenAnswers.length);
     if (hintBtn) {
-        if (!alreadyHinted && (player.hints > 0 || player.coins >= 1)) {
-            hintBtn.style.display = 'block';
-            if (player.hints > 0) {
-                hintBtn.innerHTML =
-                    `💡 Użyj darmowej podpowiedzi (Dostępne: ${player.hints})`;
-            } else {
-                hintBtn.innerHTML =
-                    `🪙 Kup podpowiedź 50/50 (Koszt: 1 moneta)`;
-            }
+        hintBtn.style.display = 'block';
+        if (hiddenAnswers && hiddenAnswers.length > 0) {
+            hintBtn.disabled = true;
+            hintBtn.innerHTML = '💡 Podpowiedź została już użyta';
+        } else if (player.hints > 0) {
+            hintBtn.disabled = false;
+            hintBtn.innerHTML =
+                `💡 Użyj darmowej podpowiedzi (Dostępne: ${player.hints})`;
+        } else if (player.coins >= 1) {
+            hintBtn.disabled = false;
+            hintBtn.innerHTML = '🪙 Kup podpowiedź 50/50 (Koszt: 1 moneta)';
         } else {
-            hintBtn.style.display = 'none';
+            hintBtn.disabled = true;
+            hintBtn.innerHTML = '💡 Podpowiedź 50/50 – brak dostępnych zasobów';
         }
     }
     document.getElementById('quiz-modal').style.display = 'none';
@@ -1656,7 +1677,6 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
         animateQuizCard();
     }
 }
-
 
 function animateQuizCard() {
     const stack = document.querySelector('.k32 .card-top');
@@ -1708,35 +1728,6 @@ function animateQuizCard() {
         flightAnimation.finished,
         flipAnimation.finished
     ]);
-}
-
-
-function animateQuizCardExit(correct) {
-    const flight = document.querySelector('.question-card-flight');
-    const card = document.getElementById('question-card-test');
-    if (!flight || !card) return;
-    document.querySelectorAll('#quiz-card-answers-container button')
-        .forEach(button => button.disabled = true);
-    const direction = correct ? -1 : 1;
-    const currentTransform = getComputedStyle(flight).transform;
-    const animation = flight.animate([
-        {
-            transform: currentTransform
-        },
-        {
-            transform: `translate(-50%, -50%) translateY(${direction * window.innerHeight * 1.5}px) rotate(0deg) scale(0.8)`
-        }
-    ], {
-        duration: 650,
-        easing: 'cubic-bezier(.55, 0, 1, .45)',
-        fill: 'forwards'
-    });
-    animation.onfinish = function() {
-        card.style.display = 'none';
-        flight.style.display = 'none';
-        flight.style.transform = '';
-        quizCardVisible = false;
-    };
 }
 
 function useQuiz1Hint() {
