@@ -1585,17 +1585,22 @@ function triggerQuizAnimated(player, quizType) {
 }
 
 function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
-    document.getElementById('quiz-question-text').innerHTML = 
+    document.getElementById('quiz-card-question-text').innerHTML =
         `<strong>Pytanie ${number} z ${total}:</strong><br><br>${q.q}`;
     
-    var answersContainer = document.getElementById('quiz-answers-container');
+    var answersContainer = document.getElementById('quiz-card-answers-container');
     answersContainer.innerHTML = '';
     
     q.a.forEach(function(ans, index) {
         var btn = document.createElement('button');
         btn.className = 'custom-modal-btn';
-        btn.innerHTML = `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">${String.fromCharCode(65 + index)}:</span> ${ans}`;
-        btn.onclick = function() { onAnswer(index); };
+        btn.innerHTML =
+            `<span style="color:#00d2d3; font-weight:bold; margin-right:8px;">
+            ${String.fromCharCode(65 + index)}:
+            </span> ${ans}`;
+        btn.onclick = function() {
+            onAnswer(index);
+        };
         answersContainer.appendChild(btn);
     });
     (hiddenAnswers || []).forEach(function(index) {
@@ -1619,7 +1624,7 @@ function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
         hintBtn.style.display = 'none';
     }
     
-    document.getElementById('quiz-modal').style.display = 'flex';
+    document.getElementById('question-card-test').style.display = 'block';
 }
 
 function useQuiz1Hint() {
