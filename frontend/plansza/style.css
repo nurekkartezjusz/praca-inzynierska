@@ -492,40 +492,52 @@ body {
     transform: rotateY(180deg);
     pointer-events: auto;
 }
-.question-card-content{
+.question-card-content {
     position: absolute;
-    inset: 10% 9%;
+    top: 7%;
+    left: 9%;
+    width: 86%;
+    height: 80%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     color: white;
     overflow: hidden;
-    gap: 14px;
-    width: 82%;
-    height: 80%;
+    gap: 6px;
     font-family: var(--font-secondary);
 }
 .question-card-content h2{
     font-size: 30px;
     font-weight: 900;
-    margin: 0 0 8px;
+    margin: 0 0 3px 0 !important;
     text-align: center;
+    line-height: 1.2;
+    flex-shrink: 0;
 }
 #quiz-card-question-text{
     width: 100%;
+    flex-shrink: 0;
+    max-height: 110px;
+    overflow-y: auto;
     font-size: 21px;
     line-height: 1.5;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 2px;
 }
 #quiz-card-answers-container{
     width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-top: 12px;
-    margin-bottom: auto;
+    grid-auto-rows: minmax(65px, auto);
+    align-content: start;
+    gap: 8px;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow-y: auto;
 }
 #quiz-card-answers-container button{
     width: 100%;
@@ -555,27 +567,13 @@ body {
     font-weight: bold;
     margin-right: 6px;
 }
-#quiz-card-answers-container button:hover:not(:disabled) {
-    background: #9EACFC;
-    transform: translateY(-2px);
-}
-#quiz-card-answers-container button:active:not(:disabled) {
-    background: #402462;
-    color: white;
-    transform: translateY(2px);
-    box-shadow: 2px 2px 0 #402462;
-}
-#quiz-card-answers-container button:disabled {
-    opacity: 0.4;
-    cursor: default;
-}
 #question-card-test #quiz-hint-btn {
     pointer-events: auto !important;
     display: block !important;
     width: 100% !important;
     flex-shrink: 0;
     box-sizing: border-box;
-    margin-top: auto !important;
+    margin-top: 6px !important;
     margin-bottom: 0 !important;
     padding: 10px !important;
     border: 3px solid #402462 !important;
@@ -1358,6 +1356,21 @@ span.s-coi{
     overflow-wrap: anywhere !important;
     display: block !important;
     box-shadow: 3px 3px 0 #402462 !important;
+}
+
+#question-card-test #quiz-card-answers-container button:hover:not(:disabled) {
+    background: #9EACFC !important;
+    transform: translateY(-2px) !important;
+}
+#question-card-test #quiz-card-answers-container button:active:not(:disabled) {
+    background: #402462 !important;
+    color: white !important;
+    transform: translateY(2px) !important;
+    box-shadow: 2px 2px 0 #402462 !important;
+}
+#question-card-test #quiz-card-answers-container button:disabled {
+    opacity: 0.4 !important;
+    cursor: default !important;
 }
 
 /* Diploma Styles */
