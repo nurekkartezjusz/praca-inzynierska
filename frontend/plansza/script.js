@@ -1588,7 +1588,7 @@ function triggerQuizAnimated(player, quizType) {
 
 function renderQuizModal(q, number, total, hiddenAnswers, player, onAnswer) {
     document.getElementById('quiz-card-question-text').innerHTML =
-        `<strong>Pytanie ${number} z ${total}:</strong><br>${q.q}`;
+        `<strong>Pytanie ${number} z ${total}:</strong><br><br>${q.q}`;
     var answersContainer = document.getElementById('quiz-card-answers-container');
     answersContainer.innerHTML = '';
     q.a.forEach(function(ans, index) {

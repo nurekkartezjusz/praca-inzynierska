@@ -496,8 +496,8 @@ body {
     position: absolute;
     top: 7%;
     left: 9%;
-    width: 86%;
-    height: 80%;
+    width: 82%;
+    height: 88%;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -524,7 +524,7 @@ body {
     font-size: 21px;
     line-height: 1.5;
     font-weight: 700;
-    margin-bottom: 2px;
+    margin-bottom: 5px;
 }
 #quiz-card-answers-container{
     width: 100%;
@@ -1360,7 +1360,7 @@ span.s-coi{
 
 #question-card-test #quiz-card-answers-container button:hover:not(:disabled) {
     background: #9EACFC !important;
-    transform: translateY(-2px) !important;
+    transform: translateY(1px) !important;
 }
 #question-card-test #quiz-card-answers-container button:active:not(:disabled) {
     background: #402462 !important;
