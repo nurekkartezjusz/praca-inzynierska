@@ -1652,7 +1652,7 @@ function animateQuizCard() {
     const startY = rect.top + rect.height / 2;
     const endX = window.innerWidth / 2;
     const endY = window.innerHeight / 2;
-    const startScale = Math.min(0.65, rect.width / 280);
+    const startScale = Math.min(0.65, rect.width / 420);
     flight.getAnimations().forEach(animation => animation.cancel());
     inner.getAnimations().forEach(animation => animation.cancel());
     flight.style.left = startX + 'px';
@@ -1689,6 +1689,35 @@ function animateQuizCard() {
         flightAnimation.finished,
         flipAnimation.finished
     ]);
+}
+
+
+function animateQuizCardExit(correct) {
+    const flight = document.querySelector('.question-card-flight');
+    const card = document.getElementById('question-card-test');
+    if (!flight || !card) return;
+    document.querySelectorAll('#quiz-card-answers-container button')
+        .forEach(button => button.disabled = true);
+    const direction = correct ? -1 : 1;
+    const currentTransform = getComputedStyle(flight).transform;
+    const animation = flight.animate([
+        {
+            transform: currentTransform
+        },
+        {
+            transform: `translate(-50%, -50%) translateY(${direction * window.innerHeight * 1.5}px) rotate(0deg) scale(0.8)`
+        }
+    ], {
+        duration: 650,
+        easing: 'cubic-bezier(.55, 0, 1, .45)',
+        fill: 'forwards'
+    });
+    animation.onfinish = function() {
+        card.style.display = 'none';
+        flight.style.display = 'none';
+        flight.style.transform = '';
+        quizCardVisible = false;
+    };
 }
 
 function useQuiz1Hint() {
