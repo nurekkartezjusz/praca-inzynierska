@@ -77,9 +77,20 @@
             </div>
 
             <div class="right-section">
-
-            <div class="statystyki">
-                <h2>Statystyki gracza</h2>
+                <div class="profile-switcher">
+                    <div class="profile-tabs" role="tablist" aria-label="Sekcje profilu">
+                        <button class="profile-tab" id="stats-tab" type="button" role="tab"
+                            aria-controls="stats-panel" aria-selected="true" tabindex="0"
+                            data-profile-tab="stats" onclick="switchProfileTab('stats')"
+                            onkeydown="handleProfileTabKeydown(event)">Statystyki gracza</button>
+                        <button class="profile-tab" id="edit-tab" type="button" role="tab"
+                            aria-controls="edit-panel" aria-selected="false" tabindex="-1"
+                            data-profile-tab="edit" onclick="switchProfileTab('edit')"
+                            onkeydown="handleProfileTabKeydown(event)">Edycja profilu</button>
+                    </div>
+                    <div class="profile-tab-content">
+                        <section class="statystyki profile-tab-panel is-active" id="stats-panel"
+                            role="tabpanel" aria-labelledby="stats-tab" aria-hidden="false" tabindex="0">
                 <div class="stat">
                     <span>Rozegrane gry:</span>
                     <span id="games-played" class="stat-value">0</span>
@@ -108,63 +119,68 @@
                     <span>Najczęściej wybierana klasa:</span>
                     <span id="favorite-class" class="stat-value">-</span>
                 </div>
-           </div>       
+                        </section>
         
         <!-- Edycja profilu -->
-        <div class="edycja-profilu">
-            <h2>Edycja profilu</h2>
-            
-            <!-- Wybór opcji -->
-            <div class="edit-options" id="edit-options">
-                <button class="edit-option-btn" onclick="showEditSection('username')">
-                    Zmień nazwę użytkownika
-                </button>
-                <button class="edit-option-btn" onclick="showEditSection('email')">
-                    Zmień adres email
-                </button>
-                <button class="edit-option-btn" onclick="showEditSection('password')">
-                    Zmień hasło
-                </button>
+                        <section class="edycja-profilu profile-tab-panel" id="edit-panel"
+                            role="tabpanel" aria-labelledby="edit-tab" aria-hidden="true" tabindex="0" inert>
+                            <h2>Ustawienia profilu</h2>
+                            <div class="edit-options" id="edit-options">
+                                <button class="edit-option-btn" onclick="showEditSection('username')">
+                                    Zmień nazwę użytkownika
+                                </button>
+                                <button class="edit-option-btn" onclick="showEditSection('email')">
+                                    Zmień adres email
+                                </button>
+                                <button class="edit-option-btn" onclick="showEditSection('password')">
+                                    Zmień hasło
+                                </button>
+                            </div>
+                            <div class="profile-danger-zone">
+                                <h3 class="profile-danger-title">Strefa niebezpieczna</h3>
+                                <div class="profile-edit-footer">
+                                    <div class="delete-account-section">
+                                        <button class="delete-account-btn" onclick="showDeleteModal()">Usuń konto</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Formularz edycji -->
+                            <form id="profile-form" onsubmit="updateProfile(event)" style="display: none;">
+                                <h2 class="profile-form-title" id="profile-form-title"></h2>
+                                <div class="error-message" id="profile-error" style="display: none;"></div>
+                                <div class="success-message" id="profile-success" style="display: none;"></div>
+                                <div class="form-group" id="username-group" style="display: none;">
+                                    <label for="edit-username">Nowa nazwa użytkownika</label>
+                                    <input type="text" id="edit-username" placeholder="Wpisz nową nazwę użytkownika">
+                                </div>
+                
+                                <div class="form-group" id="email-group" style="display: none;">
+                                    <label for="edit-email">Nowy adres email</label>
+                                    <input type="email" id="edit-email" placeholder="Wpisz nowy adres email">
+                                </div>
+                
+                                <div class="form-group" id="password-group" style="display: none;">
+                                    <label for="new-password">Nowe hasło</label>
+                                    <input type="password" id="new-password" placeholder="Wpisz nowe hasło (min. 6 znaków)">
+                                </div>
+                
+                                <div class="form-group">
+                                    <label for="current-password">Potwierdź obecne hasło</label>
+                                    <input type="password" id="current-password" placeholder="Wpisz obecne hasło" required>
+                                    <a href="../haslo/index.html" class="forgot-password-link">Nie pamiętam hasła</a>
+                                </div>
+                
+                                <div class="form-buttons">
+                                    <button type="button" class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
+                                    <button type="submit" class="save-profile-btn">Zapisz zmiany</button>
+                                </div>
+                                <div class="loader" id="profile-loader" style="display: none;"></div>
+                            </form>
+                        </section>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Formularz edycji -->
-            <form id="profile-form" onsubmit="updateProfile(event)" style="display: none;">
-                <div class="error-message" id="profile-error" style="display: none;"></div>
-                <div class="success-message" id="profile-success" style="display: none;"></div>
-                <div class="form-group" id="username-group" style="display: none;">
-                    <label for="edit-username">Nowa nazwa użytkownika</label>
-                    <input type="text" id="edit-username" placeholder="Wpisz nową nazwę użytkownika">
-                </div>
-                
-                <div class="form-group" id="email-group" style="display: none;">
-                    <label for="edit-email">Nowy adres email</label>
-                    <input type="email" id="edit-email" placeholder="Wpisz nowy adres email">
-                </div>
-                
-                <div class="form-group" id="password-group" style="display: none;">
-                    <label for="new-password">Nowe hasło</label>
-                    <input type="password" id="new-password" placeholder="Wpisz nowe hasło (min. 6 znaków)">
-                </div>
-                
-                <div class="form-group">
-                    <label for="current-password">Potwierdź obecne hasło</label>
-                    <input type="password" id="current-password" placeholder="Wpisz obecne hasło" required>
-                    <a href="../haslo/index.html" class="forgot-password-link">Nie pamiętam hasła</a>
-                </div>
-                
-                <div class="form-buttons">
-                    <button type="button" class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
-                    <button type="submit" class="save-profile-btn">Zapisz zmiany</button>
-                </div>
-                <div class="loader" id="profile-loader" style="display: none;"></div>
-            </form>
-        </div>
-        
-        <!-- Przycisk usuń konto -->
-        <div class="delete-account-section">
-            <button class="delete-account-btn" onclick="showDeleteModal()">Usuń konto</button>
-        </div>
-    </div>
 
 
     </div>
@@ -320,14 +336,62 @@
         loadUserData();
         
         let currentEditMode = null;
+
+        function switchProfileTab(tabName, focusTab = false) {
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                const isSelected = tab.dataset.profileTab === tabName;
+                tab.setAttribute('aria-selected', String(isSelected));
+                tab.tabIndex = isSelected ? 0 : -1;
+                if (isSelected && focusTab) tab.focus();
+            });
+
+            document.querySelectorAll('.profile-tab-panel').forEach(panel => {
+                const isActive = panel.id === `${tabName}-panel`;
+                panel.classList.toggle('is-active', isActive);
+                panel.setAttribute('aria-hidden', String(!isActive));
+                if (isActive) {
+                    panel.removeAttribute('inert');
+                } else {
+                    panel.setAttribute('inert', '');
+                }
+            });
+        }
+
+        function handleProfileTabKeydown(event) {
+            const tabs = Array.from(document.querySelectorAll('.profile-tab'));
+            const currentIndex = tabs.indexOf(event.currentTarget);
+            let nextIndex;
+
+            if (event.key === 'ArrowRight') {
+                nextIndex = (currentIndex + 1) % tabs.length;
+            } else if (event.key === 'ArrowLeft') {
+                nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            } else if (event.key === 'Home') {
+                nextIndex = 0;
+            } else if (event.key === 'End') {
+                nextIndex = tabs.length - 1;
+            } else {
+                return;
+            }
+
+            event.preventDefault();
+            switchProfileTab(tabs[nextIndex].dataset.profileTab, true);
+        }
         
         // Pokaż sekcję edycji
         function showEditSection(mode) {
             currentEditMode = mode;
             document.querySelector('.edycja-profilu').classList.add('is-editing');
             
+            const formTitles = {
+                username: 'Zmień nazwę użytkownika',
+                email: 'Zmień adres e-mail',
+                password: 'Zmień hasło użytkownika'
+            };
+            document.getElementById('profile-form-title').textContent = formTitles[mode];
+
             // Pokaż formularz
-            document.getElementById('profile-form').style.display = 'block';
+            document.getElementById('profile-form').style.display = 'flex';
             
             // Ukryj wszystkie pola
             document.getElementById('username-group').style.display = 'none';

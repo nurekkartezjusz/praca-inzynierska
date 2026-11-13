@@ -103,6 +103,72 @@ html, body{
     flex-direction:column;
     gap:20px;
 }
+.profile-switcher{
+    min-width:0;
+}
+.profile-tabs{
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    position:relative;
+    z-index:1;
+    margin-bottom:-3px;
+}
+.profile-tab{
+    padding:10px 12px;
+    border:3px solid #000;
+    background:#c8a5ff;
+    box-shadow:3px 3px 0 #000;
+    color:#111;
+    font-family:var(--font-primary);
+    font-size:clamp(7px, 0.8vw, 10px);
+    line-height:1.5;
+    cursor:pointer;
+}
+.profile-tab[aria-selected="true"]{
+    position:relative;
+    z-index:2;
+    margin-bottom:-3px;
+    border-bottom-color:#fff;
+    background:#fff;
+    box-shadow:none;
+}
+.profile-tab:focus-visible{
+    outline:3px solid #3d2780;
+    outline-offset:2px;
+}
+.profile-tab-content{
+    display:grid;
+    border:3px solid #000;
+    background:#fff;
+    box-shadow:4px 4px 0 #000;
+    color:#000;
+}
+.profile-tab-panel{
+    grid-area:1 / 1;
+    min-width:0;
+    min-height:422px;
+    padding:22px 18px;
+    visibility:hidden;
+    pointer-events:none;
+}
+.profile-tab-panel.is-active{
+    visibility:visible;
+    pointer-events:auto;
+}
+.profile-tab-panel.edycja-profilu{
+    display:flex;
+    flex-direction:column;
+}
+.profile-tab-content .statystyki,
+.profile-tab-content .edycja-profilu{
+    border:0;
+    background:transparent;
+    box-shadow:none;
+}
+.right-section .delete-account-section{
+    margin-top:0;
+}
 .statystyki, .edycja-profilu {
     background: #ffffff;
     border: 3px solid #000000;
@@ -113,8 +179,8 @@ html, body{
 .edycja-profilu{
     position: relative;
 }
-.edycja-profilu.is-editing h2{
-    visibility: hidden;
+.edycja-profilu.is-editing .profile-danger-zone{
+    visibility:hidden;
 }
 .edycja-profilu.is-editing #edit-options{
     visibility: hidden;
@@ -123,30 +189,40 @@ html, body{
     position: absolute;
     inset: 0;
     z-index: 1;
+    display:flex;
+    flex-direction:column;
     overflow-y: auto;
-    padding: 12px 14px;
+    padding: 22px 18px;
     background: #fff;
 }
+.profile-form-title{
+    margin-bottom:20px;
+    border-bottom:2px solid #000;
+    padding-bottom:10px;
+    font-size:clamp(10px, 1vw, 14px);
+    line-height:1.6;
+}
 .edycja-profilu.is-editing #profile-form .form-group{
-    gap: 4px;
-    margin-bottom: 6px;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 .edycja-profilu.is-editing #profile-form .form-group label{
-    font-size: 13px;
-}
-.edycja-profilu.is-editing #profile-form .form-group input{
-    min-height: 36px;
-    padding: 6px 10px;
     font-size: 15px;
 }
+.edycja-profilu.is-editing #profile-form .form-group input{
+    min-height: 46px;
+    padding: 10px 12px;
+    font-size: 16px;
+}
 .edycja-profilu.is-editing #profile-form .form-buttons{
-    gap: 10px;
-    margin-top: 0;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 12px;
 }
 .edycja-profilu.is-editing #profile-form .form-buttons .cancel-btn,
 .edycja-profilu.is-editing #profile-form .form-buttons .save-profile-btn{
-    min-height: 40px;
-    padding: 8px 6px;
+    min-height: 48px;
+    padding: 10px 8px;
 }
 .statystyki h2, .edycja-profilu h2 {
     font-size: 14px;
@@ -179,11 +255,38 @@ html, body{
     flex-direction: column;
     gap: 10px;
 }
+.profile-danger-zone{
+    margin-top:auto;
+}
+.profile-danger-title{
+    margin:14px 0 8px;
+    color:#a51d1d;
+    font-family:var(--font-primary);
+    font-size:clamp(8px, 0.8vw, 11px);
+    line-height:1.5;
+}
+.profile-edit-footer{
+    padding:14px 0 0;
+    border-top:2px dashed rgba(200, 165, 255, 0.85);
+}
+.profile-edit-footer .delete-account-section{
+    width:100%;
+    margin-top:0;
+}
+.profile-edit-footer .delete-account-btn{
+    width:100%;
+    min-width:0;
+    min-height:48px;
+    padding:12px;
+    line-height:1.5;
+}
 
 .edit-option-btn, .save-profile-btn, .cancel-btn {
     font-family: var(--font-third);
     font-size: 20px;
+    line-height:1.5;
     padding: 12px;
+    min-height:48px;
     background: #c8a5ff;
     border: 3px solid #000000;
     box-shadow: 3px 3px 0px #000000;
@@ -450,13 +553,23 @@ strong{
         margin-top: 0;
         padding: 16px 14px;
     }
+    .profile-tab-panel{
+        min-height:0;
+    }
+    .profile-tab{
+        padding:8px;
+        font-size:clamp(6px, 1.8vw, 8px);
+    }
     #profile-form{
-        padding: 10px 12px;
+        padding: 16px 14px;
     }
     .statystyki h2,
     .edycja-profilu h2{
         font-size: clamp(10px, 3vw, 13px);
         line-height: 1.6;
+    }
+    .profile-danger-title{
+        font-size:clamp(8px, 2.4vw, 10px);
     }
     .stat{
         align-items: center;
@@ -506,10 +619,16 @@ strong{
         margin-top: 0;
     }
     .delete-account-btn{
-        width: auto;
-        min-width: 180px;
+        width: 100%;
+        min-width: 0;
         min-height: 44px;
         font-size: 10px;
+    }
+    .profile-edit-footer .delete-account-btn{
+        min-height:44px;
+        padding:12px;
+        font-size:clamp(9px, 2.7vw, 11px);
+        line-height:1.5;
     }
     .modal{
         padding: 15px;
