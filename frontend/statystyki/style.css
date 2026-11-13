@@ -262,7 +262,7 @@ html, body{
     margin:14px 0 8px;
     color:#a51d1d;
     font-family:var(--font-primary);
-    font-size:clamp(8px, 0.8vw, 11px);
+    font-size:14px;
     line-height:1.5;
 }
 .profile-edit-footer{
@@ -569,7 +569,7 @@ strong{
         line-height: 1.6;
     }
     .profile-danger-title{
-        font-size:clamp(8px, 2.4vw, 10px);
+        font-size:clamp(10px, 3vw, 13px);
     }
     .stat{
         align-items: center;
