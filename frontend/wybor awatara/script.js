@@ -63,16 +63,9 @@ function update(part) {
 window.onload = () => {
     ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"].forEach(update);
     
-    // Pokaż checkbox tutorial tylko dla nowych użytkowników (po rejestracji)
     const urlParams = new URLSearchParams(window.location.search);
     const isNewUser = urlParams.get('new') === 'true';
-    
-    const tutorialSection = document.querySelector('.tutorial-check');
-    if (!isNewUser && tutorialSection) {
-        tutorialSection.style.display = 'none';
-    }
-    
-    // Ukryj przycisk strony głównej dla nowych użytkowników (po rejestracji)
+
     const homeBtn = document.getElementById('home-btn');
     if (isNewUser && homeBtn) {
         homeBtn.style.display = 'none';
@@ -80,8 +73,6 @@ window.onload = () => {
 };
 
 async function startGame() {
-    const tutorial = document.getElementById("tutorial").checked;
-
     const API_URL = '/api';
     const token = localStorage.getItem('access_token');
 
