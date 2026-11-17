@@ -1,4 +1,10 @@
 const API_URL = '/api';
+const AVATAR_COLORS = {
+    wlosy: ["czarne", "blond", "braz"],
+    koszulka: ["czarna", "czerwona", "niebieska", "zielona", "biala", "rozowa"],
+    spodnie: ["czarne", "biale", "szare", "niebieskie"]
+};
+let loadedFriends = [];
 
 // Bezpieczne parsowanie JSON z odpowiedzi
 async function safeJsonParse(response) {
@@ -10,6 +16,29 @@ async function safeJsonParse(response) {
         }
     }
     return {};
+}
+
+function renderFriendsList() {
+    const friendsDiv = document.getElementById('friendsList');
+    const query = document.getElementById('friendFilter').value.trim().toLocaleLowerCase();
+    const filteredFriends = loadedFriends.filter(friend =>
+        friend.username.toLocaleLowerCase().includes(query)
+    );
+
+    if (filteredFriends.length === 0) {
+        friendsDiv.innerHTML = query
+            ? '<div class="empty-state">Nie znaleziono znajomych</div>'
+            : '<div class="empty-state">Nie masz jeszcze znajomych. Użyj wyszukiwarki powyżej!</div>';
+        return;
+    }
+
+    friendsDiv.innerHTML = filteredFriends.map(friend => createUserCard(friend, 'friend')).join('');
+}
+
+function updateInvitationTabCount() {
+    const friendRequests = Number(document.getElementById('requestCount').textContent) || 0;
+    const gameInvitations = Number(document.getElementById('gameInvitationCount').textContent) || 0;
+    document.getElementById('pendingInvitationCount').textContent = friendRequests + gameInvitations;
 }
 
 // Sprawdź czy użytkownik jest zalogowany
@@ -38,7 +67,53 @@ function logout() {
 
 // Pobierz inicjały użytkownika
 function getInitials(username) {
-    return username.substring(0, 2).toUpperCase();
+    return (username || '').substring(0, 2).toUpperCase();
+}
+
+function renderOwnAvatar(avatarState) {
+    const defaults = {
+        skora: 1,
+        usta: 1,
+        oczy: 1,
+        wlosy: 1,
+        wlosyColorIndex: 0,
+        koszulka: 1,
+        koszulkaColorIndex: 0,
+        spodnie: 1,
+        spodnieColorIndex: 0
+    };
+    const state = { ...defaults, ...avatarState };
+
+    ["skora", "usta", "oczy", "wlosy", "koszulka", "spodnie"].forEach(part => {
+        const image = document.getElementById(`friend-avatar-${part}`);
+        const colorOptions = AVATAR_COLORS[part];
+        let filename = `${part}${state[part]}`;
+
+        if (colorOptions) {
+            const color = colorOptions[state[`${part}ColorIndex`]] || colorOptions[0];
+            filename += `_${color}`;
+        }
+
+        image.src = `../wybor%20awatara/img/${part}/${filename}.png`;
+    });
+}
+
+async function loadCurrentUser() {
+    try {
+        const response = await fetch(`${API_URL}/me`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+
+        if (!response.ok) {
+            throw new Error('Błąd pobierania profilu');
+        }
+
+        const user = await safeJsonParse(response);
+        renderOwnAvatar(user.avatar ? JSON.parse(user.avatar) : {});
+    } catch (error) {
+        console.error('Błąd pobierania profilu:', error);
+        showToast('Nie udało się pobrać awatara gracza', 'error');
+    }
 }
 
 // Wyszukaj użytkowników
@@ -97,6 +172,7 @@ async function loadFriendRequests() {
         const countSpan = document.getElementById('requestCount');
         
         countSpan.textContent = requests.length;
+        updateInvitationTabCount();
 
         if (requests.length === 0) {
             requestsDiv.innerHTML = '<div class="empty-state">Brak nowych zaproszeń</div>';
@@ -132,7 +208,7 @@ async function loadFriends() {
         const friends = await safeJsonParse(response);
         const friendsDiv = document.getElementById('friendsList');
         const countSpan = document.getElementById('friendCount');
-        
+        loadedFriends = friends;
         countSpan.textContent = friends.length;
 
         if (friends.length === 0) {
@@ -140,7 +216,7 @@ async function loadFriends() {
             return;
         }
 
-        friendsDiv.innerHTML = friends.map(friend => createUserCard(friend, 'friend')).join('');
+        renderFriendsList();
     } catch (error) {
         console.error('Błąd:', error);
         showToast('Błąd pobierania znajomych', 'error');
@@ -397,6 +473,7 @@ async function loadGameInvitations() {
         
         if (countSpan) {
             countSpan.textContent = invitations.length;
+            updateInvitationTabCount();
         }
 
         if (!invitationsDiv) return;
@@ -522,8 +599,11 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     }, 500);
 });
 
+document.getElementById('friendFilter').addEventListener('input', renderFriendsList);
+
 // Inicjalizacja
 checkAuth();
+loadCurrentUser();
 loadFriendRequests();
 loadFriends();
 loadGameInvitations();

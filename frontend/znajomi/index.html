@@ -56,41 +56,63 @@
         </nav>
         <button class="nav-backdrop" type="button" aria-label="Zamknij menu" onclick="toggleNavigation(false)"></button>
     </header>
-    <div class="container">
-        <h1>
-            <span class="znajomi"><span class="first-letter">Z</span>najomi</span>
-        </h1>
-        
-        <!-- Wyszukiwanie użytkowników -->
-        <div class="search-section">
-            <h2>Szukaj użytkowników</h2>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Wpisz nazwę użytkownika...">
-                <button onclick="searchUsers()">Szukaj</button>
-            </div>
-            <div id="searchResults" class="user-list"></div>
-        </div>
+    <main class="app">
+        <div class="profile-card">
+            <section class="left-section" aria-label="Twój profil">
+                <div class="avatar-frame">
+                    <div class="avatar" aria-label="Twój awatar">
+                        <img id="friend-avatar-skora" class="layer" alt="">
+                        <img id="friend-avatar-usta" class="layer" alt="">
+                        <img id="friend-avatar-oczy" class="layer" alt="">
+                        <img id="friend-avatar-wlosy" class="layer" alt="">
+                        <img id="friend-avatar-koszulka" class="layer" alt="">
+                        <img id="friend-avatar-spodnie" class="layer" alt="">
+                    </div>
+                </div>
+            </section>
 
-        <!-- Zaproszenia -->
-        <div class="requests-section">
-            <h2>Zaproszenia do znajomych (<span id="requestCount">0</span>)</h2>
-            <div id="friendRequests" class="user-list"></div>
-        </div>
+            <section class="right-section" aria-label="Znajomi">
+                <div class="friends-switcher">
+                    <div class="friends-tabs" role="tablist" aria-label="Sekcje znajomych">
+                        <button class="friends-tab" id="friends-tab" type="button" role="tab"
+                            aria-controls="friends-panel" aria-selected="true" tabindex="0"
+                            data-friends-tab="friends">Moi znajomi (<span id="friendCount">0</span>)</button>
+                        <button class="friends-tab" id="discover-tab" type="button" role="tab"
+                            aria-controls="discover-panel" aria-selected="false" tabindex="-1"
+                            data-friends-tab="discover">Szukaj i zaproszenia <span class="tab-count" id="pendingInvitationCount">0</span></button>
+                    </div>
+                    <div class="friends-tab-content">
+                        <section class="friends-panel is-active" id="friends-panel" role="tabpanel"
+                            aria-labelledby="friends-tab" aria-hidden="false" tabindex="0">
+                            <label class="visually-hidden" for="friendFilter">Filtruj znajomych</label>
+                            <input type="search" id="friendFilter" class="friend-filter" placeholder="Filtruj znajomych...">
+                            <div id="friendsList" class="user-list"></div>
+                        </section>
 
-        <!-- Zaproszenia do gier -->
-        <div class="game-invitations-section">
-            <h2>Zaproszenia do gier (<span id="gameInvitationCount">0</span>)</h2>
-            <div id="gameInvitations" class="user-list"></div>
+                        <section class="friends-panel" id="discover-panel" role="tabpanel"
+                            aria-labelledby="discover-tab" aria-hidden="true" tabindex="0" inert>
+                            <div class="search-section">
+                                <h2>Szukaj użytkowników</h2>
+                                <div class="search-box">
+                                    <input type="text" id="searchInput" placeholder="Wpisz nazwę użytkownika...">
+                                    <button type="button" onclick="searchUsers()">Szukaj</button>
+                                </div>
+                                <div id="searchResults" class="user-list"></div>
+                            </div>
+                            <div class="requests-section">
+                                <h2>Zaproszenia do gier (<span id="gameInvitationCount">0</span>)</h2>
+                                <div id="gameInvitations" class="user-list"></div>
+                            </div>
+                            <div class="requests-section">
+                                <h2>Zaproszenia do znajomych (<span id="requestCount">0</span>)</h2>
+                                <div id="friendRequests" class="user-list"></div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
         </div>
-
-        <!-- Lista znajomych -->
-        <div class="friends-section">
-            <h2>Moi znajomi (<span id="friendCount">0</span>)</h2>
-            <div id="friendsList" class="user-list"></div>
-        </div>
-
-        
-    </div>
+    </main>
 
     <!-- Modal wyboru gry -->
     <div id="gameModal" class="modal">
@@ -116,6 +138,33 @@
     <script src="../js/profile-menu.js"></script>
     <script src="script.js"></script>
     <script>
+        function switchFriendsTab(tabName, focusTab) {
+            document.querySelectorAll('.friends-tab').forEach(function(tab) {
+                var isSelected = tab.dataset.friendsTab === tabName;
+                tab.setAttribute('aria-selected', String(isSelected));
+                tab.tabIndex = isSelected ? 0 : -1;
+                if (isSelected && focusTab) tab.focus();
+            });
+            document.querySelectorAll('.friends-panel').forEach(function(panel) {
+                var isActive = panel.id === tabName + '-panel';
+                panel.classList.toggle('is-active', isActive);
+                panel.setAttribute('aria-hidden', String(!isActive));
+                if (isActive) panel.removeAttribute('inert');
+                else panel.setAttribute('inert', '');
+            });
+        }
+
+        document.querySelectorAll('.friends-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                switchFriendsTab(tab.dataset.friendsTab, false);
+            });
+            tab.addEventListener('keydown', function(event) {
+                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                event.preventDefault();
+                switchFriendsTab(tab.dataset.friendsTab === 'friends' ? 'discover' : 'friends', true);
+            });
+        });
+
         function toggleNavigation(forceOpen) {
             const toggle = document.querySelector('.nav-toggle');
             const menu = document.getElementById('mobile-navigation');
