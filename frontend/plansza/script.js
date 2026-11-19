@@ -1412,6 +1412,7 @@ function executeChanceCard(cardIndex) {
     var result = card(player);
 
     showMsg(result.msg);
+    console.log("KARTA K35: SZANSA");
     animateDiceCard(result.msg);
 
     updateGamePanel();
@@ -1491,6 +1492,7 @@ function triggerFieldArrival(player) {
         } else {
             var message = "📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!";
             showMsg(message);
+            console.log("KARTA K35: BIBLIOTEKA");
             animateDiceCard(message);
         }
         updateGamePanel();
@@ -1499,6 +1501,7 @@ function triggerFieldArrival(player) {
         player.luck += 1;
         var message = "⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!";
         showMsg(message);
+        console.log("KARTA K35: STREFA RELAKSU");
         animateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
@@ -1512,6 +1515,7 @@ function triggerFieldArrival(player) {
             message = "🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥";
         }
         showMsg(message);
+        console.log("KARTA K35: STOŁÓWKA");
         animateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
@@ -1841,22 +1845,19 @@ function animateDiceCard(message) {
 }
 
 function closeDiceCard() {
-    const stack = document.querySelector('.k35 .card-top');
     const flight = document.querySelector('.dice-card-flight');
     const inner = document.querySelector('.dice-card-inner');
-    if (!stack || !flight || !inner || flight.style.display === 'none') {
+    if (!flight || !inner || flight.style.display === 'none') {
         return;
     }
     if (!diceCardCanClose) return;
-        diceCardCanClose = false;
-    const rect = stack.getBoundingClientRect();
-    const endX = rect.left + rect.width / 2;
-    const endY = rect.top + rect.height / 2;
-    const startX = window.innerWidth / 2;
-    const startY = window.innerHeight / 2;
-    const endScale = Math.min(0.65, rect.width / 420);
+    diceCardCanClose = false;
     flight.getAnimations().forEach(animation => animation.cancel());
     inner.getAnimations().forEach(animation => animation.cancel());
+    const startX = window.innerWidth / 2;
+    const startY = window.innerHeight / 2;
+    const endX = startX;
+    const endY = -350;
     const flightAnimation = flight.animate([
         {
             left: startX + 'px',
@@ -1866,11 +1867,11 @@ function closeDiceCard() {
         {
             left: endX + 'px',
             top: endY + 'px',
-            transform: `translate(-50%, -50%) rotate(90deg) scale(${endScale})`
+            transform: 'translate(-50%, -50%) rotate(-90deg) scale(0.4)'
         }
     ], {
         duration: 650,
-        easing: 'cubic-bezier(.2, .8, .3, 1)',
+        easing: 'cubic-bezier(.4, 0, 1, 1)',
         fill: 'forwards'
     });
     const flipAnimation = inner.animate([
