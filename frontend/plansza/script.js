@@ -1410,9 +1410,12 @@ function executeChanceCard(cardIndex) {
     var player = gameState.players[gameState.turn];
     var card = SZANSA_KARTY[cardIndex];
     var result = card(player);
+
     showMsg(result.msg);
+    animateDiceCard(result.msg);
+
     updateGamePanel();
-    
+
     if (player.hp <= 0) {
         var winner = gameState.players[(gameState.turn + 1) % gameState.players.length];
         showMsg('💀 ' + player.name + ' stracił wszystkie HP! Wygrywa ' + winner.name + '!');
@@ -1420,6 +1423,7 @@ function executeChanceCard(cardIndex) {
         document.getElementById('dice-btn').disabled = true;
         return;
     }
+
     scheduleNextTurn(2000);
 }
 
@@ -1485,23 +1489,30 @@ function triggerFieldArrival(player) {
                 }
             }
         } else {
-            showMsg("📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!");
+            var message = "📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!";
+            showMsg(message);
+            animateDiceCard(message);
         }
         updateGamePanel();
         scheduleNextTurn(2000);
     } else if (type === 'strefarelaksu') {
         player.luck += 1;
-        showMsg("⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!");
+        var message = "⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!";
+        showMsg(message);
+        animateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
     } else if (type === 'stolowka') {
         var floor = getFloor(player.pos);
+        var message;
         if (floor === 1) {
-            showMsg("🥪 Stołówka na parterze jest zamknięta! Brak bonusów.");
+            message = "🥪 Stołówka na parterze jest zamknięta! Brak bonusów.";
         } else {
             player.hp += 1;
-            showMsg("🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥");
+            message = "🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥";
         }
+        showMsg(message);
+        animateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
     } else if (type === 'piwnica') {
@@ -1769,6 +1780,119 @@ function useQuiz1Hint() {
     document.getElementById('quiz-hint-btn').style.display = 'none';
     showMsg("💡 Użyto podpowiedzi! Ukryto 2 błędne odpowiedzi.");
 }
+
+function animateDiceCard(message) {
+    const stack = document.querySelector('.k35 .card-top');
+    const flight = document.querySelector('.dice-card-flight');
+    const inner = document.querySelector('.dice-card-inner');
+    const messageBox = document.getElementById('dice-card-message');
+    if (!stack || !flight || !inner || !messageBox) {
+        console.error('Nie znaleziono stosu lub karty k35.');
+        return false;
+    }
+    messageBox.textContent = message;
+    const rect = stack.getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    const endX = window.innerWidth / 2;
+    const endY = window.innerHeight / 2;
+    const startScale = Math.min(0.65, rect.width / 420);
+    flight.getAnimations().forEach(animation => animation.cancel());
+    inner.getAnimations().forEach(animation => animation.cancel());
+    flight.style.left = startX + 'px';
+    flight.style.top = startY + 'px';
+    flight.style.display = 'block';
+    inner.style.transform = 'rotateY(0deg)';
+    void flight.offsetWidth;
+    const flightAnimation = flight.animate([
+        {
+            left: startX + 'px',
+            top: startY + 'px',
+            transform: `translate(-50%, -50%) rotate(90deg) scale(${startScale})`
+        },
+        {
+            left: endX + 'px',
+            top: endY + 'px',
+            transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
+        }
+    ], {
+        duration: 650,
+        easing: 'cubic-bezier(.2, .8, .3, 1)',
+        fill: 'forwards'
+    });
+    const flipAnimation = inner.animate([
+        { transform: 'rotateY(0deg)' },
+        { transform: 'rotateY(180deg)' }
+    ], {
+        duration: 200,
+        delay: 650,
+        easing: 'ease-in',
+        fill: 'forwards'
+    });
+    return Promise.all([
+        flightAnimation.finished,
+        flipAnimation.finished
+    ]);
+}
+
+function closeDiceCard() {
+    const stack = document.querySelector('.k35 .card-top');
+    const flight = document.querySelector('.dice-card-flight');
+    const inner = document.querySelector('.dice-card-inner');
+
+    if (!stack || !flight || !inner || flight.style.display === 'none') {
+        return;
+    }
+    const rect = stack.getBoundingClientRect();
+    const endX = rect.left + rect.width / 2;
+    const endY = rect.top + rect.height / 2;
+    const startX = window.innerWidth / 2;
+    const startY = window.innerHeight / 2;
+    const endScale = Math.min(0.65, rect.width / 420);
+    flight.getAnimations().forEach(animation => animation.cancel());
+    inner.getAnimations().forEach(animation => animation.cancel());
+    const flightAnimation = flight.animate([
+        {
+            left: startX + 'px',
+            top: startY + 'px',
+            transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
+        },
+        {
+            left: endX + 'px',
+            top: endY + 'px',
+            transform: `translate(-50%, -50%) rotate(90deg) scale(${endScale})`
+        }
+    ], {
+        duration: 650,
+        easing: 'cubic-bezier(.2, .8, .3, 1)',
+        fill: 'forwards'
+    });
+    const flipAnimation = inner.animate([
+        { transform: 'rotateY(180deg)' },
+        { transform: 'rotateY(0deg)' }
+    ], {
+        duration: 200,
+        easing: 'ease-out',
+        fill: 'forwards'
+    });
+    Promise.all([
+        flightAnimation.finished,
+        flipAnimation.finished
+    ]).then(() => {
+        flight.style.display = 'none';
+        flight.style.left = '';
+        flight.style.top = '';
+        flight.style.transform = '';
+        inner.style.transform = '';
+    });
+}
+
+document.addEventListener('click', function(e) {
+    const flight = document.querySelector('.dice-card-flight');
+    if (flight && flight.style.display === 'block') {
+        closeDiceCard();
+    }
+});
 
 function openDziekanatModal(player) {
     var obronaBtn = document.getElementById('dk-btn-obrona');
