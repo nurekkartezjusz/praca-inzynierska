@@ -1781,6 +1781,8 @@ function useQuiz1Hint() {
     showMsg("💡 Użyto podpowiedzi! Ukryto 2 błędne odpowiedzi.");
 }
 
+var diceCardCanClose = false;
+
 function animateDiceCard(message) {
     const stack = document.querySelector('.k35 .card-top');
     const flight = document.querySelector('.dice-card-flight');
@@ -1829,20 +1831,24 @@ function animateDiceCard(message) {
         easing: 'ease-in',
         fill: 'forwards'
     });
+    diceCardCanClose = false;
     return Promise.all([
         flightAnimation.finished,
         flipAnimation.finished
-    ]);
+    ]).then(() => {
+        diceCardCanClose = true;
+    });
 }
 
 function closeDiceCard() {
     const stack = document.querySelector('.k35 .card-top');
     const flight = document.querySelector('.dice-card-flight');
     const inner = document.querySelector('.dice-card-inner');
-
     if (!stack || !flight || !inner || flight.style.display === 'none') {
         return;
     }
+    if (!diceCardCanClose) return;
+        diceCardCanClose = false;
     const rect = stack.getBoundingClientRect();
     const endX = rect.left + rect.width / 2;
     const endY = rect.top + rect.height / 2;
@@ -1887,9 +1893,9 @@ function closeDiceCard() {
     });
 }
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function() {
     const flight = document.querySelector('.dice-card-flight');
-    if (flight && flight.style.display === 'block') {
+    if (flight && flight.style.display === 'block' && diceCardCanClose) {
         closeDiceCard();
     }
 });
