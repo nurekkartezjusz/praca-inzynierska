@@ -1412,7 +1412,6 @@ function executeChanceCard(cardIndex) {
     var result = card(player);
 
     showMsg(result.msg);
-    console.log("KARTA K35: SZANSA");
     animateDiceCard(result.msg);
 
     updateGamePanel();
@@ -1431,7 +1430,9 @@ function executeChanceCard(cardIndex) {
 function triggerFieldArrival(player) {
     gamePhase = "resolving_field";
     var type = getCellType(player.pos);
-    
+    console.log("POLE:", type);
+    console.log("POZYCJA GRACZA:", player.pos);
+    console.log("FUNKCJA KARTY:", typeof animateDiceCard);
     if (type === 'sala') {
         triggerQuiz(player, 1);
     } else if (type === 'aula') {
@@ -1492,7 +1493,6 @@ function triggerFieldArrival(player) {
         } else {
             var message = "📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!";
             showMsg(message);
-            console.log("KARTA K35: BIBLIOTEKA");
             animateDiceCard(message);
         }
         updateGamePanel();
@@ -1501,7 +1501,6 @@ function triggerFieldArrival(player) {
         player.luck += 1;
         var message = "⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!";
         showMsg(message);
-        console.log("KARTA K35: STREFA RELAKSU");
         animateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
@@ -1515,7 +1514,6 @@ function triggerFieldArrival(player) {
             message = "🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥";
         }
         showMsg(message);
-        console.log("KARTA K35: STOŁÓWKA");
         animateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
