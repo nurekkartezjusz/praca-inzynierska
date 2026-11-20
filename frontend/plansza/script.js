@@ -1798,9 +1798,10 @@ function animateDiceCard(message) {
     const messageBox = document.getElementById('dice-card-message');
     if (!stack || !flight || !inner || !messageBox) {
         console.error('Nie znaleziono stosu lub karty k35.');
-        return false;
+        return Promise.resolve(false);
     }
     messageBox.textContent = message;
+    diceCardCanClose = false;
     const rect = stack.getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
@@ -1839,46 +1840,44 @@ function animateDiceCard(message) {
         easing: 'ease-in',
         fill: 'forwards'
     });
-    diceCardCanClose = false;
     return Promise.all([
         flightAnimation.finished,
         flipAnimation.finished
     ]).then(() => {
         diceCardCanClose = true;
+        return true;
     });
 }
 
 function closeDiceCard() {
     const flight = document.querySelector('.dice-card-flight');
     const inner = document.querySelector('.dice-card-inner');
-    if (!flight || !inner || flight.style.display === 'none') {
-        return;
+    if (!flight || !inner || flight.style.display === 'none' || !diceCardCanClose) {
+        return Promise.resolve();
     }
-    if (!diceCardCanClose) return;
     diceCardCanClose = false;
-    flight.getAnimations().forEach(animation => animation.cancel());
-    inner.getAnimations().forEach(animation => animation.cancel());
-    const startX = window.innerWidth / 2;
-    const startY = window.innerHeight / 2;
-    const endX = startX;
-    const endY = -350;
+    flight.getAnimations().forEach(anim => anim.cancel());
+    inner.getAnimations().forEach(anim => anim.cancel());
+    inner.style.transform = 'rotateY(180deg)';
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
     const flightAnimation = flight.animate([
         {
-            left: startX + 'px',
-            top: startY + 'px',
+            left: centerX + 'px',
+            top: centerY + 'px',
             transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
         },
         {
-            left: endX + 'px',
-            top: endY + 'px',
-            transform: 'translate(-50%, -50%) rotate(-90deg) scale(0.4)'
+            left: centerX + 'px',
+            top: '-350px',
+            transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
         }
     ], {
-        duration: 650,
+        duration: 500,
         easing: 'cubic-bezier(.4, 0, 1, 1)',
         fill: 'forwards'
     });
-    flightAnimation.finished.then(() => {
+    return flightAnimation.finished.then(() => {
         flight.style.display = 'none';
         flight.style.left = '';
         flight.style.top = '';
@@ -1887,12 +1886,24 @@ function closeDiceCard() {
     });
 }
 
-document.addEventListener('click', function() {
+function bindDiceCardClick() {
     const flight = document.querySelector('.dice-card-flight');
-    if (flight && flight.style.display === 'block' && diceCardCanClose) {
+    if (!flight || flight.dataset.diceBound === '1') return;
+    flight.dataset.diceBound = '1';
+    flight.addEventListener('click', function(e) {
+        e.stopPropagation();
         closeDiceCard();
-    }
-});
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindDiceCardClick);
+} else {
+    bindDiceCardClick();
+}
+
+window.animateDiceCard = animateDiceCard;
+window.closeDiceCard = closeDiceCard;
 
 function openDziekanatModal(player) {
     var obronaBtn = document.getElementById('dk-btn-obrona');
