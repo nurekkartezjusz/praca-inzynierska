@@ -1415,7 +1415,6 @@ function executeChanceCard(cardIndex) {
     if (typeof animateDiceCard === "function") {
         animateDiceCard(result.msg);
     }
-    animateDiceCard(result.msg);
 
     updateGamePanel();
 
@@ -1873,7 +1872,7 @@ function closeDiceCard() {
             transform: 'translate(-50%, -50%) rotate(0deg) scale(1)'
         }
     ], {
-        duration: 500,
+        duration: 200,
         easing: 'cubic-bezier(.4, 0, 1, 1)',
         fill: 'forwards'
     });
