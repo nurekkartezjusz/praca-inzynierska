@@ -148,7 +148,9 @@ function mpPlayEvent(ev, finalState, next) {
         var line = mpDescribeEvent(ev, name, player, finalState);
         if (line) {
             showMsg(line[0]);
-            var shouldShowCard = isMine;
+            var shouldShowCard = isMine &&
+                (ev.type === 'chance_card' ||
+                    (ev.type === 'field' && ['stolowka', 'strefarelaksu', 'biblioteka'].indexOf(ev.cell) !== -1));
             if (shouldShowCard && typeof window.animateDiceCard === "function") {
                 window.animateDiceCard(line[0]);
             }

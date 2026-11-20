@@ -1789,6 +1789,7 @@ function useQuiz1Hint() {
 }
 
 var diceCardCanClose = false;
+let diceCardCloseTimer = null;
 
 function animateDiceCard(message) {
     const stack = document.querySelector('.k35 .card-top');
@@ -1844,6 +1845,10 @@ function animateDiceCard(message) {
         flipAnimation.finished
     ]).then(() => {
         diceCardCanClose = true;
+        clearTimeout(diceCardCloseTimer);
+        diceCardCloseTimer = setTimeout(() => {
+            closeDiceCard();
+        }, 7000);
         return true;
     });
 }
@@ -1855,6 +1860,7 @@ function closeDiceCard() {
         return Promise.resolve();
     }
     diceCardCanClose = false;
+    clearTimeout(diceCardCloseTimer);
     flight.getAnimations().forEach(anim => anim.cancel());
     inner.getAnimations().forEach(anim => anim.cancel());
     inner.style.transform = 'rotateY(180deg)';
