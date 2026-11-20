@@ -1412,6 +1412,9 @@ function executeChanceCard(cardIndex) {
     var result = card(player);
 
     showMsg(result.msg);
+    if (typeof animateDiceCard === "function") {
+        animateDiceCard(result.msg);
+    }
     animateDiceCard(result.msg);
 
     updateGamePanel();
@@ -1425,6 +1428,12 @@ function executeChanceCard(cardIndex) {
     }
 
     scheduleNextTurn(2000);
+}
+
+function safeAnimateDiceCard(message) {
+    if (typeof animateDiceCard === "function") {
+        animateDiceCard(message);
+    }
 }
 
 function triggerFieldArrival(player) {
@@ -1490,7 +1499,7 @@ function triggerFieldArrival(player) {
         } else {
             var message = "📖 " + player.name + " w bibliotece: Otrzymuje +1 mądrości 🧠 oraz darmową podpowiedź 💡!";
             showMsg(message);
-            animateDiceCard(message);
+            safeAnimateDiceCard(message);
         }
         updateGamePanel();
         scheduleNextTurn(2000);
@@ -1498,7 +1507,7 @@ function triggerFieldArrival(player) {
         player.luck += 1;
         var message = "⭐ " + player.name + " w strefie relaksu: Odpoczynek pomaga w nauce! +1 szczęścia!";
         showMsg(message);
-        animateDiceCard(message);
+        safeAnimateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
     } else if (type === 'stolowka') {
@@ -1511,7 +1520,7 @@ function triggerFieldArrival(player) {
             message = "🥪 " + player.name + " w stołówce: Pożywny obiad regeneruje zdrowie! +1 HP! ♥";
         }
         showMsg(message);
-        animateDiceCard(message);
+        safeAnimateDiceCard(message);
         updateGamePanel();
         scheduleNextTurn(1500);
     } else if (type === 'piwnica') {
@@ -1783,13 +1792,6 @@ function useQuiz1Hint() {
 var diceCardCanClose = false;
 
 function animateDiceCard(message) {
-    console.log('DICE DEBUG:', {
-        stack: document.querySelector('.k35 .card-top'),
-        flight: document.querySelector('.dice-card-flight'),
-        inner: document.querySelector('.dice-card-inner'),
-        messageBox: document.getElementById('dice-card-message'),
-        message
-    });
     const stack = document.querySelector('.k35 .card-top');
     const flight = document.querySelector('.dice-card-flight');
     const inner = document.querySelector('.dice-card-inner');
@@ -1876,18 +1878,7 @@ function closeDiceCard() {
         easing: 'cubic-bezier(.4, 0, 1, 1)',
         fill: 'forwards'
     });
-    const flipAnimation = inner.animate([
-        { transform: 'rotateY(180deg)' },
-        { transform: 'rotateY(0deg)' }
-    ], {
-        duration: 200,
-        easing: 'ease-out',
-        fill: 'forwards'
-    });
-    Promise.all([
-        flightAnimation.finished,
-        flipAnimation.finished
-    ]).then(() => {
+    flightAnimation.finished.then(() => {
         flight.style.display = 'none';
         flight.style.left = '';
         flight.style.top = '';
