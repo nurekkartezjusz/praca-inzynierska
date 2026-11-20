@@ -1430,9 +1430,6 @@ function executeChanceCard(cardIndex) {
 function triggerFieldArrival(player) {
     gamePhase = "resolving_field";
     var type = getCellType(player.pos);
-    console.log("POLE:", type);
-    console.log("POZYCJA GRACZA:", player.pos);
-    console.log("FUNKCJA KARTY:", typeof animateDiceCard);
     if (type === 'sala') {
         triggerQuiz(player, 1);
     } else if (type === 'aula') {
@@ -1786,6 +1783,13 @@ function useQuiz1Hint() {
 var diceCardCanClose = false;
 
 function animateDiceCard(message) {
+    console.log('DICE DEBUG:', {
+        stack: document.querySelector('.k35 .card-top'),
+        flight: document.querySelector('.dice-card-flight'),
+        inner: document.querySelector('.dice-card-inner'),
+        messageBox: document.getElementById('dice-card-message'),
+        message
+    });
     const stack = document.querySelector('.k35 .card-top');
     const flight = document.querySelector('.dice-card-flight');
     const inner = document.querySelector('.dice-card-inner');
