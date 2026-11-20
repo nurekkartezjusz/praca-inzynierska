@@ -148,6 +148,7 @@ function mpPlayEvent(ev, finalState, next) {
         var line = mpDescribeEvent(ev, name, player, finalState);
         if (line) {
             showMsg(line[0]);
+            var shouldShowCard = isMine;
             if (shouldShowCard && typeof window.animateDiceCard === "function") {
                 window.animateDiceCard(line[0]);
             }
