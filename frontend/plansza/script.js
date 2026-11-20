@@ -1848,7 +1848,7 @@ function animateDiceCard(message) {
         clearTimeout(diceCardCloseTimer);
         diceCardCloseTimer = setTimeout(() => {
             closeDiceCard();
-        }, 7000);
+        }, 1500);
         return true;
     });
 }
